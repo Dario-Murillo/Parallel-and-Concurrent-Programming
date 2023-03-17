@@ -4,11 +4,11 @@ Dario Murillo -C15406
 
 
 
-1.Programacion Serial
+1.Programacion Serial: Secuencia estandar, las tareas en los programas se ejecutan una tras otra hasta que la otra se haya realizado por completo
 
-2.Programacion Concurrente
+2.Programacion Concurrente: Lo que no es serial, permite la ejecucion de tareas de manera intercalada, no hay que esperar para terminar las tareas
 
-3.Programacion Paralela
+3.Programacion Paralela: Las tareas son ejecutadas al mismo tiempo exactamente, es simultaneo
 
 4.Concurrencia de tareas
 
