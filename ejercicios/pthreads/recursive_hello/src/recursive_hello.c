@@ -40,10 +40,10 @@ void* greet(void* data) {
   pthread_t recursive;
   
   if(numero == 0) {
-    printf("\nBye from secondary thread, number recieved:%d", (int)numero);
+    printf("\nBye from secondary thread, number received:%d", (int)numero);
     
   } else if (numero > 0){
-    printf("\nHello from secondary thread, number recieved:%d", (int)numero);
+    printf("\nHello from secondary thread, number received:%d", (int)numero);
     --numero; //Restar 1 al numero
     pthread_create(&recursive, NULL, greet, (void*)numero); //Creacion de hilo que llama a la subrutina greet recursivamente 
     pthread_join(recursive, NULL); //Liberacion de la memoria solicitada por los hilos
