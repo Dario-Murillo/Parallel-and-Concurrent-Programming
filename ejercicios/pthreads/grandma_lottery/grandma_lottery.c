@@ -10,7 +10,7 @@ int main(void) {
 
 
     
-    void* numero_ran1 = NULL;
+    size_t numero_ran1 = 0;
     size_t numero_ran2 = 0;
 
     // void* temp;
@@ -21,11 +21,11 @@ int main(void) {
     pthread_create(&thread_ran2, NULL, number, NULL);
 
 
-    pthread_join(thread_ran1, &numero_ran1);
+    pthread_join(thread_ran1, (void*)&numero_ran1);
     pthread_join(thread_ran2, (void*)numero_ran2);
 
     //numero_ran1 = (size_t) temp;
-    printf("Numero:%zu\n", (size_t)numero_ran1);
+    printf("Numero:%zu\n", numero_ran1);
     
 
 }
