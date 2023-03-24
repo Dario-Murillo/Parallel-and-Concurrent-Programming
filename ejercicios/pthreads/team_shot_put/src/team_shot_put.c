@@ -38,22 +38,20 @@ int main(int argc, char* argv[]) {
 int create_threads(int num_atletas) {
     int error = EXIT_SUCCESS;
     double numero = 0;
-    pthread_t* team_1 = (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
-    pthread_t* team_2 = (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
-    if (team_1) {
-        for (int thread_number = 0; thread_number < num_atletas
-            ; ++thread_number) {
-        
-        
-        
-        error = pthread_create(&team_1[thread_number], /*attr*/ NULL, shoot
-            , /*arg*/ NULL);
-        }
+    pthread_t* hilos = (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
+    int seed = time(NULL) * pthread_self();
+    if(hilos) {
+      for(int index = 0; index < atletas; index) {
+        pthread_join(&hilos[index], NULL, shoot, (void*)seed);
+      }
     }
-    return error;
+  
     for (int thread_number = 0; thread_number < num_atletas
             ; ++thread_number) {
+              pthread_join(hilos[thread_number], (void*) &numero);
     }
+   free(hilos);
+   return error;
 
 }
 
