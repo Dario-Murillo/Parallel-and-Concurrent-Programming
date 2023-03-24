@@ -11,34 +11,39 @@ void* number(void* data);
 */
 int main(void) {
     size_t numero_ran1 = 0;
-    size_t numero_ran2 = 0;
-
-    // void* temp;
-    pthread_t thread_ran1, thread_ran2;
-
-    unsigned int seed1 =  time(NULL); // generamos una 'seed' distinta para cada hilo con el metodo time
-    unsigned int seed2 =  time(NULL) * 10; //se multiplica por 10 para evitar tener el mismo numero
-
-    pthread_create(&thread_ran1, NULL, number, (void*) &seed1); // creamos ambos hilos llamando a la subrutina greed y pasando como parametro 
-    pthread_create(&thread_ran2, NULL, number, (void*) &seed2); // su respectivo seed
-
-    // liberacion de los hilos y retorno del numero random que consiguieron
-    pthread_join(thread_ran1, (void*)&numero_ran1);
-    pthread_join(thread_ran2, (void*)&numero_ran2);
-
-    // numero_ran1 = (size_t) temp;
-    printf("Primer numero:%zu\n", numero_ran1);
-    printf("Segundo numero:%zu\n", numero_ran2);
-} // end main
+    unsigned int seed1 =  time(NULL); // generamos una 'seed' 
+    pthread_t* threads = (pthread_t*) malloc(2 * sizeof(pthread_t));
+    for (int thread_num = 0; thread_num < 2; thread_num++) {
+      pthread_create(&threads[thread_num], NULL, number, (void*)&seed1);
+    }
+    for (int thread_num = 0; thread_num < 2; thread_num++) {
+      pthread_join(threads[thread_num], (void*) &numero_ran1);
+      printf("Numero del hilo %d: %zu\n" , thread_num, numero_ran1);
+    }
+    free(threads); // liberar la memoria dinamica solicitada para crear los hilos
+} //  end main
 
 /**
  * @brief subrutina number 
  * @param data recibe un seed unico que es usado para el metodo rand_r
 */
 void* number(void* data) {
-  unsigned int *seed = data; 
-  int number = rand_r(seed);
+  unsigned int *seed = data;  // recibir la seed unica
+  int number = rand_r(seed) % 99;  // evitar que el numero sea mayor a 99
   size_t cast = (size_t) number;
   void* retorno = (void*) cast;
   return retorno;
 } // end number
+
+//variante que devuelve la dirrecion de memoria del numero generado
+//funciona de igual manera y no da errores 
+/**
+ * void* number(void* data) {
+ * unsigned int *seed = data; // recibir la seed unica
+ * int number = rand_r(seed) % 99; // evitar que el numero sea mayor a 99
+ * void* retorno = &number;
+ * return retorno;
+ * } // end number
+ * 
+ * 
+*/
