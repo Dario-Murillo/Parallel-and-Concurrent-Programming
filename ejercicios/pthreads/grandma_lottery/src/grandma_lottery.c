@@ -41,8 +41,8 @@ void* number(void* data) {
  * void* number(void* data) {
  * unsigned int *seed = data; // recibir la seed unica
  * int number = rand_r(seed) % 99; // evitar que el numero sea mayor a 99
- * void* retorno = &number;
- * return retorno;
+   int* dirr = (int*) malloc(number * size_of(int))
+ * return dirr;
  * } // end number
  * 
  * 
