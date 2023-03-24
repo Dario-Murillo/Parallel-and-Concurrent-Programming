@@ -21,6 +21,7 @@ int main(void) {
       printf("Numero del hilo %d: %zu\n" , thread_num, numero_ran1);
     }
     free(threads); // liberar la memoria dinamica solicitada para crear los hilos
+    // free(dirr);
 } //  end main
 
 /**
