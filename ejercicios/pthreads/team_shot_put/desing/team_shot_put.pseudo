@@ -1,0 +1,30 @@
+
+struct equipo {
+    private thread_number
+    private team_num
+    private seed
+}
+
+procedure main(argc, argv[])
+  atletas := integer(argv[1])
+  create_thread(atletas)
+
+procedure create_thread(atletas)
+  for thread_number := 0 to atletas do
+    create_thread(shoot, datos_equipo1) // thread tam
+    create_thread(shoot, datos_equipo2) // thread team
+  end for
+  for thread_number := 0 to atletas do
+    thread_join(datos_equipo1, random number1)
+    thread_join(datos_equipo1, random number2)
+  end for
+  print equipo ganador;
+end procedure
+
+procedure shoot(equipo data)
+    for i := 0 to 3 do 
+        generate random number
+    end for
+    print random number
+    return randon number
+end procedure
