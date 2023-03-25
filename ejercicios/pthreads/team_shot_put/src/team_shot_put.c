@@ -1,27 +1,29 @@
+// Copyright 2023 <Dario Murillo Chaverri C15406>
 #include <pthread.h>
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 
-typedef struct private_data {
-  uint64_t thread_number;  
-  uint64_t thread_count;
-  struct private_data* next;
-} private_data_t;
+
+typedef struct equipo {
+  uint64_t thread_num;
+  uint64_t team_num;
+  unsigned int seed;
+} equipo_t;
 
 
-void* shoot(void*);
-int create_threads(int num_atletas);
+void* shoot(void* arg);
+int create_threads(uint64_t num_atletas);
 
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
-  int atletas;
-  if (argc == 2) {  
-    if (sscanf(argv[1], "%d" , &atletas) == 1) {   
-        if(atletas % 2 != 0) {
-
+  uint64_t atletas;
+  if (argc == 2) {
+    if (sscanf(argv[1], "%" SCNu64 , &atletas) == 1) {
+        if (atletas % 2 != 0) {
         } else {
             fprintf(stderr, "Error: athlete count must be odd\n");
             return 11;
@@ -30,41 +32,87 @@ int main(int argc, char* argv[]) {
       fprintf(stderr, "Error: invalid thread count\n");
       return 12;
     }
+  } else {
+    fprintf(stderr, "Error: must specify an odd number\n");
+    return 13;
   }
   error = create_threads(atletas);
   return error;
 }
 
-int create_threads(int num_atletas) {
-    int error = EXIT_SUCCESS;
-    double numero = 0;
-    pthread_t* hilos = (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
-    int seed = time(NULL) * pthread_self();
-    if(hilos) {
-      for(int index = 0; index < atletas; index) {
-        pthread_join(&hilos[index], NULL, shoot, (void*)seed);
-      }
-    }
-  
-    for (int thread_number = 0; thread_number < num_atletas
-            ; ++thread_number) {
-              pthread_join(hilos[thread_number], (void*) &numero);
-    }
-   free(hilos);
-   return error;
+int create_threads(uint64_t num_atletas) {
+  int error = EXIT_SUCCESS;
+  uint64_t total_hilos = num_atletas * 2;
+  pthread_t* hilos_equipo1 =
+  (pthread_t*) malloc(total_hilos * sizeof(pthread_t));
+  pthread_t* hilos_equipo2 =
+  (pthread_t*) malloc(total_hilos * sizeof(pthread_t));
+  equipo_t* datos_equipo1 = (equipo_t*) calloc(num_atletas,
+  sizeof(equipo_t));
+  equipo_t* datos_equipo2 = (equipo_t*) calloc(num_atletas,
+  sizeof(equipo_t));
 
+
+  if (hilos_equipo1 && hilos_equipo2 && datos_equipo1) {
+    for (uint64_t thread_num = 0; thread_num < num_atletas; thread_num++) {
+      datos_equipo1[thread_num].thread_num = thread_num;
+      datos_equipo2[thread_num].thread_num = thread_num;
+      datos_equipo1[thread_num].team_num = 1;
+      datos_equipo2[thread_num].team_num = 2;
+      datos_equipo1[thread_num].seed = time(NULL) ^ pthread_self();
+      datos_equipo2[thread_num].seed = time(NULL) ^ pthread_self();
+      error = pthread_create(&hilos_equipo1[thread_num], NULL, shoot,
+      &datos_equipo1[thread_num]);
+      error = pthread_create(&hilos_equipo2[thread_num], NULL, shoot,
+      &datos_equipo2[thread_num]);
+    }
+  }
+  float* numero1;  // variable para almacenar el dato devuelto por shoot
+  float* numero2;
+  int equipo1_pts = 0;
+  int equipo2_pts = 0;
+  for (uint64_t thread_number = 0; thread_number < num_atletas
+    ; ++thread_number) {
+    pthread_join(hilos_equipo1[thread_number], (void**)&numero1);
+    pthread_join(hilos_equipo2[thread_number], (void**)&numero2);
+
+    if (*numero1 > *numero2) {
+      equipo1_pts++;
+    } else {
+      equipo2_pts++;
+    }
+    free(numero1);
+    free(numero2);
+  }
+
+  if (equipo1_pts > equipo2_pts) {
+    printf("equipo1 gana: %d : %d\n", equipo1_pts, equipo2_pts);
+  } else {
+    printf("equipo2 gana: %d, %d\n", equipo1_pts, equipo2_pts);
+  }
+
+  //  liberar memoria
+  free(hilos_equipo1);
+  free(hilos_equipo2);
+  free(datos_equipo1);
+  free(datos_equipo2);
+  return error;
 }
 
-void* shoot(void* arg){
-  unsigned int *seed = arg;  // recibir la seed unica
-  double best_shoot = 0;
-  for(int i = 0; i < 3; i++) {
-      int number = rand_r(seed) % 25;  // evitar que el numero sea mayor a 99
-      if(best_shoot > number) {
+void* shoot(void* arg) {
+  equipo_t* datos_equipo = (equipo_t*) arg;
+  unsigned int seed = time(NULL) ^ pthread_self();
+  float best_shoot = 0;
+  for (int i = 0; i < 3; i++) {
+      float number = ((float)rand_r(&seed)/2147483648) * (25-0) + 0;
+      if (number > best_shoot) {
         best_shoot = number;
       }
   }
-  size_t cast = (size_t) best_shoot;
-  void* retorno = (void*) cast;
-  return retorno;
+  printf("%" PRIu64 "." "%" PRIu64 " Best shoot:%f\n",
+  datos_equipo->team_num, datos_equipo->thread_num + 1, best_shoot);
+  float* resultado = malloc(sizeof(float));
+  *resultado = best_shoot;
+  return (void*)resultado;
 }
+
