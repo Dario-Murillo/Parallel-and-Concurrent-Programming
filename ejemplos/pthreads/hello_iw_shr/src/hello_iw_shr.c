@@ -59,8 +59,7 @@ int main(int argc, char* argv[]) {
       (finish_time.tv_nsec - start_time.tv_nsec) * 1e-9;
 
     printf("Execution time: %.9lfs\n", elapsed_time);
-
-    free(shared_data); // liberacion de la memoria 
+    free(shared_data);  // liberacion de la memoria
   } else {
     fprintf(stderr, "Error: could not allocate shared data\n");
     return 12;
@@ -75,7 +74,7 @@ int create_threads(shared_data_t* shared_data) {
     malloc(shared_data->thread_count * sizeof(pthread_t));
   private_data_t* private_data = (private_data_t*)
     calloc(shared_data->thread_count, sizeof(private_data_t));
-  //como ahora el thread_count esta en una estructura distinta hay que apuntar
+  // como ahora el thread_count esta en una estructura distinta hay que apuntar
   // a este dato, esto es posible ya que la estructura de memoria privada
   // contiene un puntero a shared_data
   if (threads && private_data) {
