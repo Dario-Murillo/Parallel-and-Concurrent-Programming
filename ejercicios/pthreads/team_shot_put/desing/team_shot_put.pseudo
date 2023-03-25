@@ -1,9 +1,9 @@
 
-struct equipo {
+struct equipo 
     private thread_number
     private team_num
     private seed
-}
+
 
 procedure main(argc, argv[])
   atletas := integer(argv[1])
