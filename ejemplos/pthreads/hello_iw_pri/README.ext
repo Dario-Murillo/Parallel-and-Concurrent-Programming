@@ -1,4 +1,5 @@
-Ejercicio 9 : Cree una nueva versión de su programa "hola mundo" donde cada thread imprime "Hello from secondary thread i of w", donde i es el número de thread y w la cantidad total de hilos creada. Está prohibido usar variables en el segmento de datos (globales, estáticas, externas). Cree un registro de memoria (estructura) privado para cada thread.
+Ejercicio 9 : 
+Utilizando los argumentos en línea de comandos, ubique la cantidad máxima de threads que su sistema operativo le permite crear. Escriba el número obtenido en un archivo readme.ext en su carpeta ejemplos/pthreads/hello_iw_pri, junto con el nombre de su sistema operativo (por ejemplo, Debian 10 64bits o Fedora 30 64bits).
 
 Por medio del comando : cat /proc/sys/kernel/threads-max 
 61449 es la maxima cantidad de hilos que se pueden crear en mi sistema operativo - Ubuntu 22.04 64bits
