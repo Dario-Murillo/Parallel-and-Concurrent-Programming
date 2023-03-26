@@ -1,5 +1,5 @@
 // Copyright 2021 Jeisson Hidalgo <jeisson.hidalgo@ucr.ac.cr> CC-BY 4.0
-
+#define _POSIX_C_SOURCE 199309L
 #include <assert.h>
 #include <inttypes.h>
 #include <pthread.h>
