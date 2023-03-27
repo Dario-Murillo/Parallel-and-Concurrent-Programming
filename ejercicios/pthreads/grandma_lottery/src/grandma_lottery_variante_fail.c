@@ -22,18 +22,18 @@ void* number(void* data);
  * @brief subrutina principal encargada de crear y destruir ambos hilos
 */
 int main(void) {
-    int* numero_ran1 = NULL;
+    int* numero_ran1;
     unsigned int seed1 =  time(NULL);  // generamos una 'seed'
     pthread_t* threads = (pthread_t*) malloc(2 * sizeof(pthread_t));
     for (int thread_num = 0; thread_num < 2; thread_num++) {
       pthread_create(&threads[thread_num], NULL, number, (void*) &seed1);
     }
     for (int thread_num = 0; thread_num < 2; thread_num++) {
-      pthread_join(threads[thread_num], (void*) &numero_ran1);
+      pthread_join(threads[thread_num], (void**) &numero_ran1);
       printf("Numero del hilo %d: %ls\n" , thread_num, numero_ran1);
+      free(numero_ran1);
     }
     free(threads);  // liberar la memoria dinamica
-    free(numero_ran1);
 }  //  end main
 
 
