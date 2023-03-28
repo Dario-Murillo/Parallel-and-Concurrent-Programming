@@ -20,15 +20,15 @@ Glosario
 
 8.Memoria privada y compartida: Hacemos uso de la memoria privada al reservar memoria dinamica por metodos como malloc o alloc, o por ejemplo, al hacer uso de ciertas estructuras de datos como los structs, los hilos tienen memoria privada. La memoria compartida permite la comunicacion entre hilos, un ejemplo de esto es un caso en el que el sistema se quede sin memoria para hacer mas hilos y por lo tanto su numero es reducido y esto es comunicado a todos los hilos, igualmente hay datos compartidos entre todos estos
 
-9.Espera Activa
+9.Espera Activa: La accion de poner hilos en cola, de manera que los hilos ejecutan las instrucciones en orden y para que un hilo empieza a hacer una tarea tiene que tener confirmacion de que el hilo anterior termino su tarea. Un ejemplo de como se puede ejecutar esto es mediante un ciclo, enbuclar un hilo sin que haga nada hasta su correspondiente turno, sin embargo, esto toma recursos de la cpu, sin embargo, la espera es la clave para el control de la concurrencia con espera pasiva
 
-10.Condicion de Carrera
+10.Condicion de Carrera: Cuando multiples hilos acceden y tratan de modificar algo al mismo tiempo, se da una pelea por los recursos. La definicion formal: modificacion concurrente de memoria compartida
 
 11.Control de concurrencia
 
 12.Seguridad condicional
 
-13.Exclusion mutua
+13.Exclusion mutua: Solo un hilo va a estar ejecutando la o las instrucciones que decidamos proteger con un mutex/candado, cada mutex tendra su propia cola de espera
 
 14.Semaforo
 
@@ -38,7 +38,7 @@ Glosario
 
 17.Candado de lectura y escritura
 
-18.Descompisicion
+18.Descomposicion
 
 19.Mapeo
 
