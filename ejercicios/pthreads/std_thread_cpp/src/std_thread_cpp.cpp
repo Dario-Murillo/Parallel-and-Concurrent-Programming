@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <chrono>
 #include <iostream>
+#include <inttypes.h>
 #include <memory>
 #include <sstream>
 #include <thread>
@@ -101,7 +102,11 @@ int create_threads(shared_data_t* shared_data) {
 void* greet(private_data_t arg) {
   private_data_t* private_data = reinterpret_cast<private_data_t*> (&arg);
   shared_data_t* shared_data = private_data->shared_data;
-  std::cout<< "Hello from secondary thread " << private_data->thread_number+1<<
-  " of " << shared_data->thread_count << "\n" << std::endl;
+  
+
+  std::stringstream message;
+  message << "Hello from secondary thread " << private_data-> thread_number
+  << " of " << shared_data->thread_count << "\n";
+  std::cout << message.str();
   return NULL;
 }  // end procedure
