@@ -10,12 +10,16 @@
 #include <unistd.h>
 
 // thread_shared_data_t
+// estructura de datos de memoria compartida
+// en este caso el dato que comparten todos los hilos es el totaol de hilos
 typedef struct shared_data {
   uint64_t next_thread;  // variable compartida que identifica el prox hilo
   uint64_t thread_count;
 } shared_data_t;
 
 // thread_private_data_t
+// estructura de datos de memoria privada
+// en este caso el dato privado de cada hilo, es su respectivo numero
 typedef struct private_data {
   uint64_t thread_number;  // rank
   shared_data_t* shared_data;
@@ -43,21 +47,22 @@ int main(int argc, char* argv[]) {
 
   shared_data_t* shared_data = (shared_data_t*)calloc(1, sizeof(shared_data_t));
   if (shared_data) {
-    shared_data->next_thread = 0;
+    shared_data->next_thread = 0;  // inicializar el conteo de hilos en 0
     shared_data->thread_count = thread_count;
-
+    // estructura de datos solicitada para medir el tiempo de ejecucion
     struct timespec start_time, finish_time;
-    clock_gettime(CLOCK_MONOTONIC, &start_time);
+    clock_gettime(CLOCK_MONOTONIC, &start_time);  // el reloj toma el tiempo
 
-    error = create_threads(shared_data);
+    error = create_threads(shared_data);  // los hilos trabajan
 
-    clock_gettime(CLOCK_MONOTONIC, &finish_time);
+    clock_gettime(CLOCK_MONOTONIC, &finish_time);  // el reloj toma el tiempo
+
+    // determinamos cuanto duro en hacer el trabajo
     double elapsed_time = finish_time.tv_sec - start_time.tv_sec +
       (finish_time.tv_nsec - start_time.tv_nsec) * 1e-9;
 
     printf("Execution time: %.9lfs\n", elapsed_time);
-
-    free(shared_data);
+    free(shared_data);  // liberacion de la memoria
   } else {
     fprintf(stderr, "Error: could not allocate shared data\n");
     return 12;
@@ -65,7 +70,14 @@ int main(int argc, char* argv[]) {
   return error;
 }  // end procedure
 
-
+/**
+ * @brief funciona como el hilo principal es el encargado de multiples acciones
+ * desde crear hilos, haciendo uso de memoria dinamica, como una impresion, 
+ * y luego la liberacion de la memoria usada
+ * @param shared_data recibe del main cuantos hilos se van a crear segun
+ * lo indica por el usuario, en caso de no recibir nada usa el numero
+ * de nucleos
+*/
 int create_threads(shared_data_t* shared_data) {
   int error = EXIT_SUCCESS;
   // for thread_number := 0 to thread_count do
@@ -108,22 +120,29 @@ int create_threads(shared_data_t* shared_data) {
   return error;
 }
 
-// procedure greet:
+/**
+  * @brief metodo que usado por los hilos secundarios indican:
+  * numero de hilos y total de hilos
+  * pero esta vez los hilos van en orden
+  * @param data
+  * 
+*/
 void* greet(void* data) {
   assert(data);  // evita que nos envien datos nulos
   private_data_t* private_data = (private_data_t*) data;
   shared_data_t* shared_data = private_data->shared_data;
 
-  // Wait until it is my turn
+  // espero en un ciclo infinito hasta que sea mi turno
   while (shared_data->next_thread < private_data->thread_number) {
     // busy-waiting, solo se encarga de esperar
   }  // end while
+  // nunca hacer este while es una terrible practica
 
   // print "Hello from secondary thread"
   printf("Hello from secondary thread %" PRIu64 " of %" PRIu64 "\n"
     , private_data->thread_number, shared_data->thread_count);
 
-  // Allow subsequent thread to do the task
+  // indica al siguiente hilo que puede seguir
   ++shared_data->next_thread;
 
   return NULL;

@@ -48,13 +48,15 @@ int main(int argc, char* argv[]) {
   shared_data_t* shared_data = (shared_data_t*)calloc(1, sizeof(shared_data_t));
   if (shared_data) {
     shared_data->thread_count = thread_count;
-
+    // estructura de datos solicitada para medir el tiempo de ejecucion
     struct timespec start_time, finish_time;
-    clock_gettime(CLOCK_MONOTONIC, &start_time);
+    clock_gettime(CLOCK_MONOTONIC, &start_time);  // el reloj toma el tiempo
 
-    error = create_threads(shared_data);
+    error = create_threads(shared_data);  // los hilos trabajan
 
-    clock_gettime(CLOCK_MONOTONIC, &finish_time);
+    clock_gettime(CLOCK_MONOTONIC, &finish_time);  // el reloj toma el tiempo
+
+    // determinamos cuanto duro en hacer el trabajo
     double elapsed_time = finish_time.tv_sec - start_time.tv_sec +
       (finish_time.tv_nsec - start_time.tv_nsec) * 1e-9;
 
@@ -67,6 +69,14 @@ int main(int argc, char* argv[]) {
   return error;
 }  // end procedure
 
+/**
+ * @brief funciona como el hilo principal es el encargado de multiples acciones
+ * desde crear hilos, haciendo uso de memoria dinamica, como una impresion, 
+ * y luego la liberacion de la memoria usada
+ * @param shared_data recibe del main cuantos hilos se van a crear segun
+ * lo indica por el usuario, en caso de no recibir nada usa el numero
+ * de nucleos
+*/
 int create_threads(shared_data_t* shared_data) {
   int error = EXIT_SUCCESS;
   // for thread_number := 0 to thread_count do
@@ -112,7 +122,12 @@ int create_threads(shared_data_t* shared_data) {
   return error;
 }
 
-// procedure greet:
+/**
+ * @brief metodo que usado por los hilos secundarios
+ * indican:
+ * numero de hilos y total de hilos
+ * @param data
+*/
 void* greet(void* data) {
   // assert(data);
   private_data_t* private_data = (private_data_t*) data;
