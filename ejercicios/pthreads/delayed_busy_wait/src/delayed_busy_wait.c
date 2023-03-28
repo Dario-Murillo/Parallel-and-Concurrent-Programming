@@ -66,10 +66,8 @@ int main(int argc, char* argv[]) {
     // determinamos cuanto duro en hacer el trabajo
     double elapsed_time = finish_time.tv_sec - start_time.tv_sec +
       (finish_time.tv_nsec - start_time.tv_nsec) * 1e-9;
-    
 
     printf("Execution time: %.9lfs\n", elapsed_time);
-    printf("SOY EL DELAY:%zu", shared_data->delay);
     free(shared_data);  // liberacion de la memoria
   } else {
     fprintf(stderr, "Error: could not allocate shared data\n");
@@ -129,9 +127,7 @@ int create_threads(shared_data_t* shared_data) {
 }
 
 /**
-  * @brief metodo que usado por los hilos secundarios indican:
-  * numero de hilos y total de hilos
-  * pero esta vez los hilos van en orden
+  * @brief espera activa con retraso pseudoaleatorio
   * @param data
   * 
 */
@@ -139,10 +135,11 @@ void* greet(void* data) {
   assert(data);  // evita que nos envien datos nulos
   private_data_t* private_data = (private_data_t*) data;
   shared_data_t* shared_data = private_data->shared_data;
-
+  unsigned int my_seed = time(NULL) ^  getpid();
   // espero en un ciclo infinito hasta que sea mi turno
   while (shared_data->next_thread < private_data->thread_number) {
-    usleep(shared_data->delay);
+    const unsigned my_delay = rand_r(&my_seed) % shared_data->delay;
+    usleep(my_delay);
   }  // end while
   // nunca hacer este while es una terrible practica
 
@@ -156,3 +153,20 @@ void* greet(void* data) {
   return NULL;
 }  // end procedure
 
+/**
+  * @brief espera activa con retraso constante
+  * @param data
+  * 
+*/
+// void* greet(void* data) {
+//   assert(data);
+//   private_data_t* private_data = (private_data_t*) data;
+//   shared_data_t* shared_data = private_data->shared_data;
+//   while (shared_data->next_thread < private_data->thread_number) {
+//     usleep(shared_data->delay);
+//   }
+//   printf("Hello from secondary thread %" PRIu64 " of %" PRIu64 "\n"
+//     , private_data->thread_number, shared_data->thread_count);
+//   ++shared_data->next_thread;
+//   return NULL;
+// }
