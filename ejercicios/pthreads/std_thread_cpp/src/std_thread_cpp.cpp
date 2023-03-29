@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <chrono>
 #include <iostream>
-#include <inttypes.h>
 #include <memory>
 #include <sstream>
 #include <thread>
@@ -27,7 +26,7 @@ typedef struct private_data {
  * @brief ...
  */
 void* greet(private_data_t priv_data);
-int create_threads(shared_data_t* shared_data);
+int create_threads(std::shared_ptr<shared_data_t> shared_data);
 
 // procedure main(argc, argv[])
 int main(int argc, char* argv[]) {
@@ -43,7 +42,7 @@ int main(int argc, char* argv[]) {
         }
     }
     // memoria dinamica encargada de alojar los datos compartidos
-    shared_data_t* shared_data = new shared_data_t;
+    std::shared_ptr<shared_data_t> shared_data(new shared_data_t);
     if (shared_data) {
         shared_data->thread_count = thread_count;
 
@@ -60,8 +59,6 @@ int main(int argc, char* argv[]) {
         std::chrono::duration_cast<std::chrono::duration<double>>
         (finish_time - start_time);
         std::cout << "Tiempo ocupado: " << elapsed_time.count() << std::endl;
-        delete(shared_data);
-
     } else {
         throw error = 12;
     }
@@ -78,7 +75,7 @@ int main(int argc, char* argv[]) {
   }
 }  // end procedure
 
-int create_threads(shared_data_t* shared_data) {
+int create_threads(std::shared_ptr<shared_data_t> shared_data) {
   int error = EXIT_SUCCESS;
 
   std::vector<std::thread> threads;
@@ -87,7 +84,7 @@ int create_threads(shared_data_t* shared_data) {
   for (uint64_t thread_number = 0; thread_number < shared_data->thread_count
       ; ++thread_number) {
     priv_data[thread_number].thread_number = thread_number;
-    priv_data[thread_number].shared_data = shared_data;
+    priv_data[thread_number].shared_data = shared_data.get();
     threads.emplace_back(std::thread(greet, priv_data[thread_number]));
   }
   std::cout << "Hello from main thread\n" << std::endl;
@@ -102,8 +99,6 @@ int create_threads(shared_data_t* shared_data) {
 void* greet(private_data_t arg) {
   private_data_t* private_data = reinterpret_cast<private_data_t*> (&arg);
   shared_data_t* shared_data = private_data->shared_data;
-  
-
   std::stringstream message;
   message << "Hello from secondary thread " << private_data-> thread_number
   << " of " << shared_data->thread_count << "\n";
