@@ -3,3 +3,4 @@ Utilizando los argumentos en línea de comandos, ubique la cantidad máxima de t
 
 Por medio del comando : cat /proc/sys/kernel/threads-max 
 61449 es la maxima cantidad de hilos que se pueden crear en mi sistema operativo - Ubuntu 22.04 64bits
+sin embargo a la hora de correr programas la maxima cantidad que me permite crear es 32752
