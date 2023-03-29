@@ -66,7 +66,7 @@ pseudoaleatorio = 4.660847533s
 constante = 7.518732852s
 pseudoaleatorio = 5.246977934s
 
-
+<image src = "/Descargas/grafico.jpg" alt="Graficos con las muestras de tiempo"> 
 
 El mejor tiempo de espera fue el de la espera pseudoaleatorio con un segundo como el maximo delay, al incrementar este numero el rango de los numeros random a crear aumenta y por lo tanto cabe el tiempo suele aumentar ya que hay mas probabilidad de que los numeros sean mayores y por lo tanto tenga que pasar mas nanosegundos "durmiendo". De todas formas, la espera activa no es una solucion optima para ejercicios en los que haya evitar condiciones de carrera, lo mejor para hacer en estos casos es hacer uso de la espera pasiva mediante mutex.
 
