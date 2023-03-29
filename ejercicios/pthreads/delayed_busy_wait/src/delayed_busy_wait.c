@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
   // create thread_count as result of converting argv[1] to integer
   // thread_count := integer(argv[1])
   uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-  uint64_t delay;
+  uint64_t delay = 50;  // caso default para evitar que el delay sea 0
   if (argc == 3) {
     if (sscanf(argv[1], "%" SCNu64, &thread_count) == 1 &&
         sscanf(argv[2], "%" SCNd64 , &delay) == 1) {
