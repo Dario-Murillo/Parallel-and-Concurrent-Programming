@@ -4,7 +4,6 @@ struct equipo
     private team_num
     private seed
 
-
 procedure main(argc, argv[])
   atletas := integer(argv[1])
   create_thread(atletas)
@@ -17,13 +16,18 @@ procedure create_thread(atletas)
   for thread_number := 0 to atletas do
     thread_join(datos_equipo1, random number1)
     thread_join(datos_equipo1, random number2)
+    if (random number1 > random number2) do
+        equipo1_pts++
+    else 
+        equipo2_pts++
+    end
   end for
   print equipo ganador;
 end procedure
 
 procedure shoot(equipo data)
     for i := 0 to 3 do 
-        generate random number
+        random number = random
     end for
     print random number
     return randon number

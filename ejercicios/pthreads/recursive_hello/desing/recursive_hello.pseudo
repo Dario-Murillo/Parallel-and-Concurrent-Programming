@@ -1,9 +1,16 @@
 procedure main:
-  create_thread(greet)
+  number := 2
+  create_thread(greet, number)
   print "Hello from main thread"
 end procedure
 
-procedure greet:
-  print "Hello from secondary thread"
-  create_thread(greet);
+procedure greet(number):
+  if (number < 0) do
+    print "Bye from secondary thread, number received" number
+  end
+  if (number > ) do
+    print "Hello from secondary thread"
+    number := number - 1
+    create_thread(greet, number);
+  end
 end procedure

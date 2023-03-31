@@ -1,10 +1,13 @@
 procedure main:
-  create_seeds
-  create_threads(number)
-  destroy_threads
+  seed := random
+  for thread_numer := 0 to 2 do
+    create_threads(greet, seed)
+  end
+  threads_join(number)
+  print "Numero del hilo:" thread "numero random: " number
 end procedure
 
-procedure number:
-  generate random number
+procedure number(seed):
+  number = random seed
   return number;
 end procedure
