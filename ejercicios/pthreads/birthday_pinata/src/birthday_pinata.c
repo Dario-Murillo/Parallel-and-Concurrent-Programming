@@ -20,6 +20,7 @@ typedef struct private_data {
 
 void* pinata(void* data);
 int create_threads(shared_data_t* shared_data);
+int rand_r(unsigned int *arg);
 
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
@@ -110,12 +111,16 @@ void* pinata(void* data) {
   assert(data);
   private_data_t* private_data = (private_data_t*) data;
   shared_data_t* shared_data = private_data->shared_data;
+  //  se establece este limite para evitar el caso de que un hilo reviente la
+  //  pinata de un golpe
+  uint64_t const limite = shared_data->hit_number;  
   pthread_mutex_lock(&shared_data->can_i_hit);
-
   int64_t random_number = 0;
   if (shared_data->hit_number <= 0) {
   } else if (shared_data->hit_number > 0) {
-    random_number = 5;
+    unsigned int seed = time(NULL) * pthread_self() ;
+    random_number = rand_r(&seed) % (limite);
+    
     int64_t sub = shared_data->hit_number - random_number;
     shared_data->hit_number =  sub;
     if (shared_data->hit_number <= 0) {
