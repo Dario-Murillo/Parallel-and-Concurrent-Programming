@@ -1,0 +1,25 @@
+procedure main(argc, argv[])
+  shared can_i_hit := create_mutex()
+  shared hit_number := integer(argv[2])
+  shared thread_count := integer(argv[1])
+  for thread_number := 0 to thread_count do
+    create_thread(pinata, thread_number) 
+  end for
+end procedure
+
+procedure pinata(thread_number)
+  lock(can_i_hit)
+  random_number := random
+  hit_number :=  hit_number - random_number
+  if (hit_number > 0) do
+    if (hit_number <= 0) do
+        print "Thread ", thread_number, "/", thread_count ": hits: ", 
+        random_number "I broke the pinata"
+    else 
+        print "Thread ", thread_number, "/", thread_count ": hits: "
+        , random_number
+    end      
+  end
+  unlock(can_i_hit)
+end procedure
+
