@@ -1,62 +1,49 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
-#define _POSIX_C_SOURCE 199309L
 #include <assert.h>
 #include <inttypes.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
 
-// thread_shared_data_t
-// estructura de datos de memoria compartida
-// en este caso el dato que comparten todos los hilos es el totaol de hilos
 typedef struct shared_data {
-  uint64_t position;
-  pthread_mutex_t can_access_position;
-  uint64_t hit_number;
+  pthread_mutex_t can_i_hit;
+  int64_t hit_number;
   uint64_t thread_count;
 } shared_data_t;
 
-
-// thread_private_data_t
-// estructura de datos de memoria privada
-// en este caso el dato privado de cada hilo, es su respectivo numero
 typedef struct private_data {
-  uint64_t thread_number;  // rank
+  uint64_t thread_number;
   shared_data_t* shared_data;
 } private_data_t;
-
 
 void* pinata(void* data);
 int create_threads(shared_data_t* shared_data);
 
-// procedure main(argc, argv[])
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
 
   uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
   uint64_t hit_number = 0;
-  if (argc == 2) {
+  if (argc == 3) {
     if (sscanf(argv[1], "%" SCNu64, &thread_count) == 1 &&
-        sscanf(argv[2], "%" SCNu64, &hit_number)) {
+       (sscanf(argv[2], "%" SCNu64, &hit_number) == 1)) {
     } else {
       fprintf(stderr, "Error: invalid thread count\n");
       return 11;
     }
   }
-
   shared_data_t* shared_data = (shared_data_t*)calloc(1, sizeof(shared_data_t));
-  if (shared_data) {
-    shared_data->position = 0;   // inicializar el conteo de hilos en 0
 
-    // declaracion del mutex
-    error = pthread_mutex_init(&shared_data->can_access_position, /*attr*/NULL);
+  if (shared_data) {
+    error = pthread_mutex_init(&shared_data->can_i_hit, /*attr*/NULL);
     if (error == EXIT_SUCCESS) {
     shared_data->thread_count = thread_count;
-
-      free(shared_data);
+    shared_data->hit_number = hit_number;
+    create_threads(shared_data);
+    pthread_mutex_destroy(&shared_data->can_i_hit);
+    free(shared_data);
     } else {
       fprintf(stderr, "Error: could not init mutex\n");
       return 13;
@@ -66,7 +53,7 @@ int main(int argc, char* argv[]) {
     return 12;
   }
   return error;
-}  // end procedure
+}
 
 /**
  * @brief funciona como el hilo principal es el encargado de multiples acciones
@@ -74,7 +61,7 @@ int main(int argc, char* argv[]) {
  * y luego la liberacion de la memoria usada
  * @param shared_data recibe del main cuantos hilos se van a crear segun
  * lo indica por el usuario, en caso de no recibir nada usa el numero
- * de nucleos
+ * de nucleos y tambien recibe cuantos golpes recibe la pinata
 */
 int create_threads(shared_data_t* shared_data) {
   int error = EXIT_SUCCESS;
@@ -99,9 +86,6 @@ int create_threads(shared_data_t* shared_data) {
       }
     }
 
-    // print "Hello from main thread"
-    printf("Hello from main thread\n");
-
     for (uint64_t thread_number = 0; thread_number < shared_data->thread_count
         ; ++thread_number) {
       pthread_join(threads[thread_number], /*value_ptr*/ NULL);
@@ -114,7 +98,6 @@ int create_threads(shared_data_t* shared_data) {
       , shared_data->thread_count);
     error = 22;
   }
-
   return error;
 }
 
@@ -127,29 +110,26 @@ void* pinata(void* data) {
   assert(data);
   private_data_t* private_data = (private_data_t*) data;
   shared_data_t* shared_data = private_data->shared_data;
+  pthread_mutex_lock(&shared_data->can_i_hit);
 
-  
-  pthread_mutex_lock(&shared_data->can_access_position);
-
-  ++shared_data->position;
-
-  uint64_t my_position = shared_data->position;
-  
+  int64_t random_number = 0;
   if (shared_data->hit_number <= 0) {
-
-  } else if(shared_data->hit_number > 0) {
-
-    unsigned int seed = time(NULL);
-    uint64_t random_number = rand_r(&seed) % (shared_data->hit_number / 2);
-    shared_data->hit_number =  shared_data->hit_number - random_number;
-    printf("Thread " "%" PRIu64 "/" "%" PRIu64 ": " "%" PRIu64 " hits",
-    private_data->thread_number,shared_data->thread_count,
-    shared_data->hit_number);
-
+  } else if (shared_data->hit_number > 0) {
+    random_number = 5;
+    int64_t sub = shared_data->hit_number - random_number;
+    shared_data->hit_number =  sub;
+    if (shared_data->hit_number <= 0) {
+      printf("Thread " "%" PRIu64 "/" "%" PRIu64 ": " "%" PRIu64
+      " hits, I broke the pinata \n",
+      private_data->thread_number, shared_data->thread_count,
+      random_number);
+    } else {
+      printf("Thread " "%" PRIu64 "/" "%" PRIu64 ": " "%" PRIu64 " hits \n",
+      private_data->thread_number, shared_data->thread_count,
+      random_number);
+    }
   }
 
-
-  
-  pthread_mutex_unlock(&shared_data->can_access_position);
+  pthread_mutex_unlock(&shared_data->can_i_hit);
   return NULL;
-}  // end procedure
+}
