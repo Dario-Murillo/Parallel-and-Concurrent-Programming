@@ -1,5 +1,5 @@
 // Copyright 2021 Jeisson Hidalgo <jeisson.hidalgo@ucr.ac.cr> CC-BY 4.0
-
+#define _POSIX_C_SOURCE 199309L
 #include <assert.h>
 #include <inttypes.h>
 #include <pthread.h>
@@ -49,9 +49,8 @@ int main(int argc, char* argv[]) {
 
     for (uint64_t thread_number = 0; thread_number < shared_data->thread_count
         ; ++thread_number) {
-      // se cambia para que todos los hilpos inicien en 0
       error = sem_init(&shared_data->can_greet[thread_number], /*pshared*/ 0
-        , /*value*/ 0);
+        , /*value*/ 0);  // iniciamos todos los semaforos en 0
     }
 
     if (shared_data->can_greet) {
@@ -94,8 +93,9 @@ int create_threads(shared_data_t* shared_data) {
         private_data[thread_number].thread_number = thread_number;
         private_data[thread_number].shared_data = shared_data;
 
-        // sem_post(&shared_data->can_greet[0]);
         // se incrementa el hilo 0
+        sem_post(&shared_data->can_greet[0]);
+
         // create_thread(greet, thread_number)
         error = pthread_create(&threads[thread_number], /*attr*/ NULL, greet
           , /*arg*/ &private_data[thread_number]);
@@ -116,9 +116,8 @@ int create_threads(shared_data_t* shared_data) {
     // print "Hello from main thread"
     printf("Hello from main thread\n");
     // caso en el que se aumenta el hilo 0 luego del saludo del main thread
-    sem_post(&shared_data->can_greet[0])
+    // sem_post(&shared_data->can_greet[0]);
 
-    sem_post(&shared_data->can_greet[0])
     for (uint64_t thread_number = 0; thread_number < shared_data->thread_count
         ; ++thread_number) {
       pthread_join(threads[thread_number], /*value_ptr*/ NULL);
