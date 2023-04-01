@@ -7,23 +7,21 @@
 #include <unistd.h>
 
 
-
 typedef struct equipo {
   uint64_t thread_num;
   uint64_t team_num;
   unsigned int seed;
 } equipo_t;
 
-
 void* shoot(void* arg);
 int create_threads(uint64_t num_atletas);
 
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
-  uint64_t atletas;
+  uint64_t num_atletas;
   if (argc == 2) {
-    if (sscanf(argv[1], "%" SCNu64 , &atletas) == 1) {
-        if (atletas % 2 != 0) {
+    if (sscanf(argv[1], "%" SCNu64 , &num_atletas) == 1) {
+        if (num_atletas % 2 != 0) {
         } else {
             fprintf(stderr, "Error: athlete count must be odd\n");
             return 11;
@@ -36,24 +34,24 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "Error: must specify an odd number\n");
     return 13;
   }
-  error = create_threads(atletas);
+  error = create_threads(num_atletas);
   return error;
 }
 
 int create_threads(uint64_t num_atletas) {
   int error = EXIT_SUCCESS;
-  uint64_t total_hilos = num_atletas * 2;
+
   pthread_t* hilos_equipo1 =
-  (pthread_t*) malloc(total_hilos * sizeof(pthread_t));
+  (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
   pthread_t* hilos_equipo2 =
-  (pthread_t*) malloc(total_hilos * sizeof(pthread_t));
+  (pthread_t*) malloc(num_atletas * sizeof(pthread_t));
   equipo_t* datos_equipo1 = (equipo_t*) calloc(num_atletas,
   sizeof(equipo_t));
   equipo_t* datos_equipo2 = (equipo_t*) calloc(num_atletas,
   sizeof(equipo_t));
 
 
-  if (hilos_equipo1 && hilos_equipo2 && datos_equipo1) {
+  if (hilos_equipo1 && hilos_equipo2 && datos_equipo1 && datos_equipo2) {
     for (uint64_t thread_num = 0; thread_num < num_atletas; thread_num++) {
       datos_equipo1[thread_num].thread_num = thread_num;
       datos_equipo2[thread_num].thread_num = thread_num;
@@ -75,7 +73,6 @@ int create_threads(uint64_t num_atletas) {
     ; ++thread_number) {
     pthread_join(hilos_equipo1[thread_number], (void**)&numero1);
     pthread_join(hilos_equipo2[thread_number], (void**)&numero2);
-
     if (*numero1 > *numero2) {
       equipo1_pts++;
     } else {
