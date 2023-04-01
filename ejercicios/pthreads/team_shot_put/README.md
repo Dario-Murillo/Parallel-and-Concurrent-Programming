@@ -1,4 +1,4 @@
-# Enunciado del ejericio
+# Enunciado del ejercicio
 
 Suponga que dos equipos se enfrentan en el deporte de lanzamiento de bala (shot put). Cada equipo tiene la misma cantidad de atletas. Los atletas de cada equipo se ordenan y se enfrentan en parejas. Para simplificar, la notación T.N indica el atleta número N del equipo T. Por ejemplo, el atleta 1 del equipo 1 se enfrenta con el atleta 1 del equipo 2 (1.1 vs 2.1), y el atleta N del equipo 1 se enfrenta con el atleta N del equipo 2 (1.N vs 2.N).
 

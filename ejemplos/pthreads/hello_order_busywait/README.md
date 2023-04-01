@@ -1,10 +1,10 @@
-# Enunciado del ejercicio
+# Enunciado del ejemplo
 
 Haga que los threads saluden siempre en orden. Es decir, si se crean w threads, la salida sea siempre en orden
 
-Hello from thread 0 of w
-Hello from thread 1 of w
-Hello from thread 2 of w
+Hello from thread 0 of w <br>
+Hello from thread 1 of w <br>
+Hello from thread 2 of w <br>
 ...
 Hello from thread w of w
 

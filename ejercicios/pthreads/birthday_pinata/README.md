@@ -6,10 +6,10 @@ Por más que ha intentado, el usuario no ha logrado educar a los hilos en etique
 
 En su simulación, para mantenerles la emoción, permita que los hilos golpeen la piñata como a ellos le gusta: en cualquier orden. Pero sí imponga la restricción de que sólo un hilo a la vez puede golpearla. La piñata revienta cuando su contador de golpes llega a cero. Cada hilo lleva el conteo de cuántos golpes pudo darle a la piñata. Los hilos reportan en la salida estándar cuántos golpes pudo darle a la piñata y quién logró romperla. El siguiente podría ser un ejemplo hipotético de ejecución.
 
-bin/birthday_pinata 3 10
-Thread 2/10: 5 hits, I broke the pinata
-Thread 0/10: 1 hits
-Thread 1/10: 4 hits
+<p> bin/birthday_pinata 3 10 <br>
+Thread 2/10: 5 hits, I broke the pinata <br>
+Thread 0/10: 1 hits <br>
+Thread 1/10: 4 hits <br>
 
 Recuerde como siempre verificar la calidad del código fuente y ejecutable. Su solución no debe producir conduciones de carrera.
 
