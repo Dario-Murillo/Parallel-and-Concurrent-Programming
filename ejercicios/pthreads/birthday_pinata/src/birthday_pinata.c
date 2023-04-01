@@ -9,6 +9,7 @@
 
 typedef struct shared_data {
   pthread_mutex_t can_i_hit;
+  uint64_t  limit;
   int64_t hit_number;
   uint64_t thread_count;
 } shared_data_t;
@@ -20,11 +21,10 @@ typedef struct private_data {
 
 void* pinata(void* data);
 int create_threads(shared_data_t* shared_data);
-int rand_r(unsigned int *arg);
+int rand_r(unsigned int *arg);  // declaracion previa
 
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
-
   uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
   uint64_t hit_number = 0;
   if (argc == 3) {
@@ -36,12 +36,12 @@ int main(int argc, char* argv[]) {
     }
   }
   shared_data_t* shared_data = (shared_data_t*)calloc(1, sizeof(shared_data_t));
-
   if (shared_data) {
     error = pthread_mutex_init(&shared_data->can_i_hit, /*attr*/NULL);
     if (error == EXIT_SUCCESS) {
     shared_data->thread_count = thread_count;
     shared_data->hit_number = hit_number;
+    shared_data->limit = hit_number;
     create_threads(shared_data);
     pthread_mutex_destroy(&shared_data->can_i_hit);
     free(shared_data);
@@ -86,12 +86,10 @@ int create_threads(shared_data_t* shared_data) {
         break;
       }
     }
-
     for (uint64_t thread_number = 0; thread_number < shared_data->thread_count
         ; ++thread_number) {
       pthread_join(threads[thread_number], /*value_ptr*/ NULL);
     }
-
     free(private_data);
     free(threads);
   } else {
@@ -104,7 +102,9 @@ int create_threads(shared_data_t* shared_data) {
 
 /**
  * @brief subrutina llamada por los hilos, indica:
- * total de hilos, numero de hilos, en que posicion llego
+ * el numero de hilo, el total, y luego mediante un
+ * numero pseudoaletorio le "pega" a la pinata
+ * reduciendo su contador, cada hilo imprime cuanto le pego
  * @param data
 */
 void* pinata(void* data) {
@@ -113,14 +113,15 @@ void* pinata(void* data) {
   shared_data_t* shared_data = private_data->shared_data;
   //  se establece este limite para evitar el caso de que un hilo reviente la
   //  pinata de un golpe
-  uint64_t const limite = shared_data->hit_number;  
   pthread_mutex_lock(&shared_data->can_i_hit);
   int64_t random_number = 0;
   if (shared_data->hit_number <= 0) {
   } else if (shared_data->hit_number > 0) {
-    unsigned int seed = time(NULL) * pthread_self() ;
-    random_number = rand_r(&seed) % (limite);
-    
+    unsigned int seed = time(NULL) ^ pthread_self();
+    random_number = rand_r(&seed) % (shared_data->limit);
+    while (random_number == 0) {  // para evitar que haya 0 hits
+      random_number = rand_r(&seed) % (shared_data->hit_number);
+    }
     int64_t sub = shared_data->hit_number - random_number;
     shared_data->hit_number =  sub;
     if (shared_data->hit_number <= 0) {
@@ -134,7 +135,6 @@ void* pinata(void* data) {
       random_number);
     }
   }
-
   pthread_mutex_unlock(&shared_data->can_i_hit);
   return NULL;
 }
