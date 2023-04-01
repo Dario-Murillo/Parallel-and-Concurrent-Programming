@@ -10,6 +10,9 @@ end procedure
 procedure pinata(thread_number)
   lock(can_i_hit)
   random_number := random
+  while (random_number == 0) do
+    random_number := random
+  end
   hit_number :=  hit_number - random_number
   if (hit_number > 0) do
     if (hit_number <= 0) do
