@@ -43,28 +43,28 @@ Si hubo una mejora comparado con la espera activa con retraso constante
 ¿Mejora el tiempo de ejecución de los dos tipos de esperas (constante y pseudoaleatoria) si disminuye o incrementa la espera máxima de los hilos? Haga al menos un par de ejecuciones con al menos los siguientes tiempos de espera:
 
 1µs
-- constante = 3.801403693s
-- pseudoaleatoria = 3.706187944s
+- constante = 3.801403693s, 3.905168192s, 3.714170893s
+- pseudoaleatoria = 3.706187944s, 3.894736560s, 3.689082649s
 
 5µs
-- constante = 4.220764891s
-- pseudoaleatorio = 4.104121731s
+- constante = 4.220764891s, 4.231430854s, 4.158045610s
+- pseudoaleatorio = 4.104121731s, 4.351450986s, 3.934841513s
 
 25µs
-- constante = 4.384902108s
-- pseudoaleatorio = 4.110097659s
+- constante = 4.384902108s, 4.227527407s, 4.318295948s
+- pseudoaleatorio = 4.110097659s, 4.053431938s, 4.343752765s
 
 50µs
-- constante = 5.903071652s
-- pseudoaleatorio = 4.305738647s
+- constante = 5.903071652s, 4.957264470s, 5.370373616s
+- pseudoaleatorio = 4.305738647s, 4.212525994s, 4.003300141s
 
 75µs
-- constante = 6.774459693s
-- pseudoaleatorio = 4.660847533s
+- constante = 5.686171000s, 5.713861060s, 5.915777785s
+- pseudoaleatorio = 4.660847533s, 4.729892074s, 4.344195805s
 
 100µs
-- constante = 7.518732852s
-- pseudoaleatorio = 5.246977934s
+- constante = 7.518732852s, 6.667682677s, 6.696610536s
+- pseudoaleatorio = 5.246977934s, 4.811853580s, 5.308031990s
 
 
 
