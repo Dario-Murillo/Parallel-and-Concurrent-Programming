@@ -1,41 +1,28 @@
+// Copyright 2023 <Dario Murillo Chaverri C15406>
 #include <datos.h>
 #include <string.h>
 
-int main(void) {
+int main() {
     FILE* input = stdin;
-    char value = 0;
+    datos_t *datos = datos_create();
+    char value;
     int linea = 0;
-    datos_t *datos = (datos_t*) malloc(1 * sizeof(datos_t));
-    
     datos_innit(datos);
 
-    while (value != EOF) {
-        fscanf(input,"%c",&value);
-        if(linea == 0) {   
+    while (fscanf(input, "%c", &value) != EOF) {
+        if (linea == 0) {
+            arreglo_agregar(&datos->alfabeto, value);
+        } else if (linea == 1) {
             if (value != '\n') {
-                arreglo_agregar(&datos->alfabeto, value);
+                datos->limite = value;
             }
-        } 
-        if(linea == 1) {   
-                
-        }
-        if(linea == 3) {
-        
-        }
-        if(linea == 4) {
-            
-        }
-        if(linea == 5) {
-            
-        }
-        if(linea == 6) {
-            break;
+        } else if (linea >= 3) {
+            arreglo_agregar(&datos->zips, value);
         }
         if (value == '\n') {
             linea++;
         }
     }
-
-    free(datos);
+    datos_destroy(datos);
     return 0;
 }
