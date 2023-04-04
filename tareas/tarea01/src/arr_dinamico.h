@@ -1,3 +1,4 @@
+// Copyright 2023 <Dario Murillo Chaverri C15406>
 #ifndef ARR_DINAMICO_H
 #define ARR_DINAMICO_H
 
@@ -17,4 +18,4 @@ int arreglo_innit(arr_dinamico_t* arr);
 void arreglo_destroy(arr_dinamico_t* arr);
 int arreglo_agregar(arr_dinamico_t* arr, char elemento);
 
-#endif 
+#endif
