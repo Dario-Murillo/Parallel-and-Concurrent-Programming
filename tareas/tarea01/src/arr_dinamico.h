@@ -9,13 +9,13 @@
 typedef struct {
   size_t capacidad;
   size_t total;
-  char* elementos;
+  char** array;
 } arr_dinamico_t;
 
 
 void arreglo_imprimir(arr_dinamico_t* arr);
 int arreglo_innit(arr_dinamico_t* arr);
 void arreglo_destroy(arr_dinamico_t* arr);
-int arreglo_agregar(arr_dinamico_t* arr, char elemento);
+int arreglo_agregar(arr_dinamico_t* arr, const char* elemento);
 
 #endif
