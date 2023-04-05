@@ -9,16 +9,17 @@
 typedef struct datos {
     arr_dinamico_t alfabeto;
     arr_dinamico_t zips;
-    char limite;
-    struct zip* pointer;
+    uint64_t limite;
+    struct zip* za;
+    struct zip_file *zf;
     struct zip_stat sb;
-    struct zip_error_t* ze;
 } datos_t;
 
 datos_t* datos_create(void);
 void datos_innit(datos_t* datos);
 void datos_destroy(datos_t* datos);
-int contra(datos_t* datos);
-
+int datos_analisis(datos_t* datos, FILE* input);
+int abrir_archivo(datos_t* datos);
+void generate_passw(datos_t* datos);
 
 #endif
