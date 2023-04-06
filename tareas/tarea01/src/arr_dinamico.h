@@ -6,7 +6,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct {
+/**
+ * @struct arr_dinamico
+ * @brief estructura de memoria dinamica que funciona
+ * como un arreglo para datos tipo char*
+ * 
+ * @var arr_dinamico::capacidad
+ * capacidad actual de arreglo 
+ * 
+ * @var arr_dinamico::total
+ * capacidad total del arreglo
+ * 
+ * @var arr_dinamico::array
+ * array son los elementos de dicho arreglo
+*/
+typedef struct arr_dinamico {
   size_t capacidad;
   size_t total;
   char** array;
