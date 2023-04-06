@@ -18,6 +18,9 @@ int arreglo_innit(arr_dinamico_t* arr) {
 
 void arreglo_destroy(arr_dinamico_t* arr) {
     assert(arr);
+    for (size_t i = 0; i < arr->total; i++) {
+        free(arr->array[i]);
+    }
     free(arr->array);
     arr->array = NULL;
     arr->capacidad = 0;
@@ -32,7 +35,6 @@ int arreglo_agregar(arr_dinamico_t* arr, const char* elemento) {
     char* aux = malloc(strlen(elemento) + 1 );
     strcpy(aux, elemento);
     arr->array[arr->total++] = aux;
-    free(aux);
     return EXIT_SUCCESS;
 }
 
