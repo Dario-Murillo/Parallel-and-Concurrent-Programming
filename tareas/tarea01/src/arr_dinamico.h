@@ -27,9 +27,36 @@ typedef struct arr_dinamico {
 } arr_dinamico_t;
 
 
+/**
+ * @brief imprime el arreglo
+ * @param arr  puntero a la variable de tipo arr_dinamico_t
+ * @return void 
+*/
 void arreglo_imprimir(arr_dinamico_t* arr);
+
+/**
+ * @brief inicializa los valores del struct
+ * @details reserva memoria inicial para el primer elemento
+ * @param arr puntero a la variable de tipo arr_dinamico_t
+ * @return retorna codigo de error 
+*/
 int arreglo_innit(arr_dinamico_t* arr);
+
+
+/**
+ * @brief libera los alojamientos de memoria 
+ * @param arr puntero a la variable de tipo arr_dinamico_t
+ * @return void
+*/
 void arreglo_destroy(arr_dinamico_t* arr);
+
+
+/**
+ * @brief agrega un nuevo elemento de tipo char* al arreglo
+ * @param arr  puntero a la variable de tipo arr_dinamico_t
+ * @param elemento cadena de caracteres que se agregara al arreglo
+ * @return codigo de error 
+*/
 int arreglo_agregar(arr_dinamico_t* arr, const char* elemento);
 
 #endif
