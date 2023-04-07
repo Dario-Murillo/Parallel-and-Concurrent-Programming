@@ -22,6 +22,10 @@
  * zips guarda la tercer lines de los lotes de prueba
  * las dirreciones de los archivos zips
  * 
+ * @var datos::contrasenas  
+ * contrasenas guarda las contrasenas que 
+ * desencriptan los zips
+ * 
  * @var datos:za,zf,sb
  * variables encargadas de la apertura y lectura
  * de archivos zip
@@ -30,16 +34,52 @@ typedef struct datos {
     arr_dinamico_t alfabeto;
     int64_t limite;
     arr_dinamico_t zips;
+    arr_dinamico_t contrasenas;
     struct zip* za;
     struct zip_file *zf;
     struct zip_stat sb;
 } datos_t;
 
+/**
+ * @brief reserva memoria para crear una variable de tipo datos_t
+ * @param void
+ * @return variable de tipo datos_t
+*/
 datos_t* datos_create(void);
+
+/**
+ * @brief inicia los miembros del struct datos
+ * @param datos puntero de una variable tipo datos_t
+ * @return void
+*/
 void datos_innit(datos_t* datos);
+
+/**
+ * @brief lee el archivo introducido por la entrada estandar
+ * y carga los valores en las variables respectivas
+ * @param datos puntero de una variable tipo datos_t
+ * @param input archivo introducido de la entrada estandar
+ * @return codigo de error 
+*/
 int datos_analisis(datos_t* datos, FILE* input);
+
+
+/**
+ * @brief codigo encargado de abrir un archivo zip encriptado
+ * @param datos puntero de una variable tipo datos_t
+ * @return codigo de error
+ * @details: Adaptado de https://gist.github.com/mobius/1759816
+*/
 int datos_abrir_archivo(datos_t* datos);
-// void datos_generate_passw(datos_t* datos, char prefix);
+
+
+void datos_generate_passw(datos_t* datos_t, char* prefix);
+
+
+/**
+ * @brief libera la memoria usada
+ * @see datos_innit
+*/
 void datos_destroy(datos_t* datos);
 
 #endif
