@@ -42,15 +42,10 @@ void* number(void* data) {
 
 
 /**  
- *  esta es una version alterna y fallida del ejercicio devolviendo 
+ *  Esta es una version alterna del ejercicio devolviendo 
  *  la dirrecion de memoria de los numeros random 
- *  por medio de herramientas de optimizacion como asan 
- *  nos damos cuenta de que esta implementacion del codigo en 
- *  la cual devolvemos la dirrecion de memoria de la variable 
- *  no produce el resultado correcto
- * 
+ *  
 */
-
 
 // void* number(void* data);
 
@@ -66,7 +61,7 @@ void* number(void* data) {
 //     }
 //     for (int thread_num = 0; thread_num < 2; thread_num++) {
 //       pthread_join(threads[thread_num], (void**) &numero_ran1);
-//       printf("Numero del hilo %d : %zu" ,thread_num , *numero_ran1);
+//       printf("Numero del hilo %d: %zu\n" ,thread_num , *numero_ran1);
 //       free(numero_ran1);
 //     }
 //     free(threads);  // liberar la memoria dinamica
@@ -82,6 +77,7 @@ void* number(void* data) {
 // void* number(void* data) {
 //   unsigned int *seed = data; 
 //   uint64_t  number = rand_r(seed) % 99;
-//   uint64_t* pointer =  malloc(number * sizeof(uint64_t));
+//   uint64_t* pointer =  malloc(sizeof(uint64_t));
+//   *pointer = number;
 //   return (void*)pointer;
 // }
