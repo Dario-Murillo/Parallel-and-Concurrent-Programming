@@ -36,40 +36,46 @@ void datos_destroy(datos_t* datos) {
 
 int datos_analisis(datos_t* datos, FILE* input) {
     assert(datos);
+    assert(input);
     int error = EXIT_SUCCESS;
-    char str[120];
-    int linea = 0;
-    while (fgets(str, 120, input)) {
-        if (linea == 0) {
-            /// la funcion strcspn es usada para evitar agregar cambios de linea
-            str[strcspn(str, "\n")] = 0;
-            arreglo_agregar(&datos->alfabeto, str);
-        } else if (linea == 1 && linea < 2) {
-            str[strcspn(str, "\n")] = 0;
-            sscanf(str, "%"  SCNi64 , &datos->limite);
-        } else if (linea >= 3) {
-            str[strcspn(str, "\n")] = 0;
-            arreglo_agregar(&datos->zips, str);
+    if (input != NULL) {
+        char str[120];
+        int linea = 0;
+        while (fgets(str, 120, input)) {
+            if (linea == 0) {
+                /// strcspn evita agregar cambios de linea
+                str[strcspn(str, "\n")] = 0;
+                arreglo_agregar(&datos->alfabeto, str);
+            } else if (linea == 1 && linea < 2) {
+                str[strcspn(str, "\n")] = 0;
+                sscanf(str, "%"  SCNi64 , &datos->limite);
+            } else if (linea >= 3) {
+                str[strcspn(str, "\n")] = 0;
+                arreglo_agregar(&datos->zips, str);
+            }
+            linea++;
         }
-        linea++;
+    } else {
+        error = EXIT_FAILURE;
+        return error;
     }
     return error;
 }
 
 
-void datos_generate_passw(datos_t* datos, char* prefix) {
-
-    if (strlen(prefix) > 0 && strlen(prefix) <= (size_t)datos->limite) {
-        printf("%s\n", prefix);
+void datos_generate_passw(datos_t* datos, char* password) {
+    if (strlen(password) > 0 && strlen(password) <= (size_t)datos->limite) {
+        printf("%s\n", password);
     }
 
-    if (strlen(prefix) < (size_t)datos->limite) {
+    if (strlen(password) <= (size_t)datos->limite) {
         for (size_t i = 0; i < strlen(datos->alfabeto.array[0]); i++) {
-            char new_prefix[strlen(prefix) + 1];
-            strcpy(new_prefix, prefix);
-            new_prefix[strlen(prefix)] = datos->alfabeto.array[0][i];
-            new_prefix[strlen(prefix) + 1] = '\0';
-            datos_generate_passw(datos, new_prefix);
+            char new_password[strlen(password) + 1];
+            strcpy(new_password, password); 
+            char new_char[1];
+            new_char[0] =  datos->alfabeto.array[0][i];
+            strcat(new_password, new_char);
+            datos_generate_passw(datos, new_password);
         }
     }
 }
@@ -94,17 +100,19 @@ int datos_abrir_archivo(datos_t* datos) {
     for (zip_int64_t  i = 0; i < zip_get_num_entries(datos->za, 0); i++) {
         if (zip_stat_index(datos->za, i, 0, &datos->sb) == 0) {
             datos->zf = zip_fopen_index_encrypted(datos->za, i, 0, password);
-                if (datos->zf) {
-                    zip_fread(datos->zf, buf, 100);
-                    /// verificar que no sea un falso positivo
-                    /// al leer el contendio del archivo
-                    if (buf[0] == 'C') {
-                        arreglo_agregar(&datos->contrasenas, password);               
-                    } else {
-                    }
+            if (datos->zf) {
+                zip_fread(datos->zf, buf, 100);
+                /// verificar que no sea un falso positivo
+                /// al leer el contendio del archivo
+                if (buf[0] == 'C') {
+                    arreglo_agregar
+                    (&datos->contrasenas, password);
+                } else {
                 }
-            }   
-        zip_fclose(datos->zf);
+            zip_fclose(datos->zf);
+            } else {
+            }
+        }
     }
     if (zip_close(datos->za) == -1) {
         fprintf(stderr, "Can't close zip archive `%s'/n", archive);
