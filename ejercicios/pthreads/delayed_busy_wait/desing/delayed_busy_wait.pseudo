@@ -1,16 +1,18 @@
 procedure main(argc, argv[])
   shared next_thread := 0 //  para idenfiticar el proximo hilo a imprimir
   shared thread_count := integer(argv[1])
+  shared delay := integer(argv[2])
   for thread_number := 0 to thread_count do
     create_thread(greet, thread_number) // thread team
   end for
   print "Hello from main thread"
 end procedure
 
-procedure greet(thread_number)
+//version constante 
+procedure greet(thread_number) 
   // Wait until it is my turn
   while next_thread < thread_number do
-    // busy-wait
+    usleep(delay) 
   end while
 
   print "Hello from secondary thread", thread_number, " of ", thread_count
@@ -19,3 +21,16 @@ procedure greet(thread_number)
   next_thread := next_thread + 1
 end procedure
 
+//version pseudoaleatoria
+procedure greet(thread_number) 
+  // Wait until it is my turn
+  while next_thread < thread_number do
+    my_delay := random number % delay
+    usleep(my_delay) 
+  end while
+
+  print "Hello from secondary thread", thread_number, " of ", thread_count
+
+  // Allow subsequent thread to do the task
+  next_thread := next_thread + 1
+end procedure
