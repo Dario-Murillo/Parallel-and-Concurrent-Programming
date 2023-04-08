@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   uint64_t delay = 50;  // caso default para evitar que el delay sea 0
   if (argc == 3) {
     if (sscanf(argv[1], "%" SCNu64, &thread_count) == 1 &&
-        sscanf(argv[2], "%" SCNd64 , &delay) == 1) {
+        sscanf(argv[2], "%" SCNu64 , &delay) == 1) {
     } else {
       fprintf(stderr, "Error: invalid thread count\n");
       return 11;
