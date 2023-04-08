@@ -16,6 +16,7 @@ typedef struct equipo {
 void* shoot(void* arg);
 int create_threads(uint64_t num_atletas);
 
+// main
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
   uint64_t num_atletas;
@@ -38,6 +39,15 @@ int main(int argc, char* argv[]) {
   return error;
 }
 
+/**
+ * @brief funciona como el hilo principal es el encargado de multiples acciones
+ * desde crear hilos, haciendo uso de memoria dinamica, como una impresion, 
+ * y luego la liberacion de la memoria usada
+ * @param shared_data recibe del main cuantos hilos se van a crear segun
+ * lo indica por el usuario, en caso de no recibir nada usa el numero
+ * de nucleos
+ * 
+*/
 int create_threads(uint64_t num_atletas) {
   int error = EXIT_SUCCESS;
 
@@ -49,7 +59,7 @@ int create_threads(uint64_t num_atletas) {
   sizeof(equipo_t));
   equipo_t* datos_equipo2 = (equipo_t*) calloc(num_atletas,
   sizeof(equipo_t));
-
+  // creacion de dos equipos de hilos distintos con sus respectivos datos
 
   if (hilos_equipo1 && hilos_equipo2 && datos_equipo1 && datos_equipo2) {
     for (uint64_t thread_num = 0; thread_num < num_atletas; thread_num++) {
@@ -71,8 +81,10 @@ int create_threads(uint64_t num_atletas) {
   int equipo2_pts = 0;
   for (uint64_t thread_number = 0; thread_number < num_atletas
     ; ++thread_number) {
+    // recolecion de los numeros generados por medio de punteros
     pthread_join(hilos_equipo1[thread_number], (void**)&numero1);
     pthread_join(hilos_equipo2[thread_number], (void**)&numero2);
+    // comparacion entre los hilos de cada equipo
     if (*numero1 > *numero2) {
       equipo1_pts++;
     } else {
@@ -85,7 +97,7 @@ int create_threads(uint64_t num_atletas) {
   if (equipo1_pts > equipo2_pts) {
     printf("equipo1 gana: %d : %d\n", equipo1_pts, equipo2_pts);
   } else {
-    printf("equipo2 gana: %d, %d\n", equipo1_pts, equipo2_pts);
+    printf("equipo2 gana: %d : %d\n", equipo1_pts, equipo2_pts);
   }
 
   //  liberar memoria
@@ -96,6 +108,12 @@ int create_threads(uint64_t num_atletas) {
   return error;
 }
 
+/**
+ * @brief genera 3 numeros aleatorios entre 0.0 a 25.0 
+ * retorna la direccion de memoria del mayor
+ * @param arg
+ * 
+*/
 void* shoot(void* arg) {
   equipo_t* datos_equipo = (equipo_t*) arg;
   unsigned int seed = time(NULL) ^ pthread_self();
