@@ -43,9 +43,8 @@ int main(int argc, char* argv[]) {
  * @brief funciona como el hilo principal es el encargado de multiples acciones
  * desde crear hilos, haciendo uso de memoria dinamica, como una impresion, 
  * y luego la liberacion de la memoria usada
- * @param shared_data recibe del main cuantos hilos se van a crear segun
- * lo indica por el usuario, en caso de no recibir nada usa el numero
- * de nucleos
+ * @param num_atletas recibe del main cuantos hilos se van a crear segun
+ * tiene que ser proveerse siempre un numero impar 
  * 
 */
 int create_threads(uint64_t num_atletas) {
