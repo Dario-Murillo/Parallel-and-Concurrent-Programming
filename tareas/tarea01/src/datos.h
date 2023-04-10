@@ -32,7 +32,7 @@
 */
 typedef struct datos {
     arr_dinamico_t alfabeto;
-    int64_t limite;
+    uint64_t limite;
     arr_dinamico_t zips;
     arr_dinamico_t contrasenas;
     struct zip* za;
@@ -70,10 +70,10 @@ int datos_analisis(datos_t* datos, FILE* input);
  * @return codigo de error
  * @details: Adaptado de https://gist.github.com/mobius/1759816
 */
-int datos_abrir_archivo(datos_t* datos);
+int datos_abrir_archivo(datos_t* datos, char* key);
 
 
-void datos_generate_passw(datos_t* datos_t, char* prefix);
+void datos_generate_passw(datos_t* datos_t, char* password);
 
 
 /**
@@ -81,5 +81,13 @@ void datos_generate_passw(datos_t* datos_t, char* prefix);
  * @see datos_innit
 */
 void datos_destroy(datos_t* datos);
+
+
+/**
+ * @brief imprime las dirreciones de los zips y sus contrasenas
+ * @param datos puntero de una variable tipo datos_t
+ * 
+*/
+void datos_impresion(datos_t* datos);
 
 #endif

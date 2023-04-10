@@ -49,7 +49,7 @@ int datos_analisis(datos_t* datos, FILE* input) {
             } else if (linea == 1 && linea < 2) {
                 str[strcspn(str, "\n")] = 0;
                 sscanf(str, "%"  SCNi64 , &datos->limite);
-            } else if (linea >= 3) {
+            } else if (linea == 3) {
                 str[strcspn(str, "\n")] = 0;
                 arreglo_agregar(&datos->zips, str);
             }
@@ -81,12 +81,12 @@ void datos_generate_passw(datos_t* datos, char* password) {
 }
 
 
-int datos_abrir_archivo(datos_t* datos) {
+int datos_abrir_archivo(datos_t* datos, char* key) {
     int error = EXIT_SUCCESS;
     size_t i = 0;
 
     const char* archive = datos->zips.array[i];
-    const char* password = "75";
+    const char* password = key;
     char buf[100];
 
     if ((datos->za = zip_open(archive, 0, &error)) != NULL) {
@@ -107,6 +107,7 @@ int datos_abrir_archivo(datos_t* datos) {
                 if (buf[0] == 'C') {
                     arreglo_agregar
                     (&datos->contrasenas, password);
+                    return EXIT_SUCCESS;
                 } else {
                 }
             zip_fclose(datos->zf);
@@ -121,5 +122,11 @@ int datos_abrir_archivo(datos_t* datos) {
     return error;
 }
 
-
+void datos_impresion(datos_t* datos) {\
+    FILE* output = stdout;
+    for (size_t i = 0; i < datos->zips.total; i++) {
+        fprintf(output, "%s" " %s", datos->zips.array[i]
+        , datos->contrasenas.array[i]);
+    }
+}
 
