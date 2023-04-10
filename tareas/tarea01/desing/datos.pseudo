@@ -1,0 +1,89 @@
+struct datos {
+    declare alfabeto;
+    declare limite;
+    declare zips;
+    declare contrasenas;
+    declare za;
+    declare *zf;
+    declare sb;
+}
+
+procedure datos_innit(datos) {
+    arreglo_innit(alfabeto);
+    arreglo_innit(zips);
+    arreglo_innit(contrasenas);
+    zip_stat_init(sb);
+    za := NULL;
+    zf := NULL;
+    limite := 0
+}
+
+procedure datos_destroy(datos) {
+    arreglo_destroy(alfabeto);
+    arreglo_destroy(zips);
+    arreglo_destroy(contrasenas);
+    free(datos);
+}
+
+procedure datos_analisis(datos, input) {
+    if input != NULL do
+        declare str[120]
+        declare linea := 0
+        while str, input do {
+            if (linea := 0) do
+                arreglo_agregar(alfabeto,str)
+            end else (linea :=1 ) do
+                limite := str
+            end else (linea >= 3) do 
+                arreglo_agregar(zips,str)
+            end
+        } end while
+    end if
+}
+
+procedure datos_generate_password(datos, password) {
+    if password < limite do
+        for i := 0  to alfabeto do
+            declare new_password[password + 1]
+            declare new_char[1]
+            new_char[0] = alfabeto[i]
+            new_password + new_char
+            datos_generate_password(datos, new_password)
+        end for
+    end if
+}
+
+procedure datos_abrir_archivo(datos, key) {
+    declare error := 0
+    declare i := 0
+    declare archive = zips.array[i]
+    declare password = key
+    declare buf[100]
+    
+    if za = zip_open(archive, 0, error) != NULL do
+    end 
+
+    for i:= 0 to total_of_entries do
+        if zip_stat_index(za, i, 0, sb) == 0 do
+            zf := zip_fopen_index_encrypted(za, i, 0, password);
+            if (zf) do
+                zip_fread(zf, buf, 100);
+                
+                if  buf[0] == 'C' do 
+                    arreglo_agregar
+                    (contrasenas, password);
+                    
+                end if
+            zip_fclose(zf)
+            end if
+        end if
+    end for
+    zip_close(za)
+}
+
+procedure datos_imprimir(datos) {
+    declare output := stdout 
+    for i :=0 to zips total do
+        print zips[i] contrasenas[i]
+    end for
+}
