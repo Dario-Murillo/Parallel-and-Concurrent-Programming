@@ -71,10 +71,10 @@ void datos_generate_passw(datos_t* datos, char* password) {
     if (strlen(password) <= (size_t)datos->limite) {
         for (size_t i = 0; i < strlen(datos->alfabeto.array[0]); i++) {
             char new_password[strlen(password) + 1];
-            strcpy(new_password, password); 
-            char new_char[1];
+            memcpy(new_password, password, strlen(password) + 1);
+            char new_char[2];
             new_char[0] =  datos->alfabeto.array[0][i];
-            strcat(new_password, new_char);
+            strncat(new_password, new_char, 1);
             datos_generate_passw(datos, new_password);
         }
     }
@@ -84,9 +84,8 @@ void datos_generate_passw(datos_t* datos, char* password) {
 int datos_abrir_archivo(datos_t* datos, char* key) {
     int error = EXIT_SUCCESS;
     size_t i = 0;
-
     const char* archive = datos->zips.array[i];
-    const char* password = key;
+    char* password = key;
     char buf[100];
 
     if ((datos->za = zip_open(archive, 0, &error)) != NULL) {
@@ -100,17 +99,15 @@ int datos_abrir_archivo(datos_t* datos, char* key) {
     for (zip_int64_t  i = 0; i < zip_get_num_entries(datos->za, 0); i++) {
         if (zip_stat_index(datos->za, i, 0, &datos->sb) == 0) {
             datos->zf = zip_fopen_index_encrypted(datos->za, i, 0, password);
-            if (datos->zf) {
+            if (datos->zf != NULL) {
                 zip_fread(datos->zf, buf, 100);
                 /// verificar que no sea un falso positivo
                 /// al leer el contendio del archivo
                 if (buf[0] == 'C') {
-                    arreglo_agregar
-                    (&datos->contrasenas, password);
-                    return EXIT_SUCCESS;
+                    arreglo_agregar(&datos->contrasenas,password);
                 } else {
                 }
-            zip_fclose(datos->zf);
+                zip_fclose(datos->zf);
             } else {
             }
         }
