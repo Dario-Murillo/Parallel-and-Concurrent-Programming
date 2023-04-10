@@ -26,6 +26,7 @@ enum {
   ERR_CREATE_THREAD,
 };
 
+// memoria compartida
 typedef struct {
   size_t thread_count;
   size_t buffer_capacity;
@@ -35,8 +36,11 @@ typedef struct {
   useconds_t producer_max_delay;
   useconds_t consumer_min_delay;
   useconds_t consumer_max_delay;
+  sem_t can_produce;
+  sem_t can_consume;
 } shared_data_t;
 
+// memoria privada
 typedef struct  {
   size_t thread_number;
   shared_data_t* shared_data;
@@ -48,6 +52,13 @@ void* produce(void* data);
 void* consume(void* data);
 useconds_t random_between(useconds_t min, useconds_t max);
 
+/**
+ * @brief rutina principal
+ * @param argc numero de argumentos
+ * @param argv argumentos
+ * @return codigo de error
+ *         0 en caso de ejecucion correcta
+*/
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
 
@@ -57,10 +68,17 @@ int main(int argc, char* argv[]) {
   if (shared_data) {
     error = analyze_arguments(argc, argv, shared_data);
     if (error == EXIT_SUCCESS) {
+      // una vez que sabemos el tamano del buffer lo creamos
+      // con malloc segun la capacidad necesaria
       shared_data->buffer = (double*)
         calloc(shared_data->buffer_capacity, sizeof(double));
       if (shared_data->buffer) {
+        // inicializacion de semaforos
+        sem_init(&shared_data->can_produce, 0, shared_data->buffer_capacity);
+        sem_init(&shared_data->can_consume, 0, 0);
+
         unsigned int seed = 0u;
+        // obtener una semilla en hardware
         getrandom(&seed, sizeof(seed), GRND_NONBLOCK);
         srandom(seed);
 
@@ -76,6 +94,8 @@ int main(int argc, char* argv[]) {
           (finish_time.tv_nsec - start_time.tv_nsec) * 1e-9;
         printf("execution time: %.9lfs\n", elapsed);
 
+        sem_destroy(&shared_data->can_consume);
+        sem_destroy(&shared_data->can_produce);
         free(shared_data->buffer);
       } else {
         fprintf(stderr, "error: could not create buffer\n");
@@ -92,6 +112,14 @@ int main(int argc, char* argv[]) {
   return error;
 }
 
+/**
+ * @brief pone los argumentos de la linea de comandos en la estructura de datos
+ * @param arg numero de argumentos
+ * @param argv los argumentos
+ * @param shared_data la estructura de datos que almacena
+ * @return codigo de error
+ *         0 si es exitoso
+*/
 int analyze_arguments(int argc, char* argv[], shared_data_t* shared_data) {
   int error = EXIT_SUCCESS;
   if (argc == 7) {
@@ -125,11 +153,17 @@ int analyze_arguments(int argc, char* argv[], shared_data_t* shared_data) {
   return error;
 }
 
+/**
+ * @brief subrutina encargada de crear el hilo productor y consumidor
+ * @param shared_data la memoria compartida con todos los datos necesarios
+ * @return codigo de error 
+*/
 int create_threads(shared_data_t* shared_data) {
   assert(shared_data);
   int error = EXIT_SUCCESS;
-
+  // creamos dos hilos, uno produce y uno consume
   pthread_t producer, consumer;
+  // no se crean los hilos con el metodo for
   error = pthread_create(&producer, /*attr*/ NULL, produce, shared_data);
   if (error == EXIT_SUCCESS) {
     error = pthread_create(&consumer, /*attr*/ NULL, consume, shared_data);
@@ -150,37 +184,72 @@ int create_threads(shared_data_t* shared_data) {
   return error;
 }
 
+/**
+ * @brief produce un numero y lo almacena en el buffer
+ * @param data recibe la memoria compartida
+*/
 void* produce(void* data) {
   // const private_data_t* private_data = (private_data_t*)data;
   shared_data_t* shared_data = (shared_data_t*)data;
   size_t count = 0;
+  // cantidad de rondas
   for (size_t round = 0; round < shared_data->rounds; ++round) {
+    // cantidad del buffer
     for (size_t index = 0; index < shared_data->buffer_capacity; ++index) {
-      usleep(1000 * random_between(shared_data->producer_min_delay
-        , shared_data->producer_max_delay));
-      shared_data->buffer[index] = ++count;
-      printf("Produced %lg\n", shared_data->buffer[index]);
+        // espere a que haya algo por producir
+        sem_wait(&shared_data->can_produce);
+
+        // duerme por una cantidad pseudoaleatoria de microsegundos
+        usleep(1000 * random_between(shared_data->producer_min_delay
+            , shared_data->producer_max_delay));
+        // agregar el numero al buffer
+        shared_data->buffer[index] = ++count;
+        printf("Produced %lg\n", shared_data->buffer[index]);
+
+        // una vez producido se indica que hay datos que se pueden consumir
+        sem_post(&shared_data->can_consume);
     }
   }
 
   return NULL;
 }
 
+/**
+ * @brief consume un numero almacenado en el buffer
+ * @param data recibe la memoria compartida
+*/
 void* consume(void* data) {
   // const private_data_t* private_data = (private_data_t*)data;
   shared_data_t* shared_data = (shared_data_t*)data;
   for (size_t round = 0; round < shared_data->rounds; ++round) {
     for (size_t index = 0; index < shared_data->buffer_capacity; ++index) {
-      double value = shared_data->buffer[index];
-      usleep(1000 * random_between(shared_data->consumer_min_delay
-        , shared_data->consumer_max_delay));
-      printf("\tConsumed %lg\n", value);
+        // espera a que haya algo por consumir
+        sem_wait(&shared_data->can_consume);
+
+      // extrae el valor del buffer
+        double value = shared_data->buffer[index];
+        usleep(1000 * random_between(shared_data->consumer_min_delay
+            , shared_data->consumer_max_delay));
+        printf("\tConsumed %lg\n", value);
+
+        // si logre consumir algo significa que
+        // queda un espacio vacio disponible para consumir
+        sem_post(&shared_data->can_produce);
     }
   }
 
   return NULL;
 }
 
+/**
+ * @brief funciona para generar un numero pseudoaleatorio
+ * @param min minimo numero a generar
+ * @param max maximo numero a generar
+ * @return numero random
+ * 
+*/
 useconds_t random_between(useconds_t min, useconds_t max) {
+  // si max > min genera un numero al random con la semilla
+  // de srandom() y pide el proximo numero de esa secuencia
   return min + (max > min ? (random() % (max - min)) : 0);
 }
