@@ -4,10 +4,16 @@
 
 int main() {
     FILE* input = stdin;
+    int error = EXIT_SUCCESS;
     datos_t *datos = datos_create();
-    
     datos_innit(datos);
-    datos_analisis(datos, input);
-    datos_destroy(datos);
-    return 0;
+    error = datos_analisis(datos, input);
+    if (error == EXIT_SUCCESS) {
+        datos_generate_passw(datos, "");
+        datos_destroy(datos);   
+    } else {
+        printf("No se pudieron leer los datos");
+        error = EXIT_FAILURE;
+    }
+    return error;
 }
