@@ -105,6 +105,7 @@ int datos_abrir_archivo(datos_t* datos, char* key) {
                 /// al leer el contendio del archivo
                 if (buf[0] == 'C') {
                     arreglo_agregar(&datos->contrasenas,password);
+                    // arreglo_agregar(&datos->contrasenas,'\n');
                 } else {
                 }
                 zip_fclose(datos->zf);
@@ -119,7 +120,7 @@ int datos_abrir_archivo(datos_t* datos, char* key) {
     return error;
 }
 
-void datos_impresion(datos_t* datos) {\
+void datos_impresion(datos_t* datos) {
     FILE* output = stdout;
     for (size_t i = 0; i < datos->zips.total; i++) {
         fprintf(output, "%s" " %s", datos->zips.array[i]
