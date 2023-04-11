@@ -35,10 +35,10 @@ typedef struct simulation {
   size_t buffer_capacity;
   double* buffer;
   size_t rounds;
-  useconds_t producer_min_delay;
-  useconds_t producer_max_delay;
-  useconds_t consumer_min_delay;
-  useconds_t consumer_max_delay;
+  __useconds_t producer_min_delay;
+  __useconds_t producer_max_delay;
+  __useconds_t consumer_min_delay;
+  __useconds_t consumer_max_delay;
   sem_t can_produce;
   sem_t can_consume;
 } simulation_t;
@@ -72,6 +72,6 @@ void simulation_destroy(simulation_t* simulation);
  * @return numero random
  * 
 */
-useconds_t random_between(useconds_t min, useconds_t max);
+__useconds_t random_between(__useconds_t min, __useconds_t max);
 
 #endif
