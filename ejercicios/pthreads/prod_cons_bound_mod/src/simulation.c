@@ -51,7 +51,7 @@ void simulation_destroy(simulation_t* simulation) {
 
 int simulation_run(simulation_t* simulation, int argc, char* argv[]) {
     int error = analyze_arguments(simulation, argc, argv);
-    if (error = EXIT_SUCCESS) {
+    if (error == EXIT_SUCCESS) {
         simulation->buffer = (double*)
         calloc(simulation->buffer_capacity, sizeof(double));
         if (simulation->buffer) {
@@ -138,6 +138,7 @@ int create_threads(simulation_t* simulation) {
         pthread_join(producer, /*value_ptr*/ NULL);
         pthread_join(consumer, /*value_ptr*/ NULL);
     }
+    return error;
 }
 
 useconds_t random_between(useconds_t min, useconds_t max) {
