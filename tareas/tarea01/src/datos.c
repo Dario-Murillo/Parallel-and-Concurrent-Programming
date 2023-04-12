@@ -101,6 +101,7 @@ int datos_abrir_archivo(datos_t* datos, char* key) {
             datos->zf = zip_fopen_index_encrypted(datos->za, i, 0, password);
             if (datos->zf != NULL) {
                 zip_fread(datos->zf, buf, 100);
+                printf("flag\n");
                 /// verificar que no sea un falso positivo
                 /// al leer el contendio del archivo
                 if (buf[0] == 'C') {

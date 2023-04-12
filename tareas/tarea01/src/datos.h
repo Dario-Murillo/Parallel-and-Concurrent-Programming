@@ -36,7 +36,7 @@ typedef struct datos {
     arr_dinamico_t zips;
     arr_dinamico_t contrasenas;
     struct zip* za;
-    struct zip_file *zf;
+    struct zip_file* zf;
     struct zip_stat sb;
 } datos_t;
 
