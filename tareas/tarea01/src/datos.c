@@ -64,20 +64,19 @@ int datos_analisis(datos_t* datos, FILE* input) {
 
 
 void datos_generate_passw(datos_t* datos, char* password) {
-    if (strlen(password) > 0 && strlen(password) <= (size_t)datos->limite) {
-        printf("%s\n", password);
-    }
-
-    if (strlen(password) <= (size_t)datos->limite) {
+    (void) password;
+    // largo de la clave
+    for (size_t i = 1; i < (size_t)datos->limite; i++) {
+        // caracteres posibles que forman la clave 
         for (size_t i = 0; i < strlen(datos->alfabeto.array[0]); i++) {
-            char new_password[strlen(password) + 1];
-            memcpy(new_password, password, strlen(password) + 1);
-            char new_char[2];
-            new_char[0] =  datos->alfabeto.array[0][i];
-            strncat(new_password, new_char, 1);
-            datos_generate_passw(datos, new_password);
+            char aux = datos->alfabeto.array[0][i];
+            char* password = &aux;
+            // base depende del limite
+            // 00000 00001 00002 00003 0004 00005 
+            puts(password);
         }
     }
+    
 }
 
 
