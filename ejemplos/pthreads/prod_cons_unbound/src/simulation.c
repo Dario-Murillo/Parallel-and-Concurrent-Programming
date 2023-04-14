@@ -13,8 +13,37 @@
 #include "producer.h"
 #include "simulation.h"
 
+/**
+ * @brief carga los datos obtenidos a la estructura de datos
+ * @param simulation puntero al registro simulation
+ * @param argc numero de argumentos
+ * @param argv argumentos
+ * @return codigo de error 0 en caso exitoso
+*/
 int analyze_arguments(simulation_t* simulation, int argc, char* argv[]);
+
+/**
+ * @brief crea y destruye los consumidores y productores
+ * @param simulation puntero a la estructura de datos
+ * @return codigo de error 0 en caso exitoso
+*/
 int create_consumers_producers(simulation_t* simulation);
+
+/**
+ * @brief crea hilos
+ * @param cantidad de hilos
+ * @param subroutine subrutina sobre la cual van a operar los hilos
+ * @param data la informacion que se va a mandar con los hilos
+ * @return devuelve un puntero a los hilos
+*/
+pthread_t* create_threads(size_t count, void*(*subroutine)(void*), void* data);
+
+/**
+ * @brief destruye los hilos
+ * @param count numero de hilos
+ * @param threads puntero a los hilos
+ * @return codigo de error 0 en caso exitoso
+*/
 int join_threads(size_t count, pthread_t* threads);
 
 simulation_t* simulation_create() {

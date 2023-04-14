@@ -5,7 +5,18 @@
 
 #include "queue.h"
 
+/**
+ * @brief remueve el primer elemento de la cola
+ * @details no hace uso de control de concurrencia
+ * @param queue puntero a la cola
+*/
 void queue_remove_first_unsafe(queue_t* queue);
+
+/**
+ * @brief consulta si la lista esta vacia
+ * @param queue puntero a la cola
+ * @return true si la cola esta vacia, falso en caso alterno
+*/
 bool queue_is_empty_unsafe(queue_t* queue);
 
 int queue_init(queue_t* queue) {

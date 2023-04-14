@@ -33,13 +33,22 @@ typedef struct simulation {
   __useconds_t consumer_max_delay;
 
   queue_t queue;
-  pthread_mutex_t can_access_next_unit;
+
+  pthread_mutex_t can_access_next_unit;  // mutex de la unidades
   size_t next_unit;
-  sem_t can_consume;
-  pthread_mutex_t can_access_consumed_count;
-  size_t consumed_count;
+  sem_t can_consume;  // semaforo para consumir
+  pthread_mutex_t can_access_consumed_count;  // mutex de los consumidores
+  size_t consumed_count;  // cantidad de elementos consumidos
 } simulation_t;
 
+
+/**
+ * @brief genera un numero pseudoaleatorio
+ * @param min minimo numero a generar
+ * @param max maximo numero a generar
+ * @return numero pseudoaleatorio
+ * 
+*/
 __useconds_t random_between(__useconds_t min, __useconds_t max);
 
 #endif  // COMMON_H
