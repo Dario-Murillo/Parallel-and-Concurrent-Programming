@@ -6,6 +6,7 @@
 
 #include "simulation.h"
 
+// Metodo main encargado de correr la simulacion
 int main(int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
   simulation_t* simulation = simulation_create();

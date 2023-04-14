@@ -1,4 +1,5 @@
 // Copyright 2021 Jeisson Hidalgo-Cespedes <jeisson.hidalgo@ucr.ac.cr> CC-BY-4
+#define _DEFAULT_SOURCE
 
 #include <assert.h>
 #include <errno.h>
@@ -27,7 +28,10 @@ simulation_t* simulation_create() {
     simulation->consumer_min_delay = 0;
     simulation->consumer_max_delay = 0;
     queue_init(&simulation->queue);
+    pthread_mutex_init(&simulation->can_access_next_unit, /* attr */ NULL);
     simulation->next_unit = 0;
+    sem_init(&simulation->can_consume, /* pshared */ 0, /* value */ 0);
+    pthread_mutex_init(&simulation->can_access_consumed_count, /* attr */ NULL);
     simulation->consumed_count = 0;
   }
   return simulation;
@@ -35,6 +39,9 @@ simulation_t* simulation_create() {
 
 void simulation_destroy(simulation_t* simulation) {
   assert(simulation);
+  pthread_mutex_destroy(&simulation->can_access_consumed_count);
+  sem_destroy(&simulation->can_consume);
+  pthread_mutex_destroy(&simulation->can_access_next_unit);
   queue_destroy(&simulation->queue);
   free(simulation);
 }
