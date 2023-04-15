@@ -1,9 +1,12 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
 #include <datos.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <zip.h>
 
 
 datos_t* datos_create(void) {
@@ -18,9 +21,6 @@ void datos_innit(datos_t* datos) {
     arreglo_innit(&datos->alfabeto);
     arreglo_innit(&datos->zips);
     arreglo_innit(&datos->contrasenas);
-    zip_stat_init(&datos->sb);
-    datos->za = NULL;
-    datos->zf = NULL;
     datos->limite = 0;
 }
 
@@ -49,7 +49,7 @@ int datos_analisis(datos_t* datos, FILE* input) {
             } else if (linea == 1 && linea < 2) {
                 str[strcspn(str, "\n")] = 0;
                 sscanf(str, "%"  SCNi64 , &datos->limite);
-            } else if (linea == 3) {
+            } else if (linea >= 3) {
                 str[strcspn(str, "\n")] = 0;
                 arreglo_agregar(&datos->zips, str);
             }
@@ -63,20 +63,18 @@ int datos_analisis(datos_t* datos, FILE* input) {
 }
 
 
-void datos_generate_passw(datos_t* datos, char* password) {
-    (void) password;
+void datos_generate_passw(datos_t* datos) {
     // largo de la clave
     for (size_t i = 1; i < (size_t)datos->limite; i++) {
-        // caracteres posibles que forman la clave 
-        for (size_t i = 0; i < strlen(datos->alfabeto.array[0]); i++) {
-            char aux = datos->alfabeto.array[0][i];
-            char* password = &aux;
-            // base depende del limite
-            // 00000 00001 00002 00003 0004 00005 
-            puts(password);
+        // char* pass_temp = calloc(i + 1, sizeof(char*));
+        // limite elevado a la i
+        for (size_t j = 0; j < strlen(datos->alfabeto.array[0]); j++) {
+            // int base[n] == passBase(limite, strlen(datos->alfabeto.array[0]))
+            for (size_t k = 1; i < (size_t)datos->limite; k++) {
+                // pass_temp[k] = datos->alfabeto.array[0]base[i];
+            }
         }
     }
-    
 }
 
 
@@ -84,36 +82,39 @@ int datos_abrir_archivo(datos_t* datos, char* key) {
     int error = EXIT_SUCCESS;
     size_t i = 0;
     const char* archive = datos->zips.array[i];
-    char* password = key;
-    char buf[100];
+    zip_t* arch = NULL;
 
-    if ((datos->za = zip_open(archive, 0, &error)) != NULL) {
+
+    if ((arch = zip_open(archive, 0, &error)) != NULL) {
     } else {
-        zip_error_to_str(buf, sizeof(buf), error, errno);
-        fprintf(stderr, "Can't open zip archive `%s': %s\n",
-        archive, buf);
-        return error;
+        error = EXIT_FAILURE;
     }
 
-    for (zip_int64_t  i = 0; i < zip_get_num_entries(datos->za, 0); i++) {
-        if (zip_stat_index(datos->za, i, 0, &datos->sb) == 0) {
-            datos->zf = zip_fopen_index_encrypted(datos->za, i, 0, password);
-            if (datos->zf != NULL) {
-                zip_fread(datos->zf, buf, 100);
-                printf("flag\n");
-                /// verificar que no sea un falso positivo
-                /// al leer el contendio del archivo
-                if (buf[0] == 'C') {
-                    arreglo_agregar(&datos->contrasenas,password);
-                    // arreglo_agregar(&datos->contrasenas,'\n');
-                } else {
-                }
-                zip_fclose(datos->zf);
-            } else {
-            }
+    struct zip_stat* finfo = NULL;
+
+
+    finfo = calloc(256, sizeof(int));
+    zip_stat_init(finfo);
+    zip_file_t* fd = NULL;
+    char* txt = NULL;
+    int count = 0;
+
+    while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
+        txt = calloc(finfo->size, sizeof(char));
+        fd = zip_fopen_index_encrypted(arch, count, 0, key);
+        zip_fread(fd, txt, finfo->size);
+        //printf("%s", txt);
+        if (strcmp(txt, "CI0117-23a")) {
+            // comprobar falso positivo
+            arreglo_agregar(&datos->contrasenas, key);
         }
+        free(txt);
+        // printf("%d\n",count);
+        count++;
     }
-    if (zip_close(datos->za) == -1) {
+
+    free(finfo);
+    if (zip_close(arch) == -1) {
         fprintf(stderr, "Can't close zip archive `%s'/n", archive);
         return 1;
     }

@@ -4,7 +4,7 @@
 
 #include <arr_dinamico.h>
 #include <inttypes.h>
-#include <zip.h>
+
 
 /**
  * @struct datos
@@ -35,9 +35,6 @@ typedef struct datos {
     uint64_t limite;
     arr_dinamico_t zips;
     arr_dinamico_t contrasenas;
-    struct zip* za;
-    struct zip_file* zf;
-    struct zip_stat sb;
 } datos_t;
 
 /**
@@ -68,12 +65,15 @@ int datos_analisis(datos_t* datos, FILE* input);
  * @brief codigo encargado de abrir un archivo zip encriptado
  * @param datos puntero de una variable tipo datos_t
  * @return codigo de error
- * @details: Adaptado de https://gist.github.com/mobius/1759816
+ * @details
+ Adaptado de 
+ https://www.geeksforgeeks.org/
+ c-program-to-read-and-print-all-files-from-a-zip-file/
 */
 int datos_abrir_archivo(datos_t* datos, char* key);
 
 
-void datos_generate_passw(datos_t* datos_t, char* password);
+void datos_generate_passw(datos_t* datos_t);
 
 
 /**
