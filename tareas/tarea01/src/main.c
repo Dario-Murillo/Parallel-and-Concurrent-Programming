@@ -9,7 +9,7 @@ int main() {
     datos_innit(datos);
     error = datos_analisis(datos, input);
     if (error == EXIT_SUCCESS) {
-        datos_abrir_archivo(datos, "75");
+        datos_generate_passw(datos);
         datos_destroy(datos);   
     } else {
         printf("No se pudieron leer los datos");
