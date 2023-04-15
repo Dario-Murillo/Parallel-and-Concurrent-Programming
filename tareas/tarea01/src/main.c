@@ -10,6 +10,7 @@ int main() {
     error = datos_analisis(datos, input);
     if (error == EXIT_SUCCESS) {
         datos_generate_passw(datos);
+        datos_impresion(datos);
         datos_destroy(datos);   
     } else {
         printf("No se pudieron leer los datos");

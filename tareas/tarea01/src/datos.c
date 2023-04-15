@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <string.h>
 #include <unistd.h>
 #include <zip.h>
 #include <math.h>
+#include <stdint.h>
 
 
 datos_t* datos_create(void) {
@@ -50,7 +50,7 @@ int datos_analisis(datos_t* datos, FILE* input) {
             } else if (linea == 1 && linea < 2) {
                 str[strcspn(str, "\n")] = 0;
                 sscanf(str, "%"  SCNi64 , &datos->limite);
-            } else if (linea == 3) {
+            } else if (linea >= 3) {
                 str[strcspn(str, "\n")] = 0;
                 arreglo_agregar(&datos->zips, str);
             }
@@ -64,43 +64,54 @@ int datos_analisis(datos_t* datos, FILE* input) {
 }
 
 
-
-int pass_base(size_t numero, size_t base) {
-    if(numero == 0)
-        return numero;
-    return (numero % base) + 10 * pass_base(numero / base, base);
-}
-
 void datos_generate_passw(datos_t* datos) {
-    // largo de la clave
-    for (size_t i = 1; i <= (size_t)datos->limite; i++) {
-        char* pass_temp = calloc(i + 1, sizeof(char*));
-        // total de caracteres elevado a la i
-
-        for (size_t j = 0; j < pow(strlen(datos->alfabeto.array[0]), i); j++) {
-            // int base[n] == passBase(limite, strlen(datos->alfabeto.array[0]))
-            unsigned int temp = pass_base(j, strlen(datos->alfabeto.array[0]));
-            size_t cont = 0;
-            while (temp > 0) {
-                int digito = temp % 10;
-                if (cont < i) {
-                    pass_temp[cont] = datos->alfabeto.array[0][digito];
+    for (size_t ind = 0; ind < datos->zips.total; ind++) {
+        bool encontro = false;
+        int64_t insercion = 0;
+        for (size_t i = 1; i <= (size_t)datos->limite; i++) {
+            char* pass_temp = calloc(i + 1, sizeof(char*));
+            // total de caracteres elevado a la i
+            for (size_t j = 0; j < pow(strlen(datos->alfabeto.array[0]), i); 
+            j++) {
+                int64_t base = strlen(datos->alfabeto.array[0]);
+                int64_t numero = j;
+                size_t cont = 0;
+                if (numero == 0) {
+                    for (size_t k = 0; k < i; k++) {
+                        pass_temp[k] = datos->alfabeto.array[0][0];
+                    }
+                } else {
+                    while (numero > 0) {
+                        int div = numero / base;
+                        int residuo = numero % base;
+                        pass_temp[cont] = datos->alfabeto.array[0][residuo];
+                        numero = div;
+                        cont++;
+                    }
                 }
-                temp /= 10;
-                cont++;
+                puts(pass_temp);
+                int64_t retorno = 
+                datos_abrir_archivo(datos->zips.array[ind], pass_temp);
+                if (retorno == 0 && insercion == 0) {
+                    arreglo_agregar(&datos->contrasenas, pass_temp);
+                    encontro = true;
+                    insercion++;
+                }
             }
-            sleep(1);
-            puts(pass_temp);
+            free(pass_temp);
         }
-        free(pass_temp);
+        if (encontro == false) {
+            arreglo_agregar(&datos->contrasenas, "\n");
+        }
     }
+    
 }
 
 
-bool datos_abrir_archivo(datos_t* datos, char* key) {
+bool datos_abrir_archivo(char* archivo, char* key) {
     int error = EXIT_SUCCESS;
-    size_t i = 0;
-    const char* archive = datos->zips.array[i];
+    const char* archive = archivo;
+    bool found_key = false;
     zip_t* arch = NULL;
 
 
@@ -123,8 +134,8 @@ bool datos_abrir_archivo(datos_t* datos, char* key) {
         fd = zip_fopen_index_encrypted(arch, count, 0, key);
         zip_fread(fd, txt, finfo->size);
         //printf("%s", txt);
-        if (strcmp(txt, "CI0117-23a")) {
-            return true;
+        if (txt[0] == 'C') {
+            found_key = true;
         }
         free(txt);
         // printf("%d\n",count);
@@ -136,13 +147,13 @@ bool datos_abrir_archivo(datos_t* datos, char* key) {
         fprintf(stderr, "Can't close zip archive `%s'/n", archive);
         return 1;
     }
-    return false;
+    return found_key;
 }
 
 void datos_impresion(datos_t* datos) {
     FILE* output = stdout;
     for (size_t i = 0; i < datos->zips.total; i++) {
-        fprintf(output, "%s" " %s", datos->zips.array[i]
+        fprintf(output, "%s %s", datos->zips.array[i]
         , datos->contrasenas.array[i]);
     }
 }

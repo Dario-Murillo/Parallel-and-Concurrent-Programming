@@ -64,17 +64,23 @@ int datos_analisis(datos_t* datos, FILE* input);
 
 /**
  * @brief codigo encargado de abrir un archivo zip encriptado
- * @param datos puntero de una variable tipo datos_t
+ * @param archivo dirrecion relativa del archivo a abrir
+ * @param clave posible clave para abrir el archivo
  * @return codigo de error
  * @details
  Adaptado de 
  https://www.geeksforgeeks.org/
  c-program-to-read-and-print-all-files-from-a-zip-file/
 */
-bool datos_abrir_archivo(datos_t* datos, char* key);
+bool datos_abrir_archivo(char* archivo, char* clave);
 
 
-void datos_generate_passw(datos_t* datos_t);
+/**
+ * @brief genera todas las posibles claves dado 
+ * un alfabeto y un maximo de la clave
+ * @param datos puntero de una variable tipo datos_t
+*/
+void datos_generate_passw(datos_t* datos);
 
 
 /**
