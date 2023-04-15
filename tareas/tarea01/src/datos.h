@@ -4,6 +4,7 @@
 
 #include <arr_dinamico.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 
 /**
@@ -70,7 +71,7 @@ int datos_analisis(datos_t* datos, FILE* input);
  https://www.geeksforgeeks.org/
  c-program-to-read-and-print-all-files-from-a-zip-file/
 */
-int datos_abrir_archivo(datos_t* datos, char* key);
+bool datos_abrir_archivo(datos_t* datos, char* key);
 
 
 void datos_generate_passw(datos_t* datos_t);
