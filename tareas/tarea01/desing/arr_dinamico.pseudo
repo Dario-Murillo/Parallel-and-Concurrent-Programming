@@ -1,18 +1,18 @@
-struct arr_dinamico {
+struct arr_dinamico:
     declare capacidad
     declare total
     declare array    
-}
+
 
 procedure aumentar_capacidad(array)
 
-procedure arreglo_init(array) {
+procedure arreglo_init(array):
     array
     capacidad := 0
     total := 0
-}
+end procedure
 
-procedure arreglo_destroy(array) {
+procedure arreglo_destroy(array):
     for i := 0 to total do
         free(array[i])
     end for  
@@ -20,26 +20,26 @@ procedure arreglo_destroy(array) {
     array := NULL
     capacidad := 0
     total := 0
-}
+end procedure
 
-procedure arreglo_agregar(array, elemento) {
+procedure arreglo_agregar(array, elemento):
     if total = capacidad do
         aumentar_capacidad(array)
     end if
     array[total++] = elemento
-}
+end procedure
 
-procedure aumentar_capacidad(array) {
+procedure aumentar_capacidad(array):
     nueva_capacidad := 2 * total
     nuevos_elementos := elemento * nueva_capacidad 
     if nueva_capacidad do
         capacidad = nueva_capacidad
         elemento = nuevos_elementos
     end
-}
+end procedure
 
-procedure arreglo_imprimir(array) {
+procedure arreglo_imprimir(array):
     for i := 0 to total do
         print array[i]
     end
-}
+end procedure

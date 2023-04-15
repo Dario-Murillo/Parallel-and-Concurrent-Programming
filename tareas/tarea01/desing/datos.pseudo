@@ -1,14 +1,10 @@
-struct datos {
+struct datos:
     declare alfabeto;
     declare limite;
     declare zips;
     declare contrasenas;
-    declare za;
-    declare *zf;
-    declare sb;
-}
 
-procedure datos_innit(datos) {
+procedure datos_innit(datos):
     arreglo_innit(alfabeto);
     arreglo_innit(zips);
     arreglo_innit(contrasenas);
@@ -16,16 +12,16 @@ procedure datos_innit(datos) {
     za := NULL;
     zf := NULL;
     limite := 0
-}
+end procedure
 
-procedure datos_destroy(datos) {
+procedure datos_destroy(datos):
     arreglo_destroy(alfabeto);
     arreglo_destroy(zips);
     arreglo_destroy(contrasenas);
     free(datos);
-}
+end procedure
 
-procedure datos_analisis(datos, input) {
+procedure datos_analisis(datos, input):
     if input != NULL do
         declare str[120]
         declare linea := 0
@@ -39,51 +35,78 @@ procedure datos_analisis(datos, input) {
             end
         } end while
     end if
-}
+end procedure
 
-procedure datos_generate_password(datos, password) {
-    if password < limite do
-        for i := 0  to alfabeto do
-            declare new_password[password + 1]
-            declare new_char[1]
-            new_char[0] = alfabeto[i]
-            new_password + new_char
-            datos_generate_password(datos, new_password)
-        end for
-    end if
-}
+procedure datos_generate_password(datos):
+    for ind := 0 to zip.total do 
+        declare encontro := false
+        declare insercion := 0
+        for i := 1 to limite do
+            declare pass_temp := i+1
+            for j := 0 to datos.alfabeto ^ i do
+                declare base := strlen(alfabeto)
+                declare numero := j
+                declare cont := 0
+                if numero := 0 do
+                    for k := 0 to i  do
+                        pass_temp[k] := alfabeto[0]
+                    end
+                else  
+                    while numero > 0 do
+                        declare div := numero / base
+                        declare residuo := numero % base
+                        pass_temp[cont] = alfabeto[residuo]
+                        numero := div
+                        cont++
+                        end
+                end
+                declare retorno := datos_abrir_archivo(zips[ind], pass_temp)
+                if retorno := && insercion := 0 do
+                    arreglo_agregar(contrasenas, pass_temp)
+                    encontro := true
+                    insercion++
+                end
+            end
+        end
+        if encontro := false do
+        arreglo_agregar(contrasenas, '\n')
+        end
+    end
+end procedure
 
-procedure datos_abrir_archivo(datos, key) {
+
+procedure datos_abrir_archivo(archive, key):
     declare error := 0
-    declare i := 0
     declare archive = zips.array[i]
-    declare password = key
-    declare buf[100]
+    declare found_key := false 
+    declare arch := NULL
     
-    if za = zip_open(archive, 0, error) != NULL do
+    if arch = zip_open(archive, 0, error) != NULL do
+    
+    else 
+        error := 1
     end 
 
-    for i:= 0 to total_of_entries do
-        if zip_stat_index(za, i, 0, sb) == 0 do
-            zf := zip_fopen_index_encrypted(za, i, 0, password);
-            if (zf) do
-                zip_fread(zf, buf, 100);
-                
-                if  buf[0] == 'C' do 
-                    arreglo_agregar
-                    (contrasenas, password);
-                    
-                end if
-            zip_fclose(zf)
-            end if
-        end if
-    end for
+    declare finfo
+    zip_stat_init(finfo)
+    declare fd := NULL
+    declare txt := NULL
+    declare count := 0
+    while zip_stat_index(arch, count, 0 finfo) do
+        txt := finfo.size
+        fd = zip_fopen_index_encrypted(arch, count, 0, key);
+        zip_fread(fd, txt, finfo->size);
+        if txt := 'C' do
+            found_key := true
+        end
+        count++
+    end
     zip_close(za)
-}
+end procedure
 
-procedure datos_imprimir(datos) {
+procedure datos_imprimir(datos):
     declare output := stdout 
     for i :=0 to zips total do
         print zips[i] contrasenas[i]
     end for
-}
+end procedure
