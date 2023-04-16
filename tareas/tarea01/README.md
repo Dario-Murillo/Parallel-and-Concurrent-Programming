@@ -33,3 +33,5 @@ bin/tarea01 < test/input004.txt
 ## Creditos
 
 Dario Murillo Chaverri @dario.murillo@ucr.ac.cr
+
+[Link al archivo README de la carpeta desing](desing/README.md)
