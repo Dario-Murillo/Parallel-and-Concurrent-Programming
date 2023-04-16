@@ -1,0 +1,3 @@
+![Diagrama UML](/desing/zippas-serial.png)
+
+La imagen anterior hace referencia a un diagrama tipo UML, el cual trata de ilustrar las estructuras de datos con sus respectiva subrutinas atributos y sus interacciones entre ellas. Los cuadros mas grandes, representan las dos estructuras de datos utilizadas para el manejo de este programa, de cada una de estas cajas sale una linea vertical la cual representa la secuencia de ejecuccion de las tareas asi como lineas que entrelazan varias subrutinas entre ellas, con un mensaje indicando cual es su relacion.
