@@ -71,7 +71,7 @@ void datos_generate_passw(datos_t* datos) {
         for (size_t i = 1; i <= (size_t)datos->limite; i++) {
             char* pass_temp = calloc(i + 1, sizeof(char*));
             // total de caracteres elevado a la i
-            for (size_t j = 0; j < pow(strlen(datos->alfabeto.array[0]), i); 
+            for (size_t j = 0; j < pow(strlen(datos->alfabeto.array[0]), i);
             j++) {
                 int64_t base = strlen(datos->alfabeto.array[0]);
                 int64_t numero = j;
@@ -90,9 +90,9 @@ void datos_generate_passw(datos_t* datos) {
                     }
                 }
                 puts(pass_temp);
-                int64_t retorno = 
+                bool retorno = 
                 datos_abrir_archivo(datos->zips.array[ind], pass_temp);
-                if (retorno == 0 && insercion == 0) {
+                if (retorno == true && insercion == 0) {
                     arreglo_agregar(&datos->contrasenas, pass_temp);
                     encontro = true;
                     insercion++;
@@ -103,8 +103,7 @@ void datos_generate_passw(datos_t* datos) {
         if (encontro == false) {
             arreglo_agregar(&datos->contrasenas, "\n");
         }
-    }
-    
+    }   
 }
 
 
@@ -123,15 +122,15 @@ bool datos_abrir_archivo(char* archivo, char* key) {
     struct zip_stat* finfo = NULL;
 
 
-    finfo = calloc(256, sizeof(int));
+    finfo = calloc(500, sizeof(int));
     zip_stat_init(finfo);
     zip_file_t* fd = NULL;
     char* txt = NULL;
     int count = 0;
 
     while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
-        txt = calloc(finfo->size, sizeof(char));
-        fd = zip_fopen_index_encrypted(arch, count, 0, key);
+        txt = calloc(finfo->size + 1, sizeof(char*)); // fuga de memoria aqui
+        fd = zip_fopen_index_encrypted(arch, count, 0, key); // posible error de inicializacion
         zip_fread(fd, txt, finfo->size);
         //printf("%s", txt);
         if (txt[0] == 'C') {
@@ -153,7 +152,7 @@ bool datos_abrir_archivo(char* archivo, char* key) {
 void datos_impresion(datos_t* datos) {
     FILE* output = stdout;
     for (size_t i = 0; i < datos->zips.total; i++) {
-        fprintf(output, "%s %s", datos->zips.array[i]
+        fprintf(output, "%s %s\n", datos->zips.array[i]
         , datos->contrasenas.array[i]);
     }
 }
