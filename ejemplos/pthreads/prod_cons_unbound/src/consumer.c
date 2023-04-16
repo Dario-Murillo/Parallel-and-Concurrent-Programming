@@ -1,7 +1,8 @@
 // Copyright 2021 Jeisson Hidalgo-Cespedes <jeisson.hidalgo@ucr.ac.cr> CC-BY-4
 
-#include <stdbool.h>
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "common.h"
 #include "consumer.h"

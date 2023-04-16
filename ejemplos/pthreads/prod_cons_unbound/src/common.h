@@ -3,10 +3,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <semaphore.h>
+
 #include <stdlib.h>
+#include <semaphore.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include "queue.h"
 
 enum {
@@ -31,7 +31,6 @@ typedef struct simulation {
   __useconds_t producer_max_delay;
   __useconds_t consumer_min_delay;
   __useconds_t consumer_max_delay;
-
   queue_t queue;
 
   pthread_mutex_t can_access_next_unit;  // mutex de la unidades
@@ -40,7 +39,6 @@ typedef struct simulation {
   pthread_mutex_t can_access_consumed_count;  // mutex de los consumidores
   size_t consumed_count;  // cantidad de elementos consumidos
 } simulation_t;
-
 
 /**
  * @brief genera un numero pseudoaleatorio

@@ -1,6 +1,7 @@
 // Copyright 2021 Jeisson Hidalgo-Cespedes <jeisson.hidalgo@ucr.ac.cr> CC-BY-4
 
-#include <stdio.h>
+#define _DEFAULT_SOURCE
+
 #include <stdlib.h>
 #include "common.h"
 

@@ -1,9 +1,10 @@
 // Copyright 2021 Jeisson Hidalgo-Cespedes <jeisson.hidalgo@ucr.ac.cr> CC-BY-4
 
-#include <stdio.h>
+#define _XOPEN_SOURCE 500
 
-#include "common.h"
+#include <stdio.h>
 #include "producer.h"
+#include <common.h>
 
 void* produce(void* data) {
   // const private_data_t* private_data = (private_data_t*)data;
