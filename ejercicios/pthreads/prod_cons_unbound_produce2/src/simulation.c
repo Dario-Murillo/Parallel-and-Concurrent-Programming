@@ -59,6 +59,7 @@ simulation_t* simulation_create() {
     queue_init(&simulation->queue);
     simulation->next_unit = 0;
     sem_init(&simulation->can_consume, /* pshared */ 0, /* value */ 0);
+    sem_init(&simulation->can_produce, /* pshared */ 0, /* value */ 1);
     pthread_mutex_init(&simulation->can_access_consumed_count, /* attr */ NULL);
     simulation->consumed_count = 0;
   }
@@ -69,7 +70,7 @@ void simulation_destroy(simulation_t* simulation) {
   assert(simulation);
   pthread_mutex_destroy(&simulation->can_access_consumed_count);
   sem_destroy(&simulation->can_consume);
-
+  sem_destroy(&simulation->can_produce);
   queue_destroy(&simulation->queue);
   free(simulation);
 }

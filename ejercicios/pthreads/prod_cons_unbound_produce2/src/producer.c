@@ -13,14 +13,11 @@ void* produce(void* data) {
   while (true) {
 
     size_t my_unit = 0;
-    if (sem_trywait (&simulation->can_produce));
-      if (simulation->next_unit < simulation->unit_count) {
+    if (sem_trywait (&simulation->can_produce)) {
         my_unit = ++simulation->next_unit;
     } else {
-
       break;
     }
-
 
     usleep(1000 * random_between(simulation->producer_min_delay
       , simulation->producer_max_delay));
@@ -29,6 +26,9 @@ void* produce(void* data) {
 
     // signal(can_consume)
     sem_post(&simulation->can_consume);
+    if (simulation->next_unit < simulation->unit_count) {
+        sem_post(&simulation->can_produce);
+    }
   }
 
   return NULL;
