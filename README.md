@@ -38,11 +38,11 @@ Glosario
 
 17. Candado de lectura y escritura
 
-18. Descomposicion
+18. Descomposicion: Identificar las tareas que se pueden realizar independientemente para asi, poder realizarlas de forma paralela, se dividen unidades de trabaje independientes e indivisibles. Existen multiples tecnicas para descomponer, como la descomposicion recursiva, de datos, exploratoria y especulativa 
 
-19. Mapeo
+19. Mapeo: Es un concepto directamente asociado a la descomposicion, ya que trata de asignar a hilos las tareas anteriormente identificadas en el metodo de descomposicion. Los mapeos pueden clasificarse en mapeos estaticos y dinamicos
 
-20. Incremento de velocidad
+20. Incremento de velocidad: Una comparacion entre cuando durao un proceso antes y cuanto dura despues de llevar a cabo una optimizacion
 
 21. Comunicacion punto a punto entre procesos
 
