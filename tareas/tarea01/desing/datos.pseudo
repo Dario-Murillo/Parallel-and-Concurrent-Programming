@@ -4,20 +4,20 @@ struct datos:
     declare zips;
     declare contrasenas;
 
-procedure datos_innit(datos):
-    arreglo_innit(alfabeto);
-    arreglo_innit(zips);
-    arreglo_innit(contrasenas);
-    zip_stat_init(sb);
-    za := NULL;
-    zf := NULL;
+procedure datos_innit(datos)
+    arreglo_innit(alfabeto)
+    arreglo_innit(zips)
+    arreglo_innit(contrasenas)
+    zip_stat_init(sb)
+    za := NULL
+    zf := NULL
     limite := 0
 end procedure
 
-procedure datos_destroy(datos):
-    arreglo_destroy(alfabeto);
-    arreglo_destroy(zips);
-    arreglo_destroy(contrasenas);
+procedure datos_destroy(datos)
+    arreglo_destroy(alfabeto)
+    arreglo_destroy(zips)
+    arreglo_destroy(contrasenas)
     free(datos);
 end procedure
 
@@ -94,7 +94,7 @@ procedure datos_abrir_archivo(archive, key):
     declare count := 0
     while zip_stat_index(arch, count, 0 finfo) do
         txt := finfo.size
-        fd = zip_fopen_index_encrypted(arch, count, 0, key);
+        fd = zip_fopen_index_encrypted(arch, count, 0, key)
         zip_fread(fd, txt, finfo->size);
         if txt := 'C' do
             found_key := true

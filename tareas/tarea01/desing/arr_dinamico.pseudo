@@ -3,7 +3,6 @@ struct arr_dinamico:
     declare total
     declare array    
 
-
 procedure aumentar_capacidad(array)
 
 procedure arreglo_init(array):
