@@ -82,28 +82,32 @@ void datos_generate_passw(datos_t* datos) {
                     }
                 } else {
                     while (numero > 0) {
-                        int div = numero / base;
-                        int residuo = numero % base;
+                        int64_t div = numero / base;
+                        int64_t residuo = numero % base;
                         pass_temp[cont] = datos->alfabeto.array[0][residuo];
                         numero = div;
                         cont++;
                     }
                 }
                 puts(pass_temp);
-                bool retorno = 
+                bool retorno =
                 datos_abrir_archivo(datos->zips.array[ind], pass_temp);
                 if (retorno == true && insercion == 0) {
                     arreglo_agregar(&datos->contrasenas, pass_temp);
                     encontro = true;
                     insercion++;
+                    break;
                 }
             }
             free(pass_temp);
+            if (encontro == true) {
+                break;
+            }
         }
         if (encontro == false) {
             arreglo_agregar(&datos->contrasenas, "\n");
         }
-    }   
+    }
 }
 
 
@@ -129,12 +133,16 @@ bool datos_abrir_archivo(char* archivo, char* key) {
     int count = 0;
 
     while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
-        txt = calloc(finfo->size + 1, sizeof(char*)); // fuga de memoria aqui
-        fd = zip_fopen_index_encrypted(arch, count, 0, key); // posible error de inicializacion
-        zip_fread(fd, txt, finfo->size);
-        //printf("%s", txt);
-        if (txt[0] == 'C') {
-            found_key = true;
+        // fuga de memoria aqui
+        txt = calloc(finfo->size + 1, sizeof(char*));
+         // posible error de inicializacion
+        fd = zip_fopen_index_encrypted(arch, count, 0, key);
+        if (fd != NULL) {
+            zip_fread(fd, txt, finfo->size);
+            // printf("%s", txt);
+            if (txt[0] == 'C') {
+                found_key = true;
+            }
         }
         free(txt);
         // printf("%d\n",count);
