@@ -162,6 +162,10 @@ void datos_impresion(datos_t* datos) {
     for (size_t i = 0; i < datos->zips.total; i++) {
         fprintf(output, "%s %s\n", datos->zips.array[i]
         , datos->contrasenas.array[i]);
+        if (datos->contrasenas.array[i]) {
+          fprintf(output, "%s %s\n", datos->zips.array[i]
+          , datos->contrasenas.array[i]);
+        }
     }
 }
 
