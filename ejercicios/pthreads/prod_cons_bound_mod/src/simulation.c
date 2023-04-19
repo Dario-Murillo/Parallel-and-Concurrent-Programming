@@ -141,6 +141,6 @@ int create_threads(simulation_t* simulation) {
     return error;
 }
 
-useconds_t random_between(useconds_t min, useconds_t max) {
+__useconds_t random_between(__useconds_t min, __useconds_t max) {
     return min + (max > min ? (random() % (max - min)) : 0);
 }
