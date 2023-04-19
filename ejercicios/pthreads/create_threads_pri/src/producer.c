@@ -9,8 +9,8 @@
 
 void* produce(void* data) {
   // const private_data_t* private_data = (private_data_t*)data;
-  privado_t* privado = (privado_t*)data;
-  simulation_t* simulation = privado->shared;
+  private_data_t* private_data = (private_data_t*)data;
+  simulation_t* simulation = private_data->shared;
 
   while (true) {
     // declare my_unit := 0
@@ -32,7 +32,7 @@ void* produce(void* data) {
     usleep(1000 * random_between(simulation->producer_min_delay
       , simulation->producer_max_delay));
     queue_enqueue(&simulation->queue, my_unit);
-    printf("Producer %zu produced %zu\n", privado->thread_number, my_unit);
+    printf("Producer %zu produced %zu\n", private_data->thread_number, my_unit);
 
     // signal(can_consume)
     sem_post(&simulation->can_consume);

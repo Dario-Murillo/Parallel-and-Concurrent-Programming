@@ -8,8 +8,8 @@
 #include "consumer.h"
 
 void* consume(void* data) {
-  privado_t* privado = (privado_t*)data;
-  simulation_t* simulation = privado->shared;
+  private_data_t* private_data = (private_data_t*)data;
+  simulation_t* simulation = private_data->shared;
 
   while (true) {
     // lock(can_access_consumed_count)
@@ -31,7 +31,8 @@ void* consume(void* data) {
 
     size_t value = 0;
     queue_dequeue(&simulation->queue, &value);
-    printf("\t Consumer %zu consumed %zu\n",privado->thread_number, value);
+    printf("\t Consumer %zu consumed %zu\n", private_data->thread_number,
+    value);
     usleep(1000 * random_between(simulation->consumer_min_delay
       , simulation->consumer_max_delay));
   }

@@ -40,12 +40,12 @@ typedef struct simulation {
   size_t consumed_count;  // cantidad de elementos consumidos
 } simulation_t;
 
-typedef struct privado {
+typedef struct private_data {
   size_t thread_number;
   size_t thread_count;
   pthread_t thread;
   simulation_t* shared;
-} privado_t;
+} private_data_t;
 
 /**
  * @brief genera un numero pseudoaleatorio

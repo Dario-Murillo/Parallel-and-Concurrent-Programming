@@ -36,7 +36,8 @@ int create_consumers_producers(simulation_t* simulation);
  * @param data la informacion que se va a mandar con los hilos
  * @return devuelve un arreglo con la memoria privada
 */
-privado_t* create_threads(simulation_t* simulation, size_t count, void*(*subroutine)(void*));
+private_data_t* create_threads(simulation_t* simulation,
+size_t count, void*(*subroutine)(void*));
 
 /**
  * @brief destruye los hilos y la memoria privada alojada
@@ -44,7 +45,7 @@ privado_t* create_threads(simulation_t* simulation, size_t count, void*(*subrout
  * @param threads puntero a la memoria privada
  * @return codigo de error 0 en caso exitoso
 */
-int join_threads(size_t count, privado_t* threads);
+int join_threads(size_t count, private_data_t* threads);
 
 simulation_t* simulation_create() {
   simulation_t* simulation = (simulation_t*) calloc(1, sizeof(simulation_t));
@@ -134,32 +135,34 @@ int analyze_arguments(simulation_t* simulation, int argc, char* argv[]) {
   return error;
 }
 
-privado_t* create_threads(simulation_t* simulation, size_t count, void*(*subroutine)(void*)) {
-
-  privado_t* info = (privado_t*) calloc(count, sizeof(privado_t));
-
-  if (info) {
+private_data_t* create_threads(simulation_t* simulation, size_t count,
+void*(*subroutine)(void*)) {
+  private_data_t* private_data =
+  (private_data_t*) calloc(count, sizeof(private_data_t));
+  if (private_data) {
     for (size_t index = 0; index < count; ++index) {
-      info[index].thread_number = index;
-      info[index].thread_count = count;
-      info[index].shared = simulation;
-      if (pthread_create(&info[index].thread, /*attr*/ NULL, subroutine, &info[index])
-         == EXIT_SUCCESS) {
+      private_data[index].thread_number = index;
+      private_data[index].thread_count = count;
+      private_data[index].shared = simulation;
+      if (pthread_create(&private_data[index].thread, /*attr*/ NULL,
+      subroutine, &private_data[index]) == EXIT_SUCCESS) {
       } else {
-        
+        fprintf(stderr, "error: could not create thread %zu\n", index);
+        join_threads(index, private_data);
+        return NULL;
       }
     }
   }
-  return info;
+  return private_data;
 }
 
-int join_threads(size_t count, privado_t* privado) {
+int join_threads(size_t count, private_data_t* private_data) {
   int error = EXIT_SUCCESS;
   for (size_t index = 0; index < count; ++index) {
     // todo: sum could not be right
-    error += pthread_join(privado[index].thread, /*value_ptr*/ NULL);
+    error += pthread_join(private_data[index].thread, /*value_ptr*/ NULL);
   }
-  free(privado);
+  free(private_data);
   return error;
 }
 
@@ -167,12 +170,14 @@ int create_consumers_producers(simulation_t* simulation) {
   assert(simulation);
   int error = EXIT_SUCCESS;
 
-  privado_t* producers = create_threads(simulation, simulation->producer_count, produce);
-  privado_t* consumers = create_threads(simulation, simulation->consumer_count, consume);
+  private_data_t* producers = create_threads(simulation,
+  simulation->producer_count, produce);
+  private_data_t* consumers = create_threads(simulation,
+  simulation->consumer_count, consume);
 
   if (producers && consumers) {
-    join_threads(simulation->producer_count, producers);
-    join_threads(simulation->consumer_count, consumers);
+    join_threads(producers->thread_count, producers);
+    join_threads(consumers->thread_count, consumers);
   } else {
     fprintf(stderr, "error: could not create threads\n");
     error = ERR_CREATE_THREAD;
