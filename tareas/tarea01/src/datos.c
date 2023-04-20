@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 
-datos_t* datos_create(void) {
+datos_t* datos_create() {
   datos_t* datos = (datos_t*)
   malloc(1 * sizeof(datos_t));
   return datos;
@@ -108,7 +108,7 @@ void datos_generate_passw(datos_t* datos) {
                       cont++;
                   }
               }
-              puts(pass_temp);
+
               bool retorno =
               datos_abrir_archivo(datos->zips.array[ind], pass_temp);
               if (retorno == true && insercion == 0) {

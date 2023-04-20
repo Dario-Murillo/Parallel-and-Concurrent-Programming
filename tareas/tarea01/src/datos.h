@@ -27,9 +27,6 @@
  * contrasenas guarda las contrasenas que 
  * desencriptan los zips
  * 
- * @var datos:za,zf,sb
- * variables encargadas de la apertura y lectura
- * de archivos zip
 */
 typedef struct datos {
     arr_dinamico_t alfabeto;
@@ -40,10 +37,9 @@ typedef struct datos {
 
 /**
  * @brief reserva memoria para crear una variable de tipo datos_t
- * @param void
  * @return variable de tipo datos_t
 */
-datos_t* datos_create(void);
+datos_t* datos_create();
 
 /**
  * @brief inicia los miembros del struct datos
@@ -79,6 +75,7 @@ bool datos_abrir_archivo(char* archivo, char* clave);
  * @brief genera todas las posibles claves dado 
  * un alfabeto y un maximo de la clave
  * @param datos puntero de una variable tipo datos_t
+ * @return void
 */
 void datos_generate_passw(datos_t* datos);
 
@@ -93,6 +90,7 @@ void datos_destroy(datos_t* datos);
 /**
  * @brief imprime las dirreciones de los zips y sus contrasenas
  * @param datos puntero de una variable tipo datos_t
+ * @return void
  * 
 */
 void datos_impresion(datos_t* datos);
