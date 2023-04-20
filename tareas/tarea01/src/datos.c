@@ -152,8 +152,7 @@ bool datos_abrir_archivo(char* archivo, char* key) {
   int count = 0;
 
   while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
-      // fuga de memoria aqui
-      txt = calloc(finfo->size + 1, sizeof(char*));
+      txt = calloc(finfo->size + 1, sizeof(char));
       // posible error de inicializacion
       fd = zip_fopen_index_encrypted(arch, count, 0, key);
       if (fd != NULL) {
@@ -162,9 +161,9 @@ bool datos_abrir_archivo(char* archivo, char* key) {
           if (txt[0] == 'C') {
               found_key = true;
           }
+          zip_fclose(fd);
       }
       free(txt);
-      // printf("%d\n",count);
       count++;
   }
 
