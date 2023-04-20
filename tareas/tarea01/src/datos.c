@@ -14,7 +14,7 @@
 
 datos_t* datos_create() {
   datos_t* datos = (datos_t*)
-  malloc(1 * sizeof(datos_t));
+  calloc(1 , sizeof(datos_t));
   return datos;
 }
 
@@ -130,14 +130,13 @@ void datos_generate_passw(datos_t* datos) {
 }
 
 
-bool datos_abrir_archivo(char* archivo, char* key) {
+bool datos_abrir_archivo(const char* archivo, const char* key) {
   int error = EXIT_SUCCESS;
-  const char* archive = archivo;
   bool found_key = false;
   zip_t* arch = NULL;
 
 
-  if ((arch = zip_open(archive, 0, &error)) != NULL) {
+  if ((arch = zip_open(archivo, 0, &error)) != NULL) {
   } else {
       error = EXIT_FAILURE;
   }
@@ -145,11 +144,11 @@ bool datos_abrir_archivo(char* archivo, char* key) {
   struct zip_stat* finfo = NULL;
 
 
-  finfo = calloc(500, sizeof(int));
+  finfo = calloc(256, sizeof(int));
   zip_stat_init(finfo);
   zip_file_t* fd = NULL;
   char* txt = NULL;
-  int count = 0;
+  int64_t count = 0;
 
   while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
       txt = calloc(finfo->size + 1, sizeof(char));
@@ -157,11 +156,9 @@ bool datos_abrir_archivo(char* archivo, char* key) {
       fd = zip_fopen_index_encrypted(arch, count, 0, key);
       if (fd != NULL) {
           zip_fread(fd, txt, finfo->size);
-          // printf("%s", txt);
           if (txt[0] == 'C') {
               found_key = true;
           }
-          zip_fclose(fd);
       }
       free(txt);
       count++;
@@ -169,7 +166,7 @@ bool datos_abrir_archivo(char* archivo, char* key) {
 
   free(finfo);
   if (zip_close(arch) == -1) {
-      fprintf(stderr, "Can't close zip archive `%s'/n", archive);
+      fprintf(stderr, "Can't close zip archive `%s'/n", archivo);
       return 1;
   }
   return found_key;

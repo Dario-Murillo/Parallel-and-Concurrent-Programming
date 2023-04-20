@@ -17,7 +17,7 @@ int aumentar_capacidad(arr_dinamico_t* arr);
 int arreglo_innit(arr_dinamico_t* arr) {
     int error = EXIT_SUCCESS;
     assert(arr);
-    arr->array = malloc(1* sizeof(char*));
+    arr->array = calloc(1 , sizeof(char*));
     arr->capacidad = 0;
     arr->total = 0;
     return error;
@@ -41,7 +41,7 @@ int arreglo_agregar(arr_dinamico_t* arr, const char* elemento) {
     if (arr->total == arr->capacidad) {
         aumentar_capacidad(arr);
     }
-    char* aux = malloc(strlen(elemento) + 1);
+    char* aux = calloc(strlen(elemento) + 1, sizeof(char*));
     strcpy(aux, elemento);
     arr->array[arr->total++] = aux;
     return EXIT_SUCCESS;

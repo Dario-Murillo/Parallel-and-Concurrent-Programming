@@ -68,7 +68,7 @@ int datos_analisis(datos_t* datos, FILE* input);
  https://www.geeksforgeeks.org/
  c-program-to-read-and-print-all-files-from-a-zip-file/
 */
-bool datos_abrir_archivo(char* archivo, char* clave);
+bool datos_abrir_archivo(const char* archivo, const char* clave);
 
 
 /**
