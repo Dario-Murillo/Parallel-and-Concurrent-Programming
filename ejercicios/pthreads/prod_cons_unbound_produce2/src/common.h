@@ -36,6 +36,7 @@ typedef struct simulation {
   size_t next_unit;
   sem_t can_produce;
   sem_t can_consume;  // semaforo para consumir
+  sem_t can_acces_unit;
   pthread_mutex_t can_access_consumed_count;  // mutex de los consumidores
   size_t consumed_count;  // cantidad de elementos consumidos
 } simulation_t;
