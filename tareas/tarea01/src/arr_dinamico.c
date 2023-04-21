@@ -51,7 +51,7 @@ int aumentar_capacidad(arr_dinamico_t* arr) {
     int error = EXIT_SUCCESS;
     size_t nueva_capacidad = 2 * (arr->total ? arr->total : 1);
     char** nuevos_elementos =
-    realloc(arr->array, nueva_capacidad * sizeof(char**));
+    realloc(arr->array, nueva_capacidad * sizeof(char*));
     if (nueva_capacidad) {
         arr->capacidad = nueva_capacidad;
         arr->array = nuevos_elementos;
