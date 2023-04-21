@@ -177,8 +177,7 @@ void datos_impresion(datos_t* datos) {
   char* linea = "\n";
   for (size_t i = 0; i < datos->zips.total; i++) {
       if (strcmp(datos->contrasenas.array[i], linea) == 0) {
-        fprintf(output, "%s %s", datos->zips.array[i]
-        , datos->contrasenas.array[i]);
+        fprintf(output, "%s\n", datos->zips.array[i]);
       } else {
         fprintf(output, "%s %s\n", datos->zips.array[i]
         , datos->contrasenas.array[i]);
