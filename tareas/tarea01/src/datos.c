@@ -136,11 +136,8 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
   zip_t* arch = NULL;
 
 
-  if ((arch = zip_open(archivo, 0, &error)) != NULL) {
-  } else {
-      error = EXIT_FAILURE;
-  }
-
+  arch = zip_open(archivo, 0, &error);
+ 
   struct zip_stat* finfo = NULL;
 
 
@@ -153,22 +150,23 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
   while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
       txt = calloc(finfo->size + 1, sizeof(char));
       // posible error de inicializacion
-      fd = zip_fopen_index_encrypted(arch, count, 0, key);
+      fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
       if (fd != NULL) {
           zip_fread(fd, txt, finfo->size);
           if (txt[0] == 'C') {
               found_key = true;
           }
+          
+          zip_fclose(fd);
       }
       free(txt);
       count++;
   }
 
   free(finfo);
-  if (zip_close(arch) == -1) {
-      fprintf(stderr, "Can't close zip archive `%s'/n", archivo);
-      return 1;
-  }
+  zip_close(arch); 
+      
+  
   return found_key;
 }
 
