@@ -63,8 +63,10 @@ int datos_analisis(datos_t* datos, FILE* input) {
               }
           } else if (linea >= 3) {
               str[strcspn(str, "\n")] = 0;
-              if (fopen(str, "r") != NULL) {
+              FILE* fp;
+              if ((fp = fopen(str, "r")) != NULL) {
                 arreglo_agregar(&datos->zips, str);
+                fclose(fp);
               } else {
                 fprintf(stderr, "Dirrecion de archivo invalida\n");
                 error = EXIT_FAILURE;
@@ -108,7 +110,7 @@ void datos_generate_passw(datos_t* datos) {
                       cont++;
                   }
               }
-              datos->alfabeto.array[0][i] = "\0";
+              pass_temp[i] = '\0';  // agregar terminacion nula a la clave
               bool retorno =
               datos_abrir_archivo(datos->zips.array[ind], pass_temp);
               if (retorno == true && insercion == 0) {
@@ -134,10 +136,8 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
   int error = EXIT_SUCCESS;
   bool found_key = false;
   zip_t* arch = NULL;
-
-
   arch = zip_open(archivo, 0, &error);
- 
+
   struct zip_stat* finfo = NULL;
 
 
@@ -148,7 +148,7 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
   int64_t count = 0;
 
   while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
-      txt = calloc(finfo->size + 1, sizeof(char));
+      txt = calloc(finfo->size + 1, sizeof(char*));
       // posible error de inicializacion
       fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
       if (fd != NULL) {
@@ -156,7 +156,6 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
           if (txt[0] == 'C') {
               found_key = true;
           }
-          
           zip_fclose(fd);
       }
       free(txt);
@@ -164,9 +163,7 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
   }
 
   free(finfo);
-  zip_close(arch); 
-      
-  
+  zip_close(arch);
   return found_key;
 }
 
