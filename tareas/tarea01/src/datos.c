@@ -108,7 +108,7 @@ void datos_generate_passw(datos_t* datos) {
                       cont++;
                   }
               }
-
+              datos->alfabeto.array[0][i] = "\0";
               bool retorno =
               datos_abrir_archivo(datos->zips.array[ind], pass_temp);
               if (retorno == true && insercion == 0) {
