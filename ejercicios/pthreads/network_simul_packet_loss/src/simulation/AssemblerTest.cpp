@@ -1,7 +1,9 @@
+// Copyright 2022 <Dario Murillo Chaverr C15406>
 #include "AssemblerTest.hpp"
 #include "Util.hpp"
+#include "iostream"
 
-AssemblerTest::AssemblerTest(float packagaProbability, 
+AssemblerTest::AssemblerTest(float packagaProbability,
   size_t consumerCount)
   : packagaProbability(packagaProbability) , consumerCount(consumerCount) {
 }
@@ -17,8 +19,10 @@ void AssemblerTest::consume(NetworkMessage data) {
   if (number < this->packagaProbability) {
     (void) data;
   } else {
-    data.target = 1 + Util::random(0
-    , static_cast<int>(this->consumerCount));
+    can_change_target.lock();
+    data.target = Util::random(0
+    , static_cast<int>(this->consumerCount + 1)); ;
     produce(data);
+    can_change_target.unlock();
   }
 }

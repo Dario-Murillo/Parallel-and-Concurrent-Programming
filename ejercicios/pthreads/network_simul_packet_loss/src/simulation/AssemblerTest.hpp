@@ -1,3 +1,4 @@
+// Copyright 2022 <Dario Murillo Chaverr C15406>
 #ifndef ASSEMBLERTEST_HPP
 #define ASSEMBLERTEST_HPP
 
@@ -9,10 +10,11 @@
 class AssemblerTest: public Assembler<NetworkMessage, NetworkMessage> {
     DISABLE_COPY(AssemblerTest);
 
-public:
+ public:
     float packagaProbability = 0;
     size_t consumerCount = 0;
-public:
+    std::mutex can_change_target;
+ public:
     explicit AssemblerTest(float packagaProbability, size_t consumerCount = 0);
     int run() override;
     void consume(NetworkMessage data) override;
