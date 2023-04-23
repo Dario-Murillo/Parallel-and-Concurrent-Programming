@@ -32,7 +32,8 @@ NetworkMessage ProducerTest::createMessage(size_t index) const {
   // Source is always 1: this producer
   const uint16_t source = 1;
   // Target is selected by random
-  const uint16_t target = 1 + Util::random(0, static_cast<int>(this->consumerCount+1));
+  const uint16_t target = 1 + Util::random(0, 
+  static_cast<int>(this->consumerCount+1));
   // IMPORTANT: This simulation uses sleep() to mimics the process of
   // producing a message. However, you must NEVER use sleep() for real projects
   Util::sleepFor(this->productorDelay);
