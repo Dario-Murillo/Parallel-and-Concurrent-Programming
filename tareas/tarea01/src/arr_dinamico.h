@@ -27,12 +27,6 @@ typedef struct arr_dinamico {
 } arr_dinamico_t;
 
 
-/**
- * @brief imprime el arreglo
- * @param arr  puntero a la variable de tipo arr_dinamico_t
- * @return void 
-*/
-void arreglo_imprimir(arr_dinamico_t* arr);
 
 /**
  * @brief inicializa los valores del struct

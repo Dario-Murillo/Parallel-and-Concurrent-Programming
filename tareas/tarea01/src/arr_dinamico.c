@@ -61,10 +61,3 @@ int aumentar_capacidad(arr_dinamico_t* arr) {
     return error;
 }
 
-
-void arreglo_imprimir(arr_dinamico_t* arr) {
-    for (size_t i = 0; i < arr->total; i++) {
-        printf("%s", arr->array[i]);
-    }
-}
-
