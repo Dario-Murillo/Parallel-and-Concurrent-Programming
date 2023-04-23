@@ -62,7 +62,7 @@ int datos_analisis(datos_t* datos, FILE* input);
  * @brief codigo encargado de abrir un archivo zip encriptado
  * @param archivo dirrecion relativa del archivo a abrir
  * @param clave posible clave para abrir el archivo
- * @return codigo de error
+ * @return booleano que indica si abrio el archivo o no
  * @details
  Adaptado de 
  https://www.geeksforgeeks.org/
