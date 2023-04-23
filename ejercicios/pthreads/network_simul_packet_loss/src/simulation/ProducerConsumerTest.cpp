@@ -49,15 +49,20 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
     this->consumers[index]->createOwnQueue();
   }
   this->assembler = new AssemblerTest(this->packagaProbability, this->consumerCount);
+  this->assembler->createOwnQueue();
 
   // Communicate simulation objects
   // Producer push network messages to the dispatcher queue
   this->producer->setProducingQueue(this->dispatcher->getConsumingQueue());
+  this->assembler->setProducingQueue(this->dispatcher->getConsumingQueue());
   // Dispatcher delivers to each consumer, and they should be registered
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->dispatcher->registerRedirect(index + 1
       , this->consumers[index]->getConsumingQueue());
   }
+
+  this->dispatcher->registerRedirect(this->consumerCount + 1,
+  this->assembler->getConsumingQueue());
 
   // Start the simulation
   this->producer->startThread();
@@ -65,6 +70,7 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->startThread();
   }
+  this->assembler->startThread();
 
   // Wait for objets to finish the simulation
   this->producer->waitToFinish();
@@ -72,6 +78,7 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->waitToFinish();
   }
+  this->assembler->waitToFinish();
 
   // Simulation finished
   return EXIT_SUCCESS;

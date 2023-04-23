@@ -6,9 +6,9 @@
 #define PRODUCERCONSUMERTEST_HPP
 
 #include <vector>
-
-#include "common.hpp"
 #include <cstddef>
+#include "common.hpp"
+
 // Forward declarations
 class ConsumerTest;
 class DispatcherTest;
