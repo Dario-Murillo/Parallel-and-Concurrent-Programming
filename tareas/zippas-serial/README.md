@@ -28,7 +28,7 @@ gcc -Wall -Wextra -g -Isrc build/arr_dinamico.o build/datos.o build/main.o -o bi
 
 Una vez compilado se puede correr con un comando como este: <br>
 
-bin/tarea01 < test/input004.txt
+bin/zippas-serial < test/input004.txt
 
 ## Creditos
 
