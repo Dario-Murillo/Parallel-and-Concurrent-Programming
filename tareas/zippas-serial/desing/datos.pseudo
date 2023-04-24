@@ -55,7 +55,7 @@ procedure datos_generate_password(datos):
                     while numero > 0 do
                         declare div := numero / base
                         declare residuo := numero % base
-                        pass_temp[cont] = alfabeto[residuo]
+                        pass_temp[cont] := alfabeto[residuo]
                         numero := div
                         cont++
                         end
