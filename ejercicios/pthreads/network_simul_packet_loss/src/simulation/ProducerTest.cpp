@@ -20,12 +20,8 @@ int ProducerTest::run() {
   }
 
   // Produce an empty message to communicate we finished
-  while (true) {
-    if(this->producingQueue != nullptr) {
-      this->produce(NetworkMessage());
-      break;
-    }
-  }
+  this->produce(NetworkMessage());
+ 
 
   // Report production is done
   Log::append(Log::INFO, "Producer", std::to_string(this->packageCount)

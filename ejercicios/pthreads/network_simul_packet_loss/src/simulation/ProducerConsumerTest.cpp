@@ -68,18 +68,19 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   // Start the simulation
   this->producer->startThread();
   this->dispatcher->startThread();
+  this->assembler->startThread();
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->startThread();
   }
-  this->assembler->startThread();
+
 
   // Wait for objets to finish the simulation
   this->producer->waitToFinish();
+  this->assembler->waitToFinish();
   this->dispatcher->waitToFinish();
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->waitToFinish();
   }
-  this->assembler->waitToFinish();
 
   // Simulation finished
   return EXIT_SUCCESS;

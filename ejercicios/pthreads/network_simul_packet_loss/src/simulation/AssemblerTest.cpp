@@ -1,4 +1,5 @@
 // Copyright 2022 <Dario Murillo Chaverr C15406>
+#include <time.h>
 #include "AssemblerTest.hpp"
 #include "Util.hpp"
 #include "iostream"
@@ -20,17 +21,18 @@ int AssemblerTest::run()  {
 }
 
 void AssemblerTest::consume(NetworkMessage data) {
+  can_change_target.lock();
   unsigned int seed = time(NULL) ^ pthread_self();
   float number = ((float)rand_r(&seed)/2147483648) * (100-0) + 0;
   if (number < this->packagaProbability) {
+    this->lostMessages++;
     (void) data;
-    ++this->lostMessages;
-  } else {
-    can_change_target.lock();
-    data.target = Util::random(1, 
-    static_cast<int>(this->consumerCount)+1);
-    ++this->redirectedMessages;
-    this->produce(data);
     can_change_target.unlock();
+  } else {
+    unsigned int r_seed = time(NULL) ^ pthread_self();
+    data.target =  1 + (rand_r(&r_seed) % this->consumerCount);
+    ++this->redirectedMessages;
+    can_change_target.unlock();
+    this->produce(data);
   }
 }
