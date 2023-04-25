@@ -22,7 +22,8 @@ const char* const usage =
   "Delays are in millisenconds, negatives are maximums for random delays\n";
 
 ProducerConsumerTest::~ProducerConsumerTest() {
-  delete this->producer;
+  for ( ProducerTest* producer : this->producers )
+    delete producer;
   delete this->dispatcher;
   for ( ConsumerTest* consumer : this->consumers )
     delete consumer;
@@ -35,21 +36,26 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   }
 
   // Create objects for the simulation
-  this->producer = new ProducerTest(this->packageCount, this->productorDelay
-    , this->consumerCount);
+ 
   this->dispatcher = new DispatcherTest(this->dispatcherDelay);
   this->dispatcher->createOwnQueue();
-  // Create each producer
+  // Create each consumer
   this->consumers.resize(this->consumerCount);
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index] = new ConsumerTest(this->consumerDelay);
     assert(this->consumers[index]);
     this->consumers[index]->createOwnQueue();
   }
+  // Create each producer
+  this->producers.resize(this->producerCount);
+  for ( size_t index = 0; index < this->producerCount; ++index ) {
+    this->producers[index] = new ProducerTest(this->packageCount, 
+      this->productorDelay, this->consumerCount);
+    this->producers[index]->setProducingQueue
+      (this->dispatcher->getConsumingQueue());
+  }
 
-  // Communicate simulation objects
-  // Producer push network messages to the dispatcher queue
-  this->producer->setProducingQueue(this->dispatcher->getConsumingQueue());
+
   // Dispatcher delivers to each consumer, and they should be registered
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->dispatcher->registerRedirect(index + 1
@@ -57,14 +63,18 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   }
 
   // Start the simulation
-  this->producer->startThread();
+  for ( size_t index = 0; index < this->producerCount; ++index ) {
+    this->producers[index]->startThread();
+  }
   this->dispatcher->startThread();
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->startThread();
   }
 
   // Wait for objets to finish the simulation
-  this->producer->waitToFinish();
+  for ( size_t index = 0; index < this->producerCount; ++index ) {
+    this->producers[index]->waitToFinish();
+  }
   this->dispatcher->waitToFinish();
   for ( size_t index = 0; index < this->consumerCount; ++index ) {
     this->consumers[index]->waitToFinish();
@@ -76,13 +86,14 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
 
 int ProducerConsumerTest::analyzeArguments(int argc, char* argv[]) {
   // 5 + 1 arguments are mandatory
-  if ( argc != 6 ) {
+  if ( argc != 7 ) {
     std::cout << usage;
     return EXIT_FAILURE;
   }
 
   int index = 1;
   this->packageCount = std::strtoull(argv[index++], nullptr, 10);
+  this->producerCount = std::strtoull(argv[index++], nullptr, 10);
   this->consumerCount = std::strtoull(argv[index++], nullptr, 10);
   this->productorDelay = std::atoi(argv[index++]);
   this->dispatcherDelay = std::atoi(argv[index++]);

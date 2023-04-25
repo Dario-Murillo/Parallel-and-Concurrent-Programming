@@ -15,15 +15,33 @@ ProducerTest::ProducerTest(size_t packageCount, int productorDelay
 
 int ProducerTest::run() {
   // Produce each asked message
-  for ( size_t index = 0; index < this->packageCount; ++index ) {
-    this->produce(this->createMessage(index));
+  size_t next_unit;
+  std::mutex can_acces_unit;
+  while (true) {
+    size_t my_unit = 0;
+    can_acces_unit.lock();
+    if (next_unit < this->packageCount) {
+      next_unit++;
+      my_unit = next_unit;
+      produced++;
+    } else {
+      can_acces_unit.unlock();
+      break;
+    }
+    can_acces_unit.unlock();
+    this->produce(createMessage(my_unit));
   }
+  
 
   // Produce an empty message to communicate we finished
+
   this->produce(NetworkMessage());
+   
 
   // Report production is done
-  Log::append(Log::INFO, "Producer", std::to_string(this->packageCount)
+
+  
+  Log::append(Log::INFO, "Producer", std::to_string(this->produced)
     + " menssages sent");
   return EXIT_SUCCESS;
 }

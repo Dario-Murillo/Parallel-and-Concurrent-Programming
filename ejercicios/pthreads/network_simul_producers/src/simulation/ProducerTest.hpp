@@ -23,6 +23,8 @@ class ProducerTest : public Producer<NetworkMessage> {
   /// Number of consumer threads
   size_t consumerCount = 0;
 
+  size_t produced = 0;
+
  public:
   /// Constructor
   ProducerTest(size_t packageCount, int productorDelay, size_t consumerCount);

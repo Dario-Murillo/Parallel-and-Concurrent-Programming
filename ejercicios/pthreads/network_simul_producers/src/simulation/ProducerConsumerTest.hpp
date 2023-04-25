@@ -24,6 +24,8 @@ class ProducerConsumerTest {
  private:
   /// Number of packages to be produced
   size_t packageCount = 0;
+  /// Numero de productores 
+  size_t producerCount = 0;
   /// Number of consumer threads
   size_t consumerCount = 0;
   /// Delay of producer to create a package, negative for max random
@@ -35,7 +37,7 @@ class ProducerConsumerTest {
 
  private:
   /// Producer of the simulated network messages
-  ProducerTest* producer = nullptr;
+  std::vector<ProducerTest*> producers;
   /// A dispatcher of the of the simulated network messages
   DispatcherTest* dispatcher = nullptr;
   /// Consumers of the simulated network messages

@@ -26,8 +26,10 @@ class Producer : public virtual Thread {
 
  public:
   /// Constructor
-  explicit Producer(Queue<DataType>* producingQueue = nullptr)
-    : producingQueue(producingQueue) {
+  explicit Producer(Queue<DataType>* producingQueue = nullptr,
+    size_t next_unit = 0)
+    : producingQueue(producingQueue) 
+    , next_unit(next_unit) {
   }
 
   /// Destructor
