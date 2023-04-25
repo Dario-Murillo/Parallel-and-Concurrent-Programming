@@ -27,8 +27,6 @@ void AssemblerTest::consume(NetworkMessage data) {
     ++this->lostMessages;
   } else {
     can_change_target.lock();
-    unsigned int seed = time(NULL);
-    srand(seed);
     data.target = Util::random(1, 
     static_cast<int>(this->consumerCount)+1);
     ++this->redirectedMessages;
