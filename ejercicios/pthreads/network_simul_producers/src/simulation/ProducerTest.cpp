@@ -15,7 +15,6 @@ ProducerTest::ProducerTest(size_t packageCount, int productorDelay
 
 int ProducerTest::run() {
   // Produce each asked message
-  size_t next_unit;
   std::mutex can_acces_unit;
   while (true) {
     size_t my_unit = 0;

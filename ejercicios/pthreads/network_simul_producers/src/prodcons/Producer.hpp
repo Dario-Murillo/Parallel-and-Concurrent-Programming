@@ -23,6 +23,7 @@ class Producer : public virtual Thread {
  protected:
   /// This thread will produce for this queue
   Queue<DataType>* producingQueue;
+  size_t next_unit;
 
  public:
   /// Constructor
@@ -50,6 +51,7 @@ class Producer : public virtual Thread {
   virtual void produce(const DataType& data) {
     assert(this->producingQueue);
     this->producingQueue->enqueue(data);
+    this->next_unit++;
   }
 };
 
