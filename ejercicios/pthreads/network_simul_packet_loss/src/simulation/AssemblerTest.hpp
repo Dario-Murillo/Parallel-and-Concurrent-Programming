@@ -13,11 +13,12 @@ class AssemblerTest: public Assembler<NetworkMessage, NetworkMessage> {
  public:
     float packagaProbability = 0;
     size_t consumerCount = 0;
+    size_t packageCount = 0;
     size_t lostMessages = 0;
     size_t redirectedMessages = 0;
     std::mutex can_change_target;
  public:
-    explicit AssemblerTest(float packagaProbability, size_t consumerCount = 0);
+    explicit AssemblerTest(float packagaProbability, size_t consumerCount, size_t packageCount);
     int run() override;
     void consume(NetworkMessage data) override;
 };

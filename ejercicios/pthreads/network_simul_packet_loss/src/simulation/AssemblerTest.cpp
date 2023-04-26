@@ -1,17 +1,21 @@
 // Copyright 2022 <Dario Murillo Chaverr C15406>
 #include <time.h>
+#include <random>
 #include "AssemblerTest.hpp"
-#include "Util.hpp"
 #include "iostream"
 #include "Log.hpp"
 
 AssemblerTest::AssemblerTest(float packagaProbability,
-  size_t consumerCount)
-  : packagaProbability(packagaProbability) , consumerCount(consumerCount) {
+  size_t consumerCount, size_t packageCount)
+  : packagaProbability(packagaProbability) , 
+  consumerCount(consumerCount),
+  packageCount(packageCount) {
 }
 
 int AssemblerTest::run()  {
   this->consumeForever();
+  
+
   Log::append(Log::INFO, "Assembler", std::to_string(this->lostMessages)
     + " messages lost");
   Log::append(Log::INFO, "Assembler", std::to_string(this->redirectedMessages)
@@ -22,17 +26,30 @@ int AssemblerTest::run()  {
 
 void AssemblerTest::consume(NetworkMessage data) {
   can_change_target.lock();
-  unsigned int seed = time(NULL) ^ pthread_self();
-  float number = ((float)rand_r(&seed)/2147483648) * (100-0) + 0;
-  if (number < this->packagaProbability) {
-    this->lostMessages++;
+  float number = 0;
+  static std::random_device::result_type seed = std::random_device()();
+  static std::mt19937 randomEngine(seed);
+  std::uniform_int_distribution<int> randomDistribution(0, 100);
+  number = static_cast<float>(randomDistribution(randomEngine));
+  if (number < this->packagaProbability && 
+    data.messageNumber != this->packageCount + 1) {
+    ++this->lostMessages;
     (void) data;
     can_change_target.unlock();
   } else {
-    unsigned int r_seed = time(NULL) ^ pthread_self();
-    data.target =  1 + (rand_r(&r_seed) % this->consumerCount);
-    ++this->redirectedMessages;
+    int new_target = 0;
+    static std::random_device::result_type seed = std::random_device()();
+    static std::mt19937 randomEngine(seed);
+    std::uniform_int_distribution<int> randomDistribution(1, this->consumerCount);
+    new_target = static_cast<int>(randomDistribution(randomEngine));
+    data.target =  new_target;
+    if (data.messageNumber != this->packageCount + 1) {
+      this->produce(data);
+      ++this->redirectedMessages;
+    }
     can_change_target.unlock();
-    this->produce(data);
+  }
+  if (data.messageNumber == this->packageCount + 1) {
+      this->produce(NetworkMessage());
   }
 }

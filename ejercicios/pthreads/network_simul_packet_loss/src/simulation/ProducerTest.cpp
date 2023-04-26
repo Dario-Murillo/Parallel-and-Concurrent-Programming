@@ -20,9 +20,7 @@ int ProducerTest::run() {
   }
 
   // Produce an empty message to communicate we finished
-  this->produce(NetworkMessage());
- 
-
+  this->produce(NetworkMessage(this->consumerCount + 1, 1, this->packageCount + 1));
   // Report production is done
   Log::append(Log::INFO, "Producer", std::to_string(this->packageCount)
     + " menssages sent");
