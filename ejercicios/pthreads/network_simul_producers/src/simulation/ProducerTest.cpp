@@ -15,19 +15,15 @@ ProducerTest::ProducerTest(size_t packageCount, int productorDelay
 
 int ProducerTest::run() {
   // Produce each asked message
-  std::mutex can_acces_unit;
   while (true) {
-    size_t my_unit = 0;
-    can_acces_unit.lock();
-    if (next_unit < this->packageCount) {
-      next_unit++;
-      my_unit = next_unit;
+    size_t my_unit = this->producingQueue->pushedElements();
+    if (this->producingQueue->pushedElements() < this->packageCount) {
+      std::cout << my_unit << std::endl;
+      my_unit = this->producingQueue->pushedElements();
       produced++;
     } else {
-      can_acces_unit.unlock();
       break;
     }
-    can_acces_unit.unlock();
     this->produce(createMessage(my_unit));
   }
   
