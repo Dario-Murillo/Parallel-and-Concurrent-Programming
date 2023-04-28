@@ -40,7 +40,7 @@ void AssemblerTest::consume(NetworkMessage data) {
     int new_target = 0;
     static std::random_device::result_type seed = std::random_device()();
     static std::mt19937 randomEngine(seed);
-    std::uniform_int_distribution<int> randomDistribution(1, this->consumerCount);
+    std::uniform_int_distribution<int> randomDistribution(1, this->consumerCount+1);
     new_target = static_cast<int>(randomDistribution(randomEngine));
     data.target =  new_target;
     if (data.messageNumber != this->packageCount + 1) {
