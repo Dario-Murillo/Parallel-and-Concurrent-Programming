@@ -20,7 +20,8 @@ int ProducerTest::run() {
   }
 
   // Produce an empty message to communicate we finished
-  this->produce(NetworkMessage(this->consumerCount + 1, 1, this->packageCount + 1));
+  this->produce(NetworkMessage(this->consumerCount + 1, 1,
+    this->packageCount + 1));
   // Report production is done
   Log::append(Log::INFO, "Producer", std::to_string(this->packageCount)
     + " menssages sent");
@@ -31,7 +32,7 @@ NetworkMessage ProducerTest::createMessage(size_t index) const {
   // Source is always 1: this producer
   const uint16_t source = 1;
   // Target is selected by random
-  const uint16_t target = 1 + Util::random(0, 
+  const uint16_t target = 1 + Util::random(0,
   static_cast<int>(this->consumerCount+1));
   // IMPORTANT: This simulation uses sleep() to mimics the process of
   // producing a message. However, you must NEVER use sleep() for real projects

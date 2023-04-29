@@ -48,7 +48,8 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
     assert(this->consumers[index]);
     this->consumers[index]->createOwnQueue();
   }
-  this->assembler = new AssemblerTest(this->packagaProbability, this->consumerCount, this->packageCount);
+  this->assembler = new AssemblerTest(this->packagaProbability,
+    this->consumerCount, this->packageCount);
 
 
   // Communicate simulation objects

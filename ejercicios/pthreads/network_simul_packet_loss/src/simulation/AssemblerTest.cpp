@@ -7,20 +7,20 @@
 
 AssemblerTest::AssemblerTest(float packagaProbability,
   size_t consumerCount, size_t packageCount)
-  : packagaProbability(packagaProbability) , 
+  : packagaProbability(packagaProbability) ,
   consumerCount(consumerCount),
   packageCount(packageCount) {
 }
 
 int AssemblerTest::run()  {
   this->consumeForever();
-  
+
 
   Log::append(Log::INFO, "Assembler", std::to_string(this->lostMessages)
     + " messages lost");
   Log::append(Log::INFO, "Assembler", std::to_string(this->redirectedMessages)
     + " messages redirected");
-  
+
   return EXIT_SUCCESS;
 }
 
@@ -31,7 +31,7 @@ void AssemblerTest::consume(NetworkMessage data) {
   static std::mt19937 randomEngine(seed);
   std::uniform_int_distribution<int> randomDistribution(0, 100);
   number = static_cast<float>(randomDistribution(randomEngine));
-  if (number < this->packagaProbability && 
+  if (number < this->packagaProbability &&
     data.messageNumber != this->packageCount + 1) {
     ++this->lostMessages;
     (void) data;
@@ -40,7 +40,8 @@ void AssemblerTest::consume(NetworkMessage data) {
     int new_target = 0;
     static std::random_device::result_type seed = std::random_device()();
     static std::mt19937 randomEngine(seed);
-    std::uniform_int_distribution<int> randomDistribution(1, this->consumerCount+1);
+    std::uniform_int_distribution<int> randomDistribution(1,
+      this->consumerCount);
     new_target = static_cast<int>(randomDistribution(randomEngine));
     data.target =  new_target;
     if (data.messageNumber != this->packageCount + 1) {
