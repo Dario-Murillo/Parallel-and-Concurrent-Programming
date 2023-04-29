@@ -25,7 +25,7 @@ int AssemblerTest::run()  {
 
 void AssemblerTest::consume(NetworkMessage data) {
   can_change_target.lock();
-  
+
   float number = 0;
 
   static std::random_device::result_type seed = std::random_device()();
@@ -41,7 +41,8 @@ void AssemblerTest::consume(NetworkMessage data) {
     int new_target = 0;
     static std::random_device::result_type seed = std::random_device()();
     static std::mt19937 randomEngine(seed);
-    std::uniform_int_distribution<int> randomDistribution(1, this->consumerCount);
+    std::uniform_int_distribution<int> randomDistribution(1,
+      this->consumerCount);
     new_target = static_cast<float>(randomDistribution(randomEngine));
     data.target =  new_target;
     ++this->redirectedMessages;
