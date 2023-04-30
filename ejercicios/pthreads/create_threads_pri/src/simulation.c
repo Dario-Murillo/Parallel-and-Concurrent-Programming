@@ -127,8 +127,8 @@ int analyze_arguments(simulation_t* simulation, int argc, char* argv[]) {
         error = ERR_MAX_CONS_DELAY;
     }
   } else {
-    fprintf(stderr, "usage: producer_consumer buffer_capacity rounds"
-      " producer_min_delay producer_max_delay"
+    fprintf(stderr, "usage: unit_count producer_count"
+      " consumer_count producer_min_delay producer_max_delay"
       " consumer_min_delay consumer_max_delay\n");
       error = ERR_NO_ARGS;
   }
