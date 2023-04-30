@@ -15,7 +15,7 @@ class AssemblerTest: public Assembler<NetworkMessage, NetworkMessage> {
     size_t consumerCount = 0;
     size_t lostMessages = 0;
     size_t redirectedMessages = 0;
-    std::mutex can_change_target;
+    std::mutex mutex;
  public:
     explicit AssemblerTest(float packagaProbability, size_t consumerCount = 0);
     int run() override;
