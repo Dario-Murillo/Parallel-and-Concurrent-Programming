@@ -28,15 +28,11 @@ class Queue {
   Semaphore canConsume;
   /// Contains the actual data shared between producer and consumer
   std::queue<DataType> queue;
-  /// Cantidad de elementos agregados a la cola
-  size_t enqueueCount;
-
 
  public:
   /// Constructor
-  Queue(size_t enqueueCount = 0)
-    : canConsume(0) ,
-     enqueueCount(enqueueCount) {
+  Queue()
+    : canConsume(0) {
   }
 
   /// Destructor
@@ -49,7 +45,6 @@ class Queue {
   void enqueue(const DataType& data) {
     this->mutex.lock();
     this->queue.push(data);
-    enqueueCount++;
     this->mutex.unlock();
     this->canConsume.signal();
   }
@@ -64,13 +59,6 @@ class Queue {
     this->queue.pop();
     this->mutex.unlock();
     return result;
-  }
-
-  size_t pushedElements() {
-    this->mutex.lock();
-    size_t aux = this->enqueueCount;
-    this->mutex.unlock();
-    return aux;
   }
 };
 

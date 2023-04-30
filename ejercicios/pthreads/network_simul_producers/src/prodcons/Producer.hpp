@@ -48,7 +48,6 @@ class Producer : public virtual Thread {
   virtual void produce(const DataType& data) {
     assert(this->producingQueue);
     this->producingQueue->enqueue(data);
-
   }
 };
 

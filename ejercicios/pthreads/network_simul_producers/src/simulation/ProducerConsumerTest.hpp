@@ -6,9 +6,9 @@
 #define PRODUCERCONSUMERTEST_HPP
 
 #include <vector>
-
-#include "common.hpp"
 #include <cstddef>
+#include "common.hpp"
+
 // Forward declarations
 class ConsumerTest;
 class DispatcherTest;
@@ -24,7 +24,7 @@ class ProducerConsumerTest {
  private:
   /// Number of packages to be produced
   size_t packageCount = 0;
-  /// Numero de productores 
+  /// Numero de productores
   size_t producerCount = 0;
   /// Number of consumer threads
   size_t consumerCount = 0;

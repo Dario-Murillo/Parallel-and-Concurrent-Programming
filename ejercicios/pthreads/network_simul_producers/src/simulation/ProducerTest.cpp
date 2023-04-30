@@ -24,7 +24,7 @@ int ProducerTest::run() {
   // Produce an empty message to communicate we finished
 
   this->produce(NetworkMessage());
-   
+
 
   // Report production is done
   Log::append(Log::INFO, "Producer", std::to_string(this->produced)
@@ -36,7 +36,7 @@ NetworkMessage ProducerTest::createMessage(size_t index) const {
   // Source is always 1: this producer
   const uint16_t source = 1;
   // Target is selected by random
-  
+
 
   unsigned int seed = std::random_device()();
   const uint16_t target =  1 + (rand_r(&seed) % this->consumerCount);
