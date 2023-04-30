@@ -15,6 +15,7 @@ const char* const usage =
   "\n"
   "  packages    number of packages to be produced\n"
   "  consumers   number of consumer threads\n"
+  "  producers   number of producer threads\n"
   "  prod_delay  delay of producer to create a package\n"
   "  disp_delay  delay of dispatcher to dispatch a package\n"
   "  cons_delay  delay of consumer to consume a package\n"
