@@ -22,7 +22,7 @@ class ProducerTest : public Producer<NetworkMessage> {
   int productorDelay = 0;
   /// Number of consumer threads
   size_t consumerCount = 0;
-
+  /// Cantidad de elementos producidos por cada productor
   size_t produced = 0;
 
  public:
@@ -32,6 +32,8 @@ class ProducerTest : public Producer<NetworkMessage> {
   int run() override;
   /// Creates a simulation message to be sent by the network
   NetworkMessage createMessage(size_t index) const;
+  /// Aumenta el numero de paquetes en 1
+  void aumentPackageCount();
 };
 
 #endif  // PRODUCERTEST_HPP

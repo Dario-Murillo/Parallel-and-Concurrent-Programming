@@ -37,7 +37,9 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
 
   // Create objects for the simulation
  
-  this->dispatcher = new DispatcherTest(this->dispatcherDelay);
+  this->dispatcher = new DispatcherTest(this->dispatcherDelay,
+    this->producerCount);
+
   this->dispatcher->createOwnQueue();
   // Create each consumer
   this->consumers.resize(this->consumerCount);
@@ -49,12 +51,23 @@ int ProducerConsumerTest::start(int argc, char* argv[]) {
   // Create each producer
   this->producers.resize(this->producerCount);
   for ( size_t index = 0; index < this->producerCount; ++index ) {
-    this->producers[index] = new ProducerTest(this->packageCount, 
-      this->productorDelay, this->consumerCount);
+    this->producers[index] = new ProducerTest(0, this->productorDelay, 
+      this->consumerCount);
     this->producers[index]->setProducingQueue
       (this->dispatcher->getConsumingQueue());
   }
 
+
+  // Repartimos la carga de produccion entre los trabajadores
+  size_t index = 0;
+  for (size_t i = 0; i < packageCount; i++) {
+    this->producers[index]->aumentPackageCount();
+    index = index + 1;
+    if (index == (this->producerCount)) {
+      index = 0;
+    }  
+  }
+  
 
   // Dispatcher delivers to each consumer, and they should be registered
   for ( size_t index = 0; index < this->consumerCount; ++index ) {

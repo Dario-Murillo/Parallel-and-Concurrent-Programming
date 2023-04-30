@@ -5,14 +5,20 @@
 #include "DispatcherTest.hpp"
 #include "Util.hpp"
 
-DispatcherTest::DispatcherTest(int dispatcherDelay)
-  : dispatcherDelay(dispatcherDelay) {
+DispatcherTest::DispatcherTest(int dispatcherDelay, int producerCount)
+  : dispatcherDelay(dispatcherDelay)
+  , producerCount(producerCount) {
 }
 
 int DispatcherTest::run() {
   // Dispatch all the network messages we receive to their respective queues
-  this->consumeForever();
-
+  int aux = 0;
+  while (aux < this->producerCount) {
+      this->consumeForever();
+      aux++;
+  }
+  
+  
   // If we exited from the forever loop, the finish message was received
   // For this simulation is OK to propagate it to all the queues
   for ( const auto& pair : this->toQueues ) {
