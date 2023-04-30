@@ -25,18 +25,20 @@ int AssemblerTest::run()  {
 }
 
 void AssemblerTest::consume(NetworkMessage data) {
-  can_change_target.lock();
+  this->mutex.lock();
   float number = 0;
   static std::random_device::result_type seed = std::random_device()();
   static std::mt19937 randomEngine(seed);
   std::uniform_int_distribution<int> randomDistribution(0, 100);
   number = static_cast<float>(randomDistribution(randomEngine));
+  this->mutex.unlock();
+
   if (number < this->packagaProbability &&
     data.messageNumber != this->packageCount + 1) {
     ++this->lostMessages;
     (void) data;
-    can_change_target.unlock();
   } else {
+    this->mutex.lock();
     int new_target = 0;
     static std::random_device::result_type seed = std::random_device()();
     static std::mt19937 randomEngine(seed);
@@ -48,7 +50,7 @@ void AssemblerTest::consume(NetworkMessage data) {
       this->produce(data);
       ++this->redirectedMessages;
     }
-    can_change_target.unlock();
+    this->mutex.unlock();
   }
   if (data.messageNumber == this->packageCount + 1) {
       this->produce(NetworkMessage());
