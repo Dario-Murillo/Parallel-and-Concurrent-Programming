@@ -2,7 +2,7 @@
 
 Agregue semáforos al pseudocódigo siguiente para forzar a que los incrementos en los hilos se hagan con exclusión mutua.	
 
-**procedure main:**
+**procedure main:** <br>
   shared count := 0 <br>
   create_thread(thread_a) <br>
   create_thread(thread_b) <br>
