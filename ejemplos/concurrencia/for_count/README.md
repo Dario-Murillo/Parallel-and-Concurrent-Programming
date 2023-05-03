@@ -1,21 +1,24 @@
 # Enunciado del ejemplo 
 
-Dos threads ejecutan las siguientes tareas. Liste todas las rutas de ejecución indicando el valor final de la variable x y la salida estándar. Una ruta de ejecución (execution path) es una combinación de instrucciones que depende del orden en que sean ejecutadas.
 
-procedure main: <br>
-  >shared x := 0 <br>
-  >create_thread(thread_a) <br>
-  >create_thread(thread_b) <br>
 
-end procedure
+Suponga que el hilo de ejecución principal crea w=100 hilos secundarios con los siguientes códigos.
 
-procedure thread_a: <br>
-  >x := 5 <br> 
-  >print(x) <br>
+shared count := 0
 
-end procedure
+**procedure main:** <br>
+create_threads(100, secondary) <br>
+**end procedure**
 
-procedure thread_b: <br>
-  >x := 7 <br>
+**procedure secondary:** <br>
+for i := 1 to 100 do <br>
+declare temp := count <br>
+count := temp + 1 <br>
+end for <br>
+**end procedure** <br>
 
-end procedure
+
+1. ¿Cuál es el valor más grande que la variable compartida count podría llegar a obtener? ¿En qué rutas de ejecución se alcanza este valor?
+
+2. ¿Cuál es el menor valor que la variable compartida count podría llegar a obtener? ¿En qué rutas de ejecución se alcanza este valor?
+
