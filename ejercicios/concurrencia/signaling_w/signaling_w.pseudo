@@ -1,0 +1,20 @@
+procedure main:
+  declare thread_count := read_integer()
+
+  // Crea un arreglo de semaforos, un semaforo para cada hilo
+  shared can_execute as array of thread_count semaphores
+
+  for thread_number := 0 to thread_count do
+    // Inicializa los semaforos en 0 excepto el primero
+    can_greet[thread_number] := create_semaphore(!thread_number)
+    // Crea los hilos con su respectivo numero privado
+    create_threads(secondary, thread_number)
+  end
+end procedure
+
+procedure secondary(thread_number):
+  wait(can_execute[thread_number])
+  statement a
+  declare next_thread := can_execute[(thread_number + 1) mod thread_count]
+  wait(next_thread)
+end procedure
