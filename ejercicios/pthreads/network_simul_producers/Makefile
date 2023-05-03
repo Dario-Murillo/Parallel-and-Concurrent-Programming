@@ -16,7 +16,7 @@ DIFF=icdiff --no-headers
 LINTF=-build/header_guard,-build/include_subdir,-runtime/int
 LINTC=$(LINTF),-readability/casting
 LINTX=$(LINTF),-build/c++11,-runtime/references
-ARGS=
+ARGS=10 3 3 100 100 100
 
 # Directories
 RSC=assets

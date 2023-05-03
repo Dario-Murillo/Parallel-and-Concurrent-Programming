@@ -16,7 +16,7 @@ DIFF=icdiff --no-headers
 LINTF=-build/header_guard,-build/include_subdir,-runtime/int
 LINTC=$(LINTF),-readability/casting
 LINTX=$(LINTF),-build/c++11,-runtime/references
-ARGS=3 2 0 100 0 750
+ARGS=5 2 3 0 100 0 750
 FLAG += -pthread
 
 # Directories
