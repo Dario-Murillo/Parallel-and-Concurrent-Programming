@@ -35,14 +35,15 @@ class Consumer : public virtual Thread {
   /// @see stopCondition
   explicit Consumer(Queue<DataType>* consumingQueue = nullptr
     , const DataType& stopCondition = DataType()
-    , bool createOwnQueue = false)
+    , bool createOwnQueue = false
+    , int bufferSize = SEM_VALUE_MAX)
     : consumingQueue(consumingQueue)
     , stopCondition(stopCondition)
     , ownsQueue(createOwnQueue) {
     // Error if asked to create own queue and provided an existing one to use
     assert(!(createOwnQueue && consumingQueue));
     if (createOwnQueue) {
-      this->createOwnQueue(SEM_VALUE_MAX);
+      this->createOwnQueue(bufferSize);
     }
   }
 

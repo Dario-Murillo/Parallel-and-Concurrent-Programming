@@ -16,7 +16,6 @@ ProducerTest::ProducerTest(size_t packageCount, int productorDelay
 int ProducerTest::run() {
   // Produce each asked message
   for ( size_t index = 0; index < this->packageCount; ++index ) {
-    std::cout << "produced" << std::endl;
     this->produce(this->createMessage(index));
   }
 
