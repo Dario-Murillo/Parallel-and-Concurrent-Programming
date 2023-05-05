@@ -104,3 +104,14 @@ void queue_clear(queue_t* queue) {
   }
   pthread_mutex_unlock(&queue->can_access_queue);
 }
+
+int queue_getcount(queue_t* queue) {
+  pthread_mutex_lock(&queue->can_access_queue);
+  queue_node_t* aux = queue->head;
+  int count = 0;
+  while (aux->next != NULL) {
+    count++;
+  }
+  pthread_mutex_unlock(&queue->can_access_queue);
+  return count;
+}

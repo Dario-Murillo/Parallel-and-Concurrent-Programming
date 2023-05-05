@@ -62,4 +62,11 @@ int queue_dequeue(queue_t* queue, size_t* data);
 */
 void queue_clear(queue_t* queue);
 
+/**
+ * @brief calcula la cantidad de elementos en la cola
+ * @param queue puntero a la cola
+ * @return cantidad de elementos en la cola
+*/
+int queue_getcount(queue_t* queue);
+
 #endif  // QUEUE_H
