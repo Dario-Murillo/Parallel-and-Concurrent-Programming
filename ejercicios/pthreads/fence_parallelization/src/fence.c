@@ -177,7 +177,7 @@ coordinate_t find_maximum_local_perimeter(const size_t top_left_row,
           local_maximum_perimeter = perimeter;
           // Assign maximum coordinates to the local rectangle's coordinates
           local_maximum_coordinates =
-            (coordinate_t){bottom_right_row, bottom_right_column};
+            ((coordinate_t){bottom_right_row, bottom_right_column});
         }
       }
     }

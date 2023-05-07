@@ -22,7 +22,7 @@ typedef struct {
 } shared_data_t;
 
 typedef struct {
-  size_t thread_num; // numero privado de cada hilo
+  size_t thread_num;  // numero privado de cada hilo
   shared_data_t* shared_data;
 } private_data_t;
 
