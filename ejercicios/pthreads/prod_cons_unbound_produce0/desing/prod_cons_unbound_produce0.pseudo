@@ -65,7 +65,7 @@ procedure produce0:
   end while
 end procedure
 
-// Se elimina la redundancia de codigos
+// version sin redundancia de codigo
 procedure produce1:
   while true do
     declare my_unit := 0
