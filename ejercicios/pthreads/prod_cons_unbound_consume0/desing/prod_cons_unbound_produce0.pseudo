@@ -37,7 +37,7 @@ procedure main(argc, argv[]):
   end if
 end procedure
 
-//version con reduncancia de codigo
+// version con reduncancia de codigo
 procedure produce0:
   declare my_unit := 0
   lock(can_access_next_unit)
@@ -65,7 +65,27 @@ procedure produce0:
   end while
 end procedure
 
-// Se eliina la redundancia de codigos
+// version sin reduncancia de codigo
+procedure consume0:
+  while true do
+    lock(can_access_consumed_count)
+    if consumed_count < unit_count do
+      consumed_count := consumed_count + 1
+    end if
+    unlock(can_access_consumed_count)
+
+    lock(can_access_queue)
+      if is_empty(queue) do
+        consumed_count := consumed_count - 1 
+      else 
+        declare my_unit := dequeue(queue)
+        print("\tConsuming ", my_unit)
+        delay(random_between(consumer_min_delay, consumer_max_delay))
+      end if 
+    unlock(can_access_queue)
+  end while
+end procedure
+
 procedure produce1:
   while true do
     declare my_unit := 0
@@ -88,24 +108,4 @@ procedure produce1:
   end
 end procedure
 
-
-procedure consume0:
-  while true do
-    lock(can_access_consumed_count)
-    if consumed_count < unit_count do
-      consumed_count := consumed_count + 1
-    end if
-    unlock(can_access_consumed_count)
-
-    lock(can_access_queue)
-      if is_empty(queue) do
-        consumed_count := consumed_count - 1 
-      else 
-        declare my_unit := dequeue(queue)
-        print("\tConsuming ", my_unit)
-        delay(random_between(consumer_min_delay, consumer_max_delay))
-      end if 
-    unlock(can_access_queue)
-  end while
-end procedure
 
