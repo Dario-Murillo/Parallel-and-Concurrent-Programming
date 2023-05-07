@@ -16,7 +16,6 @@ procedure player1()
   signal(players_ready)
     
   wait(clock_ready)
-  signal(clock_ready)
   play_chess()
 end procedure
 
@@ -26,7 +25,6 @@ procedure player2()
   signal(player2_ready)
 
   wait(clock_ready)
-  signal(clock_ready)
   play_chess()
 end procedure
 
@@ -34,5 +32,6 @@ procedure referee()
   enter_room()
   wait(players_ready)
   set_clock()
+  signal(clock_ready)
   signal(clock_ready)
 end procedure
