@@ -33,6 +33,7 @@ void* consume(void* data) {
     printf("\tConsuming %zu\n", value);
     usleep(1000 * random_between(simulation->consumer_min_delay
       , simulation->consumer_max_delay));
+    sem_post(&simulation->can_produce);
   }
 
   return NULL;
