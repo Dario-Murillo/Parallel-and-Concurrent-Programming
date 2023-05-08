@@ -32,7 +32,7 @@ Glosario
 
 14. Semaforo: Metodo de control de concurrencia, que de manera similar al mutex, crea un sistema el cual bloquea o libera recursos de manera que indica a cada hilo cuando puede realizar ciertas acciones, sin embargo, el mutex tiene indeterminismo mientras que los semaforos imponen orden. Los semaforos en particular se implementan de manera que haya un semafaro para cada hilo, la implementacion de este se da al asignarle un numero entero positivo, el cual es incrementado o decrementado y en base a su valor indica cuando un hilo puede actuar. Los numeros negativos indican los hilos esperando al semaforo, si un numero decrementa y es negativo, bloquea el semaforo y cuando se incrementa se desbloquea y por lo tanto uno de los hilos procede a hacer la tarea 
 
-15. Barrera
+15. Barrera: Un punto de encuentro, donde todos los hilos tienen que llegar, y todos los hilos quedaran en espera, es decir no podran seguir su ejecuccion, hasta que el ultimo hilo llegue. Se puede implementar con herramientas de control de concurrencia, como los semaforos
 
 16. Variable de condicion
 
@@ -42,7 +42,7 @@ Glosario
 
 19. Mapeo: Es un concepto directamente asociado a la descomposicion, ya que trata de asignar a hilos las tareas anteriormente identificadas en el metodo de descomposicion. Los mapeos pueden clasificarse en mapeos estaticos y dinamicos
 
-20. Incremento de velocidad: Una comparacion entre cuando durao un proceso antes y cuanto dura despues de llevar a cabo una optimizacion
+20. Incremento de velocidad: Una comparacion entre cuando dura un proceso antes y cuanto dura despues de llevar a cabo una optimizacion
 
 21. Comunicacion punto a punto entre procesos
 
