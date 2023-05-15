@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
 #include <zip.h>
@@ -58,12 +59,12 @@ void datos_impresion(datos_t* datos);
 /**
  * @brief principio de mapeo por bloque
 */
-int inicio(int thread_number, int trabajo, datos_t* datos);
+int inicio(uint64_t thread_number, int trabajo, datos_t* datos);
 
 /**
  * @brief final de mapeo por bloque
 */
-int final(int thread_number, int trabajo, datos_t* datos);
+int final(uint64_t thread_number, int trabajo, datos_t* datos);
 
 /**
  * @brief crea equipo de hilos
@@ -121,7 +122,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
 
 
   int error = datos_analisis(datos, input, argc, argv);
-
+  create_threads(datos);
 
   /* Change directory */
   if (chdir (tmp_dirname) == -1) {
@@ -132,6 +133,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
             FTW_DEPTH | FTW_MOUNT | FTW_PHYS) == -1) {
     perror("tempdir: error: ");
   }
+  datos_impresion(datos);
   return error;
 }
 
@@ -190,17 +192,17 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
   return error;
 }
 
-int inicio(int thread_number, int trabajo, datos_t* datos) {
+int inicio(uint64_t thread_number, int trabajo, datos_t* datos) {
   int min = 0;
   if(thread_number <  trabajo % datos->thread_count) {
-    min = trabajo % datos->thread_count;
-  } else {
     min = thread_number;
+  } else {
+    min = trabajo % datos->thread_count;
   }
   return thread_number * (trabajo / datos->thread_count) + min;
 }
 
-int final(int thread_number, int trabajo, datos_t* datos) {
+int final(uint64_t thread_number, int trabajo, datos_t* datos) {
   return inicio(thread_number+1, trabajo, datos);
 }
 
@@ -212,32 +214,37 @@ int create_threads(datos_t* datos) {
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
       ; ++thread_number) {
     
-    for (uint64_t largo = 0; largo < datos->limite; largo++) {
-          
+    arreglo_innit(&private_data[thread_number].carga_inicio);
+    arreglo_innit(&private_data[thread_number].carga_final);
+
+    for (uint64_t largo = 1; largo <= datos->limite; largo++) {
         int trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
+        char in[100];
+        sprintf(in, "%d", inicio(thread_number, trabajo, datos));
+        arreglo_agregar(&private_data[thread_number].carga_inicio, in);
 
-        arreglo_agregar(&private_data[thread_number].carga_inicio, 
-          inicio(thread_number, trabajo, datos->thread_count));
-
-        arreglo_agregar(&private_data[thread_number].carga_final, 
-          final(thread_number, trabajo, datos->thread_count));
+        char fi[100];
+        sprintf(fi, "%d",  final(thread_number, trabajo, datos));
+        arreglo_agregar(&private_data[thread_number].carga_final, fi);
       }
-      
-      error = pthread_create(&private_data[thread_number].thread, NULL
+
+    private_data[thread_number].datos_compartidos = datos;
+    error = pthread_create(&private_data[thread_number].thread, NULL
         , datos_generate_passw
         , &private_data[thread_number]);
-      if (error == EXIT_SUCCESS) {
-      } else {
-        fprintf(stderr, "Error: could not create secondary thread\n");
-        error = 21;
-        break;
-      }
+    if (error == EXIT_SUCCESS) {
+    } else {
+      fprintf(stderr, "Error: could not create secondary thread\n");
+      error = 21;
+      break;
+    }
   }
-
 
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; ++thread_number) {
       pthread_join(private_data[thread_number].thread, /*value_ptr*/ NULL);
+      arreglo_destroy(&private_data[thread_number].carga_inicio);
+      arreglo_destroy(&private_data[thread_number].carga_final);
   }
 
   free(private_data);
@@ -251,16 +258,17 @@ void* datos_generate_passw(void* data) {
   datos_privados_t* private_data = (datos_privados_t*) data;
   datos_t* datos = private_data->datos_compartidos;
   /// primer ciclo recorre todos los archivos zips
-  for (size_t ind = 0; ind < datos->zips.total; ind++) {
+  for (uint64_t ind = 0; ind < datos->zips.total; ind++) {
     pthread_mutex_lock(&datos->mutex);
     datos->encontroPass = false;
     datos->insercion = 0;
     pthread_mutex_unlock(&datos->mutex);
     /// segundo ciclo recorre todos los largos posibles de la clave
-    for (size_t i = 1; i <= (size_t)datos->limite; i++) {
+    for (uint64_t i = 1; i <= (size_t)datos->limite; i++) {
       char* pass_temp = calloc(i + 1, sizeof(char*));
       /// tercer ciclo recorre todas los caracteres del arreglo
-      for (size_t j = private_data->carga_inicio.array[i]; j < private_data->carga_final.array[i]; j++) {
+      for (int j = atoi(private_data->carga_inicio.array[i-1]); 
+          j < atoi(private_data->carga_final.array[i-1]); j++) {
         /// largo de alfabero = base
         int64_t base = strlen(datos->alfabeto.array[0]);
         int64_t numero = j;
@@ -280,6 +288,7 @@ void* datos_generate_passw(void* data) {
           }
         }
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
+        puts(pass_temp);
         bool retorno =
         datos_abrir_archivo(datos->zips.array[ind], pass_temp);
 
