@@ -1,6 +1,7 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
 #define  _POSIX_C_SOURCE 200809L
 #define  _XOPEN_SOURCE 500L
+
 #define _MAX_INT 1844674407370955161
 
 #include <assert.h>
@@ -169,12 +170,14 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   if (!error) {
     return EXIT_FAILURE;
   }
-
   int error = datos_analisis(datos, input, argc, argv);
+  /// Iniciar barrera una vez que sabemos la cantidad de hilos
+  pthread_barrier_init(&datos->barrera, NULL, datos->thread_count);
   create_threads(datos);
 
 
   borrar_carpeta("tmp");
+  pthread_barrier_destroy(&datos->barrera);
   return error;
 }
 
@@ -260,11 +263,11 @@ int create_threads(datos_t* datos) {
 
   srand(time(NULL));
 
-  for (size_t thread_number = 0; thread_number < datos->thread_count
+  for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; thread_number++) {
     
     arreglo_innit(&private_data->archivos);
-    for (size_t archivo_number = 0; archivo_number < datos->zips.total
+    for (uint64_t archivo_number = 0; archivo_number < datos->zips.total
       ; archivo_number++) {
       FILE *src, *dest;
       char buf[BUFSIZ];
@@ -317,7 +320,8 @@ int create_threads(datos_t* datos) {
       }
 
     private_data[thread_number].datos_compartidos = datos;
-    error = pthread_create(&private_data[thread_number].thread, NULL
+    error = pthread_create(&private_data[thread_number].thread
+        , NULL
         , datos_generate_passw
         , &private_data[thread_number]);
     if (error == EXIT_SUCCESS) {
@@ -343,7 +347,6 @@ int create_threads(datos_t* datos) {
 
 void* datos_generate_passw(void* data) {
   assert(data);
-
   datos_privados_t* private_data = (datos_privados_t*) data;
   datos_t* datos = private_data->datos_compartidos;
   /// primer ciclo recorre todos los archivos zips
@@ -401,9 +404,14 @@ void* datos_generate_passw(void* data) {
         break;
       }
     }
-    if (datos->encontroPass == false) {
+    pthread_mutex_lock(&datos->mutex);
+    if (datos->encontroPass == false && datos->insercion == 0) {
       arreglo_agregar(&datos->contrasenas, "\n");
+      datos->insercion++;
+      pthread_mutex_unlock(&datos->mutex);
     }
+    pthread_mutex_unlock(&datos->mutex);
+    pthread_barrier_wait(&datos->barrera);
   }
   return NULL;
 }

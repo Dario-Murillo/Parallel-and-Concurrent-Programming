@@ -1,10 +1,14 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
-#include <pthread.h>
-#include <stdbool.h>
-#include "arr_dinamico.h"
+#define _DEFAULT_SOURCE
 
 #ifndef COMMON_H
 #define COMMON_H
+
+#include <pthread.h>
+#include <stdbool.h>
+#include <inttypes.h>
+#include "arr_dinamico.h"
+
 
 /**
  * @struct datos
@@ -26,6 +30,22 @@
  * contrasenas guarda las contrasenas que 
  * desencriptan los zips
  * 
+ * @var datos::thread_count
+ * cantidad de hilos que se usaran
+ * 
+ * @var datos::mutex
+ * mutex para evitar condiciones de carrera a la hora de
+ * modificar memoria compartida
+ * 
+ * @var datos::encontroPass
+ * variable booleana encarga de indicar a los hilos si la 
+ * clave de un archivo fue encontrada
+ * 
+ * @var datos::insercion
+ * contador de cuantas veces se ha introducido una clave al
+ * arreglo, usada para evitar multiples inserciones de la 
+ * misma clave
+ * 
 */
 typedef struct datos {
   arr_dinamico_t alfabeto;
@@ -36,6 +56,7 @@ typedef struct datos {
   pthread_mutex_t mutex;
   bool encontroPass;
   int64_t insercion;
+  pthread_barrier_t barrera;
 } datos_t;
 
 /**
