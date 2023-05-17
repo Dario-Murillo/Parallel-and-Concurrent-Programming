@@ -42,19 +42,27 @@ typedef struct datos {
  * @struct datos_privados
  * @brief estructura de memoria privada para cada hilo
  * 
- * @var datos_privados::carga
- * cantidad de claves que pueden producir
- * 
  * @var datos_privados::thread
  * hilo de ejecuccion
  * 
+ * @var datos_privados::archivos
+ * arreglo de las copias unicas sobre las cuales los
+ * hilos van a trabajar
+ * 
+ * @var datos_privados::carga_inicio
+ * arreglo que contiene el rango inicial sobre el cual
+ * los hilos van a trabajar 
+ * 
+ * @var datos_privados::carga_final
+ * arreglo que contiene el rango final sobre el cual
+ * los hilos van a trabajar 
  * @var datos_privados::datos_compartidos
  * puntero a la memoria compartida
  * 
 */
 typedef struct datos_privados {
-  int64_t carga;
   pthread_t thread;
+  arr_dinamico_t archivos;
   arr_dinamico_t carga_inicio;
   arr_dinamico_t carga_final;
   datos_t* datos_compartidos;

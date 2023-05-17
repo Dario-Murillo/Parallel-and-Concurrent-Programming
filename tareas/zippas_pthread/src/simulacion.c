@@ -75,7 +75,9 @@ int inicio(uint64_t thread_number, int trabajo, datos_t* datos);
 int final(uint64_t thread_number, int trabajo, datos_t* datos);
 
 /**
- * @brief crea equipo de hilos
+ * @brief crea equipo de hilos con los respectivos datos
+ * @param datos puntero de una variable tipo datos_t
+ * @return codigo de error
 */
 int create_threads(datos_t* datos);
 
@@ -90,6 +92,13 @@ int create_threads(datos_t* datos);
  * 
 */
 int borrar_carpeta(const char *carpeta);
+
+/**
+ * @brief selecciona un caracter random
+ * @param index 
+ * @return caracter random
+*/
+char random_char(int index);
 
 
 datos_t* datos_create() {
@@ -224,6 +233,12 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
   return error;
 }
 
+char random_char(int index) {
+  char charset[] = 
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return charset[index];
+}
+
 int inicio(uint64_t thread_number, int trabajo, datos_t* datos) {
   int min = 0;
   if(thread_number <  trabajo % datos->thread_count) {
@@ -242,6 +257,47 @@ int create_threads(datos_t* datos) {
   int error = EXIT_SUCCESS;
   datos_privados_t* private_data = (datos_privados_t*)
     calloc(datos->thread_count, sizeof(datos_privados_t));
+
+  srand(time(NULL));
+
+  for (size_t thread_number = 0; thread_number < datos->thread_count
+    ; thread_number++) {
+    
+    arreglo_innit(&private_data->archivos);
+    for (size_t archivo_number = 0; archivo_number < datos->zips.total
+      ; archivo_number++) {
+      FILE *src, *dest;
+      char buf[BUFSIZ];
+      size_t n;
+      char tmp_name[100];
+      char str[17] = "";
+      char aux[5] = ".zip";
+
+      int i, index;
+      for (i = 0; i < 16; i++) {
+        index = rand() % 62;
+        str[i] = random_char(index);
+      }
+
+      strcpy(tmp_name, "tmp/");
+      strcat(tmp_name, str);
+      strcat(tmp_name, aux);
+
+      int largo = strlen(tmp_name);
+      tmp_name[largo] = '\0';
+
+      src = fopen(datos->zips.array[archivo_number], "rb");
+      dest = fopen(tmp_name, "wb");
+
+      while ((n = fread(buf, 1, BUFSIZ, src)) > 0) {
+        fwrite(buf, 1, n, dest);
+      }
+
+      arreglo_agregar(&private_data->archivos, tmp_name);
+      fclose(src);
+      fclose(dest);
+    }
+  }
 
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
       ; ++thread_number) {
@@ -274,9 +330,10 @@ int create_threads(datos_t* datos) {
 
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; ++thread_number) {
-      pthread_join(private_data[thread_number].thread, /*value_ptr*/ NULL);
+      pthread_join(private_data[thread_number].thread, NULL);
       arreglo_destroy(&private_data[thread_number].carga_inicio);
       arreglo_destroy(&private_data[thread_number].carga_final);
+      arreglo_destroy(&private_data[thread_number].archivos);
   }
 
   free(private_data);
@@ -322,7 +379,7 @@ void* datos_generate_passw(void* data) {
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         puts(pass_temp);
         bool retorno =
-        datos_abrir_archivo(datos->zips.array[ind], pass_temp);
+        datos_abrir_archivo(private_data->archivos.array[i], pass_temp);
 
         if (retorno == true && datos->insercion == 0) {
           /// si la clave fue correcta la agrega a un arreglo
