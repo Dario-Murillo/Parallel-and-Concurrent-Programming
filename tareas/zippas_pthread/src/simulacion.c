@@ -13,7 +13,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <pthread.h>
-#include <ftw.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include "common.h"
 #include "simulacion.h"
 
@@ -26,7 +27,6 @@
  * @return codigo de error 
 */
 int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]);
-
 
 /**
  * @brief codigo encargado de abrir un archivo zip encriptado
@@ -58,11 +58,19 @@ void datos_impresion(datos_t* datos);
 
 /**
  * @brief principio de mapeo por bloque
+ * @param thread_number numero de hilo
+ * @param trabajo cantidad de trabajo a procesar
+ * @param datos puntero de una variable tipo datos_t
+ * @return carga inicial de trabajo
 */
 int inicio(uint64_t thread_number, int trabajo, datos_t* datos);
 
 /**
  * @brief final de mapeo por bloque
+  * @param thread_number numero de hilo
+ * @param trabajo cantidad de trabajo a procesar
+ * @param datos puntero de una variable tipo datos_t
+ * @return carga final de trabajo
 */
 int final(uint64_t thread_number, int trabajo, datos_t* datos);
 
@@ -71,10 +79,17 @@ int final(uint64_t thread_number, int trabajo, datos_t* datos);
 */
 int create_threads(datos_t* datos);
 
+
 /**
- * https://stackoverflow.com/questions/18792489/
- * how-to-create-a-temporary-directory-in-c-in-linux
+ * @brief elimina una carpeta y los archivos dentro de ella
+ * @param carpeta nombre de la carpeta a eliminar
+ * @return codigo de error
+ * @details Adaptado de:
+  https://stackoverflow.com/questions/2256945/
+  removing-a-non-empty-directory-programmatically-in-c-or-c
+ * 
 */
+int borrar_carpeta(const char *carpeta);
 
 
 datos_t* datos_create() {
@@ -103,37 +118,54 @@ void datos_destroy(datos_t* datos) {
 }
 
 
-static int
-remove_callback(const char *pathname,
-                __attribute__((unused)) const struct stat *sbuf,
-                __attribute__((unused)) int type,
-                __attribute__((unused)) struct FTW *ftwb) {
-  return remove (pathname);
+int borrar_carpeta(const char *carpeta) {
+  DIR *d = opendir(carpeta);
+  size_t path_len = strlen(carpeta);
+  int r = -1;
+
+  if (d) {
+    struct dirent *p;
+    r = 0;
+    while (!r && (p=readdir(d))) {
+      int r2 = -1;
+      char *buf;
+      size_t len;
+      if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+          continue;
+      len = path_len + strlen(p->d_name) + 2; 
+      buf = malloc(len);
+      if (buf) {
+        struct stat statbuf;
+        snprintf(buf, len, "%s/%s", carpeta, p->d_name);
+        if (!stat(buf, &statbuf)) {
+          if (S_ISDIR(statbuf.st_mode))
+            r2 = remove_directory(buf);
+          else
+            r2 = unlink(buf);
+        }
+        free(buf);
+      }
+      r = r2;
+    }
+    closedir(d);
+  }
+  if (!r)
+    r = rmdir(carpeta);
+  return r;
 }
 
 int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
-   /* Create the temporary directory */
-  char template[] = "/tmp/tmpdir.XXXXXX";
-  char *tmp_dirname = mkdtemp (template);
-
-  if (tmp_dirname == NULL) {
-    perror ("tempdir: error: Could not create tmp directory");
+  int error = EXIT_SUCCESS;
+  error = mkdir("tmp", 0777); 
+  if (!error) {
+    return EXIT_FAILURE;
   }
-
 
   int error = datos_analisis(datos, input, argc, argv);
   create_threads(datos);
 
-  /* Change directory */
-  if (chdir (tmp_dirname) == -1) {
-    perror ("tempdir: error: ");
-  }
-  /* Delete the temporary directory */
-  if (nftw (tmp_dirname, remove_callback, FOPEN_MAX,
-            FTW_DEPTH | FTW_MOUNT | FTW_PHYS) == -1) {
-    perror("tempdir: error: ");
-  }
-  datos_impresion(datos);
+
+  borrar_carpeta("tmp");
   return error;
 }
 

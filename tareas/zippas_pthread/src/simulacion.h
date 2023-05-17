@@ -2,11 +2,8 @@
 #ifndef SIMULACION_H
 #define SIMULACION_H
 
-#include <arr_dinamico.h>
-#include <inttypes.h>
-#include <stdbool.h>
 #include "common.h"
-
+#include "arr_dinamico.h"
 
 typedef struct datos datos_t;
 /**
