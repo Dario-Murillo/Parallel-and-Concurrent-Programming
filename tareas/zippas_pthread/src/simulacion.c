@@ -1,6 +1,5 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
-#define  _POSIX_C_SOURCE 200809L
-#define  _XOPEN_SOURCE 500L
+
 
 #define _MAX_INT 1844674407370955161
 
@@ -13,11 +12,10 @@
 #include <zip.h>
 #include <math.h>
 #include <stdint.h>
-#include <pthread.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "common.h"
 #include "simulacion.h"
+
 
 
 /**
@@ -276,8 +274,8 @@ int create_threads(datos_t* datos) {
       char str[17] = "";
       char aux[5] = ".zip";
 
-      int i, index;
-      for (i = 0; i < 16; i++) {
+      int index;
+      for (int i = 0; i < 16; i++) {
         index = rand() % 62;
         str[i] = random_char(index);
       }
@@ -296,7 +294,7 @@ int create_threads(datos_t* datos) {
         fwrite(buf, 1, n, dest);
       }
 
-      arreglo_agregar(&private_data->archivos, tmp_name);
+      arreglo_agregar(&private_data[thread_number].archivos, tmp_name);
       fclose(src);
       fclose(dest);
     }
@@ -309,15 +307,15 @@ int create_threads(datos_t* datos) {
     arreglo_innit(&private_data[thread_number].carga_final);
 
     for (uint64_t largo = 1; largo <= datos->limite; largo++) {
-        int trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
-        char in[100];
-        sprintf(in, "%d", inicio(thread_number, trabajo, datos));
-        arreglo_agregar(&private_data[thread_number].carga_inicio, in);
+      int trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
+      char in[100];
+      sprintf(in, "%d", inicio(thread_number, trabajo, datos));
+      arreglo_agregar(&private_data[thread_number].carga_inicio, in);
 
-        char fi[100];
-        sprintf(fi, "%d",  final(thread_number, trabajo, datos));
-        arreglo_agregar(&private_data[thread_number].carga_final, fi);
-      }
+      char fi[100];
+      sprintf(fi, "%d",  final(thread_number, trabajo, datos));
+      arreglo_agregar(&private_data[thread_number].carga_final, fi);
+    }
 
     private_data[thread_number].datos_compartidos = datos;
     error = pthread_create(&private_data[thread_number].thread
@@ -382,9 +380,9 @@ void* datos_generate_passw(void* data) {
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         puts(pass_temp);
         bool retorno =
-        datos_abrir_archivo(private_data->archivos.array[i], pass_temp);
+        datos_abrir_archivo(private_data->archivos.array[ind], pass_temp);
 
-        if (retorno == true && datos->insercion == 0) {
+        if (retorno == true && private_data->datos_compartidos->insercion == 0) {
           /// si la clave fue correcta la agrega a un arreglo
           pthread_mutex_lock(&datos->mutex);
           arreglo_agregar(&datos->contrasenas, pass_temp);
@@ -393,19 +391,19 @@ void* datos_generate_passw(void* data) {
           pthread_mutex_unlock(&datos->mutex);
           break;
         }
-        pthread_mutex_unlock(&datos->mutex);
 
-        if (datos->encontroPass == true) {
+        if (private_data->datos_compartidos->encontroPass == true) {
           break;
         }
       }
       free(pass_temp);
-      if (datos->encontroPass == true) {
+      if (private_data->datos_compartidos->encontroPass == true) {
         break;
       }
     }
     pthread_mutex_lock(&datos->mutex);
-    if (datos->encontroPass == false && datos->insercion == 0) {
+    if (private_data->datos_compartidos->encontroPass == false 
+      && private_data->datos_compartidos->insercion  == 0) {
       arreglo_agregar(&datos->contrasenas, "\n");
       datos->insercion++;
       pthread_mutex_unlock(&datos->mutex);
