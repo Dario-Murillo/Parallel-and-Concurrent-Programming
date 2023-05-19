@@ -1,6 +1,4 @@
 // Copyright 2023 <Dario Murillo Chaverri C15406>
-
-
 #define _MAX_INT 1844674407370955161
 
 #include <assert.h>
@@ -15,8 +13,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include "simulacion.h"
-
-
 
 /**
  * @brief lee el archivo introducido por la entrada estandar
@@ -112,7 +108,7 @@ void datos_innit(datos_t* datos) {
   arreglo_innit(&datos->alfabeto);
   arreglo_innit(&datos->zips);
   arreglo_innit(&datos->contrasenas);
-  pthread_mutex_init(&datos->mutex, 0);
+  pthread_mutex_init(&datos->mutex, NULL);
   datos->limite = 0;
 }
 
@@ -147,7 +143,7 @@ int borrar_carpeta(const char *carpeta) {
         snprintf(buf, len, "%s/%s", carpeta, p->d_name);
         if (!stat(buf, &statbuf)) {
           if (S_ISDIR(statbuf.st_mode))
-            r2 = remove_directory(buf);
+            r2 = borrar_carpeta(buf);
           else
             r2 = unlink(buf);
         }
@@ -166,16 +162,20 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
   error = mkdir("tmp", 0777); 
   if (!error) {
-    return EXIT_FAILURE;
+  } else {
+    error = EXIT_FAILURE;
+    return error;
   }
-  int error = datos_analisis(datos, input, argc, argv);
+  error = datos_analisis(datos, input, argc, argv);
   /// Iniciar barrera una vez que sabemos la cantidad de hilos
-  pthread_barrier_init(&datos->barrera, NULL, datos->thread_count);
-  create_threads(datos);
-
-
+  if (error == EXIT_SUCCESS) {
+    create_threads(datos);
+  } else {
+    printf("Error al analizar los datos");
+    error = EXIT_FAILURE;
+    return error;
+  }
   borrar_carpeta("tmp");
-  pthread_barrier_destroy(&datos->barrera);
   return error;
 }
 
@@ -264,7 +264,8 @@ int create_threads(datos_t* datos) {
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; thread_number++) {
     
-    arreglo_innit(&private_data->archivos);
+    arreglo_innit(&private_data[thread_number].archivos);
+
     for (uint64_t archivo_number = 0; archivo_number < datos->zips.total
       ; archivo_number++) {
       FILE *src, *dest;
@@ -377,12 +378,12 @@ void* datos_generate_passw(void* data) {
             cont++;
           }
         }
-        pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         puts(pass_temp);
+        pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         bool retorno =
         datos_abrir_archivo(private_data->archivos.array[ind], pass_temp);
 
-        if (retorno == true && private_data->datos_compartidos->insercion == 0) {
+        if (retorno == true) {
           /// si la clave fue correcta la agrega a un arreglo
           pthread_mutex_lock(&datos->mutex);
           arreglo_agregar(&datos->contrasenas, pass_temp);
@@ -391,7 +392,6 @@ void* datos_generate_passw(void* data) {
           pthread_mutex_unlock(&datos->mutex);
           break;
         }
-
         if (private_data->datos_compartidos->encontroPass == true) {
           break;
         }
@@ -409,7 +409,6 @@ void* datos_generate_passw(void* data) {
       pthread_mutex_unlock(&datos->mutex);
     }
     pthread_mutex_unlock(&datos->mutex);
-    pthread_barrier_wait(&datos->barrera);
   }
   return NULL;
 }

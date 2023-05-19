@@ -56,7 +56,6 @@ typedef struct datos {
   pthread_mutex_t mutex;
   bool encontroPass;
   int64_t insercion;
-  pthread_barrier_t barrera;
 } datos_t;
 
 /**
