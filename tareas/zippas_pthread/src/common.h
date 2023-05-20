@@ -55,6 +55,8 @@ typedef struct datos {
   uint64_t thread_count;
   pthread_mutex_t mutex;
   bool encontroPass;
+  pthread_mutex_t abrir_archivo;
+  pthread_mutex_t escribir_archivo;
   int64_t insercion;
 } datos_t;
 

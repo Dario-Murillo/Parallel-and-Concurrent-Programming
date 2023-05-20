@@ -27,13 +27,15 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]);
  * @brief codigo encargado de abrir un archivo zip encriptado
  * @param archivo dirrecion relativa del archivo a abrir
  * @param clave posible clave para abrir el archivo
+ * @param clave puntero de una variable de tipo datos_t
  * @return booleano que indica si abrio el archivo o no
  * @details
  Adaptado de 
  https://www.geeksforgeeks.org/
  c-program-to-read-and-print-all-files-from-a-zip-file/
 */
-bool datos_abrir_archivo(const char* archivo, const char* clave);
+bool datos_abrir_archivo(const char* archivo, const char* clave
+  , datos_t* datos);
 
 /**
  * @brief genera todas las posibles claves dado 
@@ -109,6 +111,8 @@ void datos_innit(datos_t* datos) {
   arreglo_innit(&datos->zips);
   arreglo_innit(&datos->contrasenas);
   pthread_mutex_init(&datos->mutex, NULL);
+  pthread_mutex_init(&datos->abrir_archivo, NULL);
+  pthread_mutex_init(&datos->escribir_archivo, NULL);
   datos->limite = 0;
 }
 
@@ -118,6 +122,8 @@ void datos_destroy(datos_t* datos) {
   arreglo_destroy(&datos->zips);
   arreglo_destroy(&datos->contrasenas);
   pthread_mutex_destroy(&datos->mutex);
+  pthread_mutex_destroy(&datos->abrir_archivo);
+  pthread_mutex_destroy(&datos->escribir_archivo);
   free(datos);
 }
 
@@ -381,7 +387,7 @@ void* datos_generate_passw(void* data) {
         puts(pass_temp);
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         bool retorno =
-        datos_abrir_archivo(private_data->archivos.array[ind], pass_temp);
+        datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos);
 
         if (retorno == true) {
           /// si la clave fue correcta la agrega a un arreglo
@@ -414,12 +420,15 @@ void* datos_generate_passw(void* data) {
 }
 
 
-bool datos_abrir_archivo(const char* archivo, const char* key) {
+bool datos_abrir_archivo(const char* archivo, const char* key
+    ,datos_t* datos) {
   int error = EXIT_SUCCESS;
   bool found_key = false;
   /// apertura de archivo zip
   zip_t* arch = NULL;
+  pthread_mutex_lock(&datos->abrir_archivo);
   arch = zip_open(archivo, 0, &error);
+  pthread_mutex_unlock(&datos->abrir_archivo);
 
   /// estructura que almacena distintos datos
   struct zip_stat* finfo = NULL;
@@ -431,21 +440,21 @@ bool datos_abrir_archivo(const char* archivo, const char* key) {
 
   /// buffer que almacenara el texto del archivo
   char* txt = NULL;
-  zip_int64_t count = 0;
 
-  while ((zip_stat_index(arch, count, 0, finfo)) == 0) {
-    txt = calloc(finfo->size + 1, sizeof(char*));
-    fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
-    if (fd != NULL) {
-      zip_fread(fd, txt, finfo->size);
-      if (txt[0] == 'C') {
-        found_key = true;
-      }
-      zip_fclose(fd);
+  pthread_mutex_lock(&datos->escribir_archivo);
+  zip_stat_index(arch, 0, 0, finfo);
+  txt = calloc(finfo->size + 1, sizeof(char*));
+  fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
+  pthread_mutex_unlock(&datos->escribir_archivo);
+  if (fd != NULL) {
+    zip_fread(fd, txt, finfo->size);
+    if (txt[0] == 'C') {
+      found_key = true;
     }
-    free(txt);
-    count++;
+    zip_fclose(fd);
   }
+  free(txt);
+  
   free(finfo);
   zip_close(arch);
   return found_key;
