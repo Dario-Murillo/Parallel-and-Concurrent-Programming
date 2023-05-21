@@ -116,7 +116,7 @@ void datos_innit(datos_t* datos) {
   sem_init(&datos->acceso, 0, 1);
   sem_init(&datos->barrera, 0, 0);
   datos->limite = 0;
-  datos->arrived = 0;
+  datos->barrera_limite = 0;
 }
 
 void datos_destroy(datos_t* datos) {
@@ -171,14 +171,27 @@ int borrar_carpeta(const char *carpeta) {
 
 int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
+
+  /// creacion de carpeta temporal
   error = mkdir("tmp", 0777); 
   if (!error) {
   } else {
     error = EXIT_FAILURE;
     return error;
   }
+
+  /// analisis de datos
   error = datos_analisis(datos, input, argc, argv);
-  /// Iniciar barrera una vez que sabemos la cantidad de hilos
+
+  /// asigna la ultima clave a la estructura de datos
+  char* aux = calloc(datos->limite + 1, sizeof(char*));
+  int largo = strlen(datos->alfabeto.array[0]) - 1;
+  for (size_t i = 0; i < datos->limite; i++) {
+    aux[i] = datos->alfabeto.array[0][largo];
+  }
+  datos->ultima_clave = aux;
+
+  /// creacion de hilos y ejecuccion del programa
   if (error == EXIT_SUCCESS) {
     create_threads(datos);
   } else {
@@ -186,7 +199,10 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
     error = EXIT_FAILURE;
     return error;
   }
+
+  /// impresion de las claves
   datos_impresion(datos);
+  free(aux);
   borrar_carpeta("tmp");
   return error;
 }
@@ -371,7 +387,7 @@ void* datos_generate_passw(void* data) {
       char* pass_temp = calloc(i + 1, sizeof(char*));
       /// tercer ciclo recorre todas los caracteres del arreglo
       for (int j = atoi(private_data->carga_inicio.array[i-1]); 
-          j < atoi(private_data->carga_final.array[i-1]); j++) {
+          j <= atoi(private_data->carga_final.array[i-1]); j++) {
         /// largo de alfabero = base
         int64_t base = strlen(datos->alfabeto.array[0]);
         int64_t numero = j;
@@ -391,14 +407,10 @@ void* datos_generate_passw(void* data) {
           }
         }
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
-        bool retorno =
-        datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos);
 
-        if (retorno == true) {
-          /// si la clave fue correcta la agrega a un arreglo
+        if (datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos)) {
+          /// si la clave fue correcta
           pthread_mutex_lock(&datos->mutex);
-          arreglo_agregar(&datos->contrasenas, pass_temp);
-          printf("FLAG");
           datos->encontroPass = true;
           datos->insercion++;
           pthread_mutex_unlock(&datos->mutex);
@@ -419,25 +431,17 @@ void* datos_generate_passw(void* data) {
       }
       pthread_mutex_unlock(&datos->mutex);
     }
-    pthread_mutex_lock(&datos->mutex);
-    if (private_data->datos_compartidos->encontroPass == false 
-      && private_data->datos_compartidos->insercion  == 0) {
-      arreglo_agregar(&datos->contrasenas, "\n");
-      datos->insercion++;
-      pthread_mutex_unlock(&datos->mutex);
-    }
-    pthread_mutex_unlock(&datos->mutex);
+
     sem_wait(&datos->acceso);
-    datos->arrived++;
-    if (datos->arrived == datos->thread_count) {
+    datos->barrera_limite++;
+    if (datos->barrera_limite == datos->thread_count) {
       for (uint64_t i = 0; i < datos->thread_count; i++) {
         sem_post(&datos->barrera);
-        datos->arrived = 0;
+        datos->barrera_limite = 0;
       }
     }
     sem_post(&datos->acceso);
     sem_wait(&datos->barrera);
-    puts(datos->contrasenas.array[ind]);
   }
   return NULL;
 }
@@ -464,18 +468,22 @@ bool datos_abrir_archivo(const char* archivo, const char* key
   /// buffer que almacenara el texto del archivo
   char* txt = NULL;
 
-  pthread_mutex_lock(&datos->escribir_archivo);
   zip_stat_index(arch, 0, 0, finfo);
+
   txt = calloc(finfo->size + 1, sizeof(char*));
   fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
-  pthread_mutex_unlock(&datos->escribir_archivo);
   if (fd != NULL) {
     zip_fread(fd, txt, finfo->size);
     if (txt[0] == 'C') {
       found_key = true;
+      arreglo_agregar(&datos->contrasenas, key);
     }
     zip_fclose(fd);
   }
+  if (found_key == false && (strcmp(datos->ultima_clave, key) == 0)) {
+    arreglo_agregar(&datos->contrasenas, "\n");
+  }
+  
   free(txt);
   
   free(finfo);

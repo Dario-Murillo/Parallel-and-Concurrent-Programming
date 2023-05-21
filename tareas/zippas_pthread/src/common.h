@@ -39,13 +39,30 @@
  * modificar memoria compartida
  * 
  * @var datos::encontroPass
- * variable booleana encarga de indicar a los hilos si la 
- * clave de un archivo fue encontrada
+ * variable par indicar a los hilos si la  clave de un archivo fue encontrada
+ * 
+ * @var datos::abrir_archivo
+ * mutex para la apertura de archivos zip
+ * 
+ * @var datos::escribir archivo
+ * mutes para indexar el archivo zip
  * 
  * @var datos::insercion
  * contador de cuantas veces se ha introducido una clave al
  * arreglo, usada para evitar multiples inserciones de la 
  * misma clave
+ * 
+ * @var datos::barrera_limite
+ * contador de hilos que han llegado a la barrera
+ * 
+ * @var datos::acceso
+ * semaforo que bloque barrera_limite
+ * 
+ * @var datos::barrera
+ * semaforo que cumple la funcionalidad de una barrera
+ * 
+ * @var datos::ultima_clave
+ * variable para identificar la ultima clave posible
  * 
 */
 typedef struct datos {
@@ -59,9 +76,10 @@ typedef struct datos {
   pthread_mutex_t abrir_archivo;
   pthread_mutex_t escribir_archivo;
   int64_t insercion;
-  uint64_t arrived;
+  uint64_t barrera_limite;
   sem_t acceso;
   sem_t barrera;
+  char* ultima_clave;
 } datos_t;
 
 /**
@@ -72,16 +90,14 @@ typedef struct datos {
  * hilo de ejecuccion
  * 
  * @var datos_privados::archivos
- * arreglo de las copias unicas sobre las cuales los
- * hilos van a trabajar
+ * arreglo de copias unicas de archivos zip
  * 
  * @var datos_privados::carga_inicio
- * arreglo que contiene el rango inicial sobre el cual
- * los hilos van a trabajar 
+ * arreglo que contiene el rango inicial de trabajo
  * 
  * @var datos_privados::carga_final
- * arreglo que contiene el rango final sobre el cual
- * los hilos van a trabajar 
+ * arreglo que contiene el rango final de trabajo
+ * 
  * @var datos_privados::datos_compartidos
  * puntero a la memoria compartida
  * 
