@@ -110,13 +110,14 @@ void datos_innit(datos_t* datos) {
   arreglo_innit(&datos->alfabeto);
   arreglo_innit(&datos->zips);
   arreglo_innit(&datos->contrasenas);
-  pthread_mutex_init(&datos->mutex, NULL);
+  pthread_mutex_init(&datos->cambiar_variable, NULL);
   pthread_mutex_init(&datos->abrir_archivo, NULL);
-  pthread_mutex_init(&datos->escribir_archivo, NULL);
+  pthread_mutex_init(&datos->leer_variable, NULL);
   sem_init(&datos->acceso, 0, 1);
   sem_init(&datos->barrera, 0, 0);
   datos->limite = 0;
   datos->barrera_limite = 0;
+  datos->encontroPass = false;
 }
 
 void datos_destroy(datos_t* datos) {
@@ -124,9 +125,9 @@ void datos_destroy(datos_t* datos) {
   arreglo_destroy(&datos->alfabeto);
   arreglo_destroy(&datos->zips);
   arreglo_destroy(&datos->contrasenas);
-  pthread_mutex_destroy(&datos->mutex);
+  pthread_mutex_destroy(&datos->cambiar_variable);
   pthread_mutex_destroy(&datos->abrir_archivo);
-  pthread_mutex_destroy(&datos->escribir_archivo);
+  pthread_mutex_destroy(&datos->leer_variable);
   sem_destroy(&datos->acceso);
   sem_destroy(&datos->barrera);
   free(datos);
@@ -378,10 +379,6 @@ void* datos_generate_passw(void* data) {
   datos_t* datos = private_data->datos_compartidos;
   /// primer ciclo recorre todos los archivos zips
   for (uint64_t ind = 0; ind < datos->zips.total; ind++) {
-    pthread_mutex_lock(&datos->mutex);
-    datos->encontroPass = false;
-    datos->insercion = 0;
-    pthread_mutex_unlock(&datos->mutex);
     /// segundo ciclo recorre todos los largos posibles de la clave
     for (uint64_t i = 1; i <= (size_t)datos->limite; i++) {
       char* pass_temp = calloc(i + 1, sizeof(char*));
@@ -410,34 +407,35 @@ void* datos_generate_passw(void* data) {
 
         if (datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos)) {
           /// si la clave fue correcta
-          pthread_mutex_lock(&datos->mutex);
+          pthread_mutex_lock(&datos->cambiar_variable);
           datos->encontroPass = true;
           datos->insercion++;
-          pthread_mutex_unlock(&datos->mutex);
+          pthread_mutex_unlock(&datos->cambiar_variable);
           break;
         }
-        pthread_mutex_lock(&datos->mutex);
+        pthread_mutex_lock(&datos->cambiar_variable);
         if (datos->encontroPass == true) {
-          pthread_mutex_unlock(&datos->mutex);
+          pthread_mutex_unlock(&datos->cambiar_variable);
           break;
         }
-        pthread_mutex_unlock(&datos->mutex);
+        pthread_mutex_unlock(&datos->cambiar_variable);
       }
       free(pass_temp);
-      pthread_mutex_lock(&datos->mutex);
+      pthread_mutex_lock(&datos->leer_variable);
       if (datos->encontroPass == true) {
-        pthread_mutex_unlock(&datos->mutex);
+        pthread_mutex_unlock(&datos->leer_variable);
         break;
       }
-      pthread_mutex_unlock(&datos->mutex);
+      pthread_mutex_unlock(&datos->leer_variable);
     }
-
     sem_wait(&datos->acceso);
     datos->barrera_limite++;
     if (datos->barrera_limite == datos->thread_count) {
       for (uint64_t i = 0; i < datos->thread_count; i++) {
         sem_post(&datos->barrera);
         datos->barrera_limite = 0;
+        datos->encontroPass = false;
+        datos->insercion = 0;
       }
     }
     sem_post(&datos->acceso);

@@ -21,10 +21,13 @@ void datos_innit(datos_t* datos);
 
 /**
  * @brief controlador principal de la simulacion
+ * @param input archivo de entrada estandar
+ * @param argc numero de argumentos
+ * @param argv argumentos
+ * @return codigo de error
  * 
 */
 int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]); 
-
 
 /**
  * @brief libera la memoria usada

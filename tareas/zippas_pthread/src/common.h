@@ -24,7 +24,7 @@
  * el limite de largo de la contrasena
  * 
  * @var datos::zips
- * zips guarda la tercer lines de los lotes de prueba
+ * zips guarda la tercer linea de los lotes de prueba
  * las dirreciones de los archivos zips
  * 
  * @var datos::contrasenas  
@@ -34,23 +34,20 @@
  * @var datos::thread_count
  * cantidad de hilos que se usaran
  * 
- * @var datos::mutex
- * mutex para evitar condiciones de carrera a la hora de
- * modificar memoria compartida
- * 
  * @var datos::encontroPass
  * variable par indicar a los hilos si la  clave de un archivo fue encontrada
  * 
  * @var datos::abrir_archivo
  * mutex para la apertura de archivos zip
  * 
- * @var datos::escribir archivo
- * mutes para indexar el archivo zip
+ * @var datos::cambiar_variable
+ * mutex para modificar memoria compartida
+ * 
+ * @var datos::leer_variable
+ * mutes para leer memoria compartida
  * 
  * @var datos::insercion
- * contador de cuantas veces se ha introducido una clave al
- * arreglo, usada para evitar multiples inserciones de la 
- * misma clave
+ * contador de cuantas veces se ha encontrado una clave 
  * 
  * @var datos::barrera_limite
  * contador de hilos que han llegado a la barrera
@@ -71,10 +68,10 @@ typedef struct datos {
   arr_dinamico_t zips;
   arr_dinamico_t contrasenas;
   uint64_t thread_count;
-  pthread_mutex_t mutex;
   bool encontroPass;
   pthread_mutex_t abrir_archivo;
-  pthread_mutex_t escribir_archivo;
+  pthread_mutex_t cambiar_variable;
+  pthread_mutex_t leer_variable;
   int64_t insercion;
   uint64_t barrera_limite;
   sem_t acceso;
