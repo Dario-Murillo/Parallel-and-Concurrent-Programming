@@ -113,7 +113,10 @@ void datos_innit(datos_t* datos) {
   pthread_mutex_init(&datos->mutex, NULL);
   pthread_mutex_init(&datos->abrir_archivo, NULL);
   pthread_mutex_init(&datos->escribir_archivo, NULL);
+  sem_init(&datos->acceso, 0, 1);
+  sem_init(&datos->barrera, 0, 0);
   datos->limite = 0;
+  datos->arrived = 0;
 }
 
 void datos_destroy(datos_t* datos) {
@@ -124,6 +127,8 @@ void datos_destroy(datos_t* datos) {
   pthread_mutex_destroy(&datos->mutex);
   pthread_mutex_destroy(&datos->abrir_archivo);
   pthread_mutex_destroy(&datos->escribir_archivo);
+  sem_destroy(&datos->acceso);
+  sem_destroy(&datos->barrera);
   free(datos);
 }
 
@@ -141,7 +146,7 @@ int borrar_carpeta(const char *carpeta) {
       char *buf;
       size_t len;
       if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
-          continue;
+        continue;
       len = path_len + strlen(p->d_name) + 2; 
       buf = malloc(len);
       if (buf) {
@@ -181,6 +186,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
     error = EXIT_FAILURE;
     return error;
   }
+  datos_impresion(datos);
   borrar_carpeta("tmp");
   return error;
 }
@@ -384,7 +390,6 @@ void* datos_generate_passw(void* data) {
             cont++;
           }
         }
-        puts(pass_temp);
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
         bool retorno =
         datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos);
@@ -393,19 +398,26 @@ void* datos_generate_passw(void* data) {
           /// si la clave fue correcta la agrega a un arreglo
           pthread_mutex_lock(&datos->mutex);
           arreglo_agregar(&datos->contrasenas, pass_temp);
+          printf("FLAG");
           datos->encontroPass = true;
           datos->insercion++;
           pthread_mutex_unlock(&datos->mutex);
           break;
         }
-        if (private_data->datos_compartidos->encontroPass == true) {
+        pthread_mutex_lock(&datos->mutex);
+        if (datos->encontroPass == true) {
+          pthread_mutex_unlock(&datos->mutex);
           break;
         }
+        pthread_mutex_unlock(&datos->mutex);
       }
       free(pass_temp);
-      if (private_data->datos_compartidos->encontroPass == true) {
+      pthread_mutex_lock(&datos->mutex);
+      if (datos->encontroPass == true) {
+        pthread_mutex_unlock(&datos->mutex);
         break;
       }
+      pthread_mutex_unlock(&datos->mutex);
     }
     pthread_mutex_lock(&datos->mutex);
     if (private_data->datos_compartidos->encontroPass == false 
@@ -415,6 +427,17 @@ void* datos_generate_passw(void* data) {
       pthread_mutex_unlock(&datos->mutex);
     }
     pthread_mutex_unlock(&datos->mutex);
+    sem_wait(&datos->acceso);
+    datos->arrived++;
+    if (datos->arrived == datos->thread_count) {
+      for (uint64_t i = 0; i < datos->thread_count; i++) {
+        sem_post(&datos->barrera);
+        datos->arrived = 0;
+      }
+    }
+    sem_post(&datos->acceso);
+    sem_wait(&datos->barrera);
+    puts(datos->contrasenas.array[ind]);
   }
   return NULL;
 }

@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <semaphore.h>
 #include "arr_dinamico.h"
 
 
@@ -58,6 +59,9 @@ typedef struct datos {
   pthread_mutex_t abrir_archivo;
   pthread_mutex_t escribir_archivo;
   int64_t insercion;
+  uint64_t arrived;
+  sem_t acceso;
+  sem_t barrera;
 } datos_t;
 
 /**
