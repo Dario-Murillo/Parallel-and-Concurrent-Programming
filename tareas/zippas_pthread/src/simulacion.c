@@ -78,7 +78,7 @@ int final(uint64_t thread_number, int trabajo, datos_t* datos);
  * @param datos puntero de una variable tipo datos_t
  * @return codigo de error
 */
-int create_threads(datos_t* datos);
+int crear_hilos(datos_t* datos);
 
 
 /**
@@ -276,7 +276,7 @@ int final(uint64_t thread_number, int trabajo, datos_t* datos) {
   return inicio(thread_number+1, trabajo, datos);
 }
 
-int create_threads(datos_t* datos) {
+int crear_hilos(datos_t* datos) {
   int error = EXIT_SUCCESS;
   datos_privados_t* private_data = (datos_privados_t*)
     calloc(datos->thread_count, sizeof(datos_privados_t));
