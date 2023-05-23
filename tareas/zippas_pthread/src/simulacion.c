@@ -188,7 +188,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
 
   /// creacion de hilos y ejecuccion del programa
   if (error == EXIT_SUCCESS) {
-    create_threads(datos);
+    crear_hilos(datos);
   } else {
     printf("Error al analizar los datos");
     error = EXIT_FAILURE;
