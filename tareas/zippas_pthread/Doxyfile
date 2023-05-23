@@ -4,9 +4,9 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Tarea01-Zippas Serial"
+PROJECT_NAME           = "Tarea02-Zippas_Pthread"
 PROJECT_NUMBER         = 1.0.0
-PROJECT_BRIEF          = "Descifrador a fuerza bruta de contrasenas de archivos zip"
+PROJECT_BRIEF          = "Descifrador concurrente a fuerza bruta de claves de archivos zip"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = doc
 CREATE_SUBDIRS         = YES
