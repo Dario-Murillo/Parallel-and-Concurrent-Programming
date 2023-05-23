@@ -1,0 +1,110 @@
+struct datos_priv
+  declare thread
+  declare archivos
+  declare carga_inicio
+  declare carga_final
+  declare datos_compartidos
+
+struct datos
+  declare alfabeto
+  declare limite
+  declare zips
+  declare contrasenas
+  declare thread_count
+  declare encontroPass
+  declare abrir_archivo
+  declare cambiar_variable
+  declare leer_variable
+  declare insercion
+  declare barrera_limite
+  declare acceso
+  declare barrera
+
+procedure main(argc, argv[]):
+  declare input
+  declare datos := datos_create()
+  run(datos, input, argc, argv)
+end procedure
+
+procedure run(datos, input, argc, argv[]):
+  datos_innit(datos)
+  datos_analisis(datos, input, argc, argv[])
+  crear_hilos(datos)
+  datos_imprimir(datos)
+end procedure
+
+procedure datos_innit(datos):
+  arreglo_innit(alfabeto)
+  arreglo_innit(zips)
+  arreglo_innit(contrasenas)
+  shared encontro_pass := false
+  shared abrir_archivo := create_mutex()
+  shared cambiar_variable := create_mutex()
+  shared leer_variable := create_mutex()
+  shared insercion := 0
+  shared barrera_limite := 0
+  shared acceso := create_semaphore(1)
+  shared barrera := create_semaphore(0)
+end procedure
+
+procedure datos_analisis(datos, argc, argv[]):
+  declare str[120]
+  declare linea := 0
+  while str != input do {
+    if (linea := 0) do
+      arreglo_agregar(alfabeto,str)
+    end else (linea :=1 ) do
+      shared limite := str
+    end else (linea >= 3) do 
+      arreglo_agregar(zips,str)
+    end
+    linea := linea + 1
+  } end while
+  shared thread_count := integer(argv[1])
+end procedure
+
+procedure inicio(thread_number, trabajo, thread_count):
+  min := 0
+  if thread_number < trabajo % thread do
+    min := thread_number
+  end if
+  if  do
+    min := trabajo % thread_count
+  end if
+  thread_number * (trabajo / datos->thread_count) + min
+end procedure
+
+procedure final(thread_number, trabajo, thread_count):
+  inicio(thread_number+1, trabajo, thread_count)
+end procedure
+
+procedure crear_hilos(datos):
+  declare datos_priv := thread_count
+  for thread_number := 0 to thread_count do
+    arreglo_innit(archivos)
+    for i := 0 to zips.total do
+        declare file = copy(zips[i])
+        arreglo_agregar(archivos , file)
+    end for
+  end for
+
+  for thread_number := 0 to thread_count do
+    arreglo_innit(carga_inicio)
+    arreglo_innit(carga_final)
+    for i := 1 to limite do
+        declare trabajo = i ^ alfabeto.total
+        declare inicio = carga_inicio(thread_number, trabajo, thread_count)
+        arreglo_agregar(carga_inicio, inicio)
+        declare final = carga_final(thread_number, trabajo, thread_count)
+        arreglo_agregar(carga_final, final)
+        create_thread(thread, datos_generate_password(), datos_priv)
+    end for
+  end for
+end procedure
+
+procedure datos_imprimir(datos):
+  declare output := stdout 
+  for i := 0 to zips total do
+    print zips[i] contrasenas[i]
+  end for
+end procedure

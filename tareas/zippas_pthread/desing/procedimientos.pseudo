@@ -1,0 +1,91 @@
+procedure datos_generate_password(datos_priv):
+  datos = datos_priv.datos_compartidos
+  for ind := 0 to zip.total do 
+    for i := 1 to limite do
+      declare pass_temp := i+1
+      for j := carga_inicio[i-1] to carga_final[i-1] do
+        declare base := strlen(alfabeto)
+        declare numero := j
+        declare cont := 0
+        if numero := 0 do
+          for k := 0 to i  do
+            pass_temp[k] := alfabeto[0]
+          end for
+        end if 
+        while numero > 0 do
+          declare div := numero / base
+          declare residuo := numero % base
+          pass_temp[cont] := alfabeto[residuo]
+          numero := div
+          cont++
+        end while
+
+        if datos_abrir_archivo(zips[ind], pass_temp) := 0 do
+          lock(cambiar_variable)
+          arreglo_agregar(contrasenas, pass_temp)
+          encontro = true
+          insercion++
+          lock(cambiar_variable)
+        end if
+
+        lock(cambiar_variable)
+        if encontro_pass := true do 
+          break
+          unlock(cambiar_variable)
+        end if
+        unlock(cambiar_variable)
+      end for
+      lock(cambiar_variable)
+      if encontro_pass = true do 
+        break
+        unlock(cambiar_variable)
+      end if
+      unlock(cambiar_variable)
+  end for
+  wait(acceso)
+  barrera_limite++
+  if barrera_limite = thread_count do
+    if encontroPass = false do
+      arreglo_agregar(zips, \n)
+    end if
+    for i := 0 to thread_count do
+      signal(barrera)
+      barrera_limite := 0
+      encontroPass := false
+      insercion := 0
+    end for
+  end
+  signal(acceso)
+  wait(barrera)
+end
+end procedure
+
+
+procedure datos_abrir_archivo(archive, key):
+  declare error := 0
+  declare archive = zips.array[i]
+  declare found_key := false 
+  declare arch := NULL
+  
+  lock(abrir_archivo)
+  arch = zip_open(archive, 0, error) != NULL
+  unlock(abrir_archivo)
+
+  declare finfo
+  zip_stat_init(finfo)
+  declare fd := NULL
+  declare txt := NULL
+  
+  zip_stat_index(arch, 0, 0 finfo) 
+  txt := finfo.size
+  fd = zip_fopen_index_encrypted(arch, count, 0, key)
+  zip_fread(fd, txt, finfo->size);
+  if txt := 'C' do
+    found_key := true
+    arreglo_agregar(contrasenas, key)
+  end
+  count++
+  
+  zip_close(za)
+end procedure
+
