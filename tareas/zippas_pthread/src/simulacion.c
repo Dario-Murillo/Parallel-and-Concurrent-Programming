@@ -19,6 +19,8 @@
  * y carga los valores en las variables respectivas
  * @param datos puntero de una variable tipo datos_t
  * @param input archivo introducido de la entrada estandar
+ * @param argc cantidad de argumentos
+ * @param argv argumentos
  * @return codigo de error 
 */
 int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]);
@@ -27,7 +29,7 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]);
  * @brief codigo encargado de abrir un archivo zip encriptado
  * @param archivo dirrecion relativa del archivo a abrir
  * @param clave posible clave para abrir el archivo
- * @param clave puntero de una variable de tipo datos_t
+ * @param datos puntero de una variable de tipo datos_t
  * @return booleano que indica si abrio el archivo o no
  * @details
  Adaptado de 
