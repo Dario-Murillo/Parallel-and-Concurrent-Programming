@@ -429,11 +429,11 @@ void* datos_generate_passw(void* data) {
       if (datos->encontroPass == false) {
         arreglo_agregar(&datos->contrasenas, "\n");
       }
+      datos->encontroPass = false;
+      datos->insercion = 0;
+      datos->barrera_limite = 0;
       for (uint64_t i = 0; i < datos->thread_count; i++) {
         sem_post(&datos->barrera);
-        datos->barrera_limite = 0;
-        datos->encontroPass = false;
-        datos->insercion = 0;
       }
     }
     sem_post(&datos->acceso);
