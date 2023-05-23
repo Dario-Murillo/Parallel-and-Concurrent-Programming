@@ -58,8 +58,6 @@
  * @var datos::barrera
  * semaforo que cumple la funcionalidad de una barrera
  * 
- * @var datos::ultima_clave
- * variable para identificar la ultima clave posible
  * 
 */
 typedef struct datos {
@@ -76,7 +74,6 @@ typedef struct datos {
   uint64_t barrera_limite;
   sem_t acceso;
   sem_t barrera;
-  char* ultima_clave;
 } datos_t;
 
 /**

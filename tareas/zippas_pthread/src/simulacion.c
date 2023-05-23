@@ -184,14 +184,6 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   /// analisis de datos
   error = datos_analisis(datos, input, argc, argv);
 
-  /// asigna la ultima clave a la estructura de datos
-  char* aux = calloc(datos->limite + 1, sizeof(char*));
-  int largo = strlen(datos->alfabeto.array[0]) - 1;
-  for (size_t i = 0; i < datos->limite; i++) {
-    aux[i] = datos->alfabeto.array[0][largo];
-  }
-  datos->ultima_clave = aux;
-
   /// creacion de hilos y ejecuccion del programa
   if (error == EXIT_SUCCESS) {
     create_threads(datos);
@@ -203,8 +195,6 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
 
   /// impresion de las claves
   datos_impresion(datos);
-  free(aux);
-  sleep(10);
   borrar_carpeta("tmp");
   return error;
 }
@@ -291,10 +281,10 @@ int create_threads(datos_t* datos) {
 
   unsigned int seed = time(NULL);
 
+  /// crea copias de cada archivo para cada hilo
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; thread_number++) {
     arreglo_innit(&private_data[thread_number].archivos);
-
     for (uint64_t archivo_number = 0; archivo_number < datos->zips.total
       ; archivo_number++) {
       FILE *src, *dest;
@@ -330,6 +320,7 @@ int create_threads(datos_t* datos) {
     }
   }
 
+  /// reparte la carga y crea los hilos
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
       ; ++thread_number) {
     arreglo_innit(&private_data[thread_number].carga_inicio);
@@ -359,6 +350,7 @@ int create_threads(datos_t* datos) {
     }
   }
 
+  /// une los hilos y libera la memoria privada
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; ++thread_number) {
       pthread_join(private_data[thread_number].thread, NULL);
@@ -421,16 +413,20 @@ void* datos_generate_passw(void* data) {
         pthread_mutex_unlock(&datos->cambiar_variable);
       }
       free(pass_temp);
-      pthread_mutex_lock(&datos->leer_variable);
+      pthread_mutex_lock(&datos->cambiar_variable);
       if (datos->encontroPass == true) {
-        pthread_mutex_unlock(&datos->leer_variable);
+        pthread_mutex_unlock(&datos->cambiar_variable);
         break;
       }
-      pthread_mutex_unlock(&datos->leer_variable);
+      pthread_mutex_unlock(&datos->cambiar_variable);
     }
+    // barrera para asegurarse que los hilos salieron de los ciclos
     sem_wait(&datos->acceso);
     datos->barrera_limite++;
     if (datos->barrera_limite == datos->thread_count) {
+      if (datos->encontroPass == false) {
+        arreglo_agregar(&datos->contrasenas, "\n");
+      }
       for (uint64_t i = 0; i < datos->thread_count; i++) {
         sem_post(&datos->barrera);
         datos->barrera_limite = 0;
@@ -472,15 +468,13 @@ bool datos_abrir_archivo(const char* archivo, const char* key
   fd = zip_fopen_index_encrypted(arch, 0, ZIP_FL_ENC_GUESS, key);
   if (fd != NULL) {
     zip_fread(fd, txt, finfo->size);
-    if (txt[0] == 'C') {
+    if (strcmp(txt, "CI0117-23a") == 0) {
       found_key = true;
       arreglo_agregar(&datos->contrasenas, key);
     }
     zip_fclose(fd);
   }
-  if (found_key == false && (strcmp(datos->ultima_clave, key) == 0)) {
-    arreglo_agregar(&datos->contrasenas, "\n");
-  }
+
   free(txt);
   free(finfo);
   zip_close(arch);
