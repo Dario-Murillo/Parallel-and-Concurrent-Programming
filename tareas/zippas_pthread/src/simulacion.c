@@ -148,7 +148,7 @@ int borrar_carpeta(const char *carpeta) {
       size_t len;
       if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
         continue;
-      len = path_len + strlen(p->d_name) + 2; 
+      len = path_len + strlen(p->d_name) + 2;
       buf = malloc(len);
       if (buf) {
         struct stat statbuf;
@@ -174,7 +174,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
 
   /// creacion de carpeta temporal
-  error = mkdir("tmp", 0777); 
+  error = mkdir("tmp", 0777);
   if (!error) {
   } else {
     error = EXIT_FAILURE;
@@ -204,6 +204,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   /// impresion de las claves
   datos_impresion(datos);
   free(aux);
+  sleep(10);
   borrar_carpeta("tmp");
   return error;
 }
@@ -264,14 +265,14 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
 }
 
 char random_char(int index) {
-  char charset[] = 
+  char charset[] =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   return charset[index];
 }
 
 int inicio(uint64_t thread_number, int trabajo, datos_t* datos) {
   int min = 0;
-  if(thread_number <  trabajo % datos->thread_count) {
+  if (thread_number <  trabajo % datos->thread_count) {
     min = thread_number;
   } else {
     min = trabajo % datos->thread_count;
@@ -288,11 +289,10 @@ int create_threads(datos_t* datos) {
   datos_privados_t* private_data = (datos_privados_t*)
     calloc(datos->thread_count, sizeof(datos_privados_t));
 
-  srand(time(NULL));
+  unsigned int seed = time(NULL);
 
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; thread_number++) {
-    
     arreglo_innit(&private_data[thread_number].archivos);
 
     for (uint64_t archivo_number = 0; archivo_number < datos->zips.total
@@ -306,7 +306,7 @@ int create_threads(datos_t* datos) {
 
       int index;
       for (int i = 0; i < 16; i++) {
-        index = rand() % 62;
+        index = rand_r(&seed) % 62;
         str[i] = random_char(index);
       }
 
@@ -332,18 +332,17 @@ int create_threads(datos_t* datos) {
 
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
       ; ++thread_number) {
-    
     arreglo_innit(&private_data[thread_number].carga_inicio);
     arreglo_innit(&private_data[thread_number].carga_final);
 
     for (uint64_t largo = 1; largo <= datos->limite; largo++) {
       int trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
       char in[100];
-      sprintf(in, "%d", inicio(thread_number, trabajo, datos));
+      snprintf(in, sizeof(in), "%d", inicio(thread_number, trabajo, datos));
       arreglo_agregar(&private_data[thread_number].carga_inicio, in);
 
       char fi[100];
-      sprintf(fi, "%d",  final(thread_number, trabajo, datos));
+      snprintf(fi, sizeof(fi), "%d", final(thread_number, trabajo, datos));
       arreglo_agregar(&private_data[thread_number].carga_final, fi);
     }
 
@@ -383,7 +382,7 @@ void* datos_generate_passw(void* data) {
     for (uint64_t i = 1; i <= (size_t)datos->limite; i++) {
       char* pass_temp = calloc(i + 1, sizeof(char*));
       /// tercer ciclo recorre todas los caracteres del arreglo
-      for (int j = atoi(private_data->carga_inicio.array[i-1]); 
+      for (int j = atoi(private_data->carga_inicio.array[i-1]);
           j <= atoi(private_data->carga_final.array[i-1]); j++) {
         /// largo de alfabero = base
         int64_t base = strlen(datos->alfabeto.array[0]);
@@ -405,7 +404,8 @@ void* datos_generate_passw(void* data) {
         }
         pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
 
-        if (datos_abrir_archivo(private_data->archivos.array[ind], pass_temp, datos)) {
+        if (datos_abrir_archivo(private_data->archivos.array[ind],
+          pass_temp, datos)) {
           /// si la clave fue correcta
           pthread_mutex_lock(&datos->cambiar_variable);
           datos->encontroPass = true;
@@ -446,7 +446,7 @@ void* datos_generate_passw(void* data) {
 
 
 bool datos_abrir_archivo(const char* archivo, const char* key
-    ,datos_t* datos) {
+    , datos_t* datos) {
   int error = EXIT_SUCCESS;
   bool found_key = false;
   /// apertura de archivo zip
@@ -481,9 +481,7 @@ bool datos_abrir_archivo(const char* archivo, const char* key
   if (found_key == false && (strcmp(datos->ultima_clave, key) == 0)) {
     arreglo_agregar(&datos->contrasenas, "\n");
   }
-  
   free(txt);
-  
   free(finfo);
   zip_close(arch);
   return found_key;

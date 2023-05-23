@@ -27,7 +27,7 @@ void datos_innit(datos_t* datos);
  * @return codigo de error
  * 
 */
-int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]); 
+int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]);
 
 /**
  * @brief libera la memoria usada
