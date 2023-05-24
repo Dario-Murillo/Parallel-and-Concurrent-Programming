@@ -1,3 +1,3 @@
 # Enunciado del ejemplo 
 
-Modifique su solución a Ejemplo 41 para calcular el promedio de forma paralela usando reducciones de OpenMP. Compare su código resultante con la versión serial original.
+Haga un programa que lea un conjunto arbitrario de números flotantes de la entrada estándar, calcule concurrentemente y en una pasada por el arreglo los siguientes estadísticos: valor mínimo, promedio, desviación estándar, y máximo. Imprima cada estadístico en la salida estándar. La cantidad de números no se conoce de antemano. Use reducciones de OpenMP.
