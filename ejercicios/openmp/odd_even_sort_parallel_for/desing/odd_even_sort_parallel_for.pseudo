@@ -1,0 +1,38 @@
+procedure main(argc, argv[]):
+  declare size := argv[1]
+  declare thread_count := argv[2]
+  declare array of doubles size := size
+
+  for i := 0 to size do
+    array[i] := random number
+  end
+  parallel_odd_even_sort(array, n, thread_count)
+end procedure
+
+procedure swap(a, b):
+  declare temp := a
+  a := b
+  b := temp
+end procedure
+
+procedure parallel_odd_even_sort(array, n, thread_count):
+  for phase := 0 to n do
+    if phase % 2 = 0 do
+        #pragma omp parallel for num_threads(thread_count) \
+        default(none) shared(array, n, std::cout)
+        for i := 1 to n do
+            if array[i-1] > array[i] do
+            swap(array[i-1], array[i])
+        end
+      end
+    else
+    #pragma omp parallel for num_threads(thread_count) \
+    default(none) shared(array, n, std::cout)
+      for i := 1 to n-1 do
+        if array[i] > array[i+1] do
+          swap(array[i], array[i+1])
+        end
+      end
+    end
+  end
+end procedure
