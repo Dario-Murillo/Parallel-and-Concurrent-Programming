@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-void serial_odd_even_sort(double* array, int n, int thread_count);
+void parallel_odd_even_sort(double* array, int n, int thread_count);
 void swap(double* a, double* b);
 
 int main(int argc, char *argv[]) {
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     array[i] = dist(rng);
   }
 
-  serial_odd_even_sort(array, size, thread_count);
+  parallel_odd_even_sort(array, size, thread_count);
   std::cout << "After sorting" << std::endl;
   for (int i = 0; i < size; i++) {
     std::cout << array[i] << std::endl;
@@ -43,7 +43,7 @@ void swap(double* a, double* b) {
   *b = temp;
 }
 
-void serial_odd_even_sort(double* array, int n, int thread_count) {
+void parallel_odd_even_sort(double* array, int n, int thread_count) {
   for (int phase = 0; phase < n; ++phase) {
     if (phase % 2 == 0) {
       #pragma omp parallel for num_threads(thread_count) \
