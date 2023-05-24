@@ -1,0 +1,16 @@
+procedure main(argc, argv[]):
+  declare thread_count := argv[1]
+  declare iteration_count := argv[2]
+  declare stage_count := argv[3]
+
+  #pragma omp parallel num_threads(thread_count) \
+  default(none) shared(stage_count, iteration_count, std::cout)
+  for count := 0 to stage_count do
+    #pragma omp for
+    for iteration := 0 to iteration_count do
+      print "stage" stage_count "thread"  omp_get_thread_num()  "/"
+        omp_get_num_threads() <<": iteration "  iteration  "/"
+        iteration_count << std::endl;
+    end
+  end
+end procedure
