@@ -1,0 +1,50 @@
+procedure main(argc, argv[]):
+  thread_count := argv[1]
+  declare values as array of doubles
+
+  while value do
+    array := value
+  end
+
+  declare sum := 0
+  declare maxValue := values[0]
+  declare minValue := values[0]
+  declare standarDeviation := 0
+  declare mean := accumulate(values.begin(),
+  values.end(), 0.0) / values.size();
+
+  #pragma omp parallel for num_threads(thread_count) schedule(runtime) \
+    default(none) shared(values) reduction(+:sum) reduction(max:maxValue) \
+    reduction(min:minValue)
+  for i := o to values.size do
+    sum += values[index];
+    maxValue := maxValue > values[index] ? maxValue : values[index]
+    minValue := minValue < values[index] ? minValue : values[index]
+    standardDeviation += (values[index] - mean) ^ 2;
+  end
+
+
+  #pragma omp parallel for num_threads(thread_count) schedule(runtime) \
+  default(none) shared(values)
+  for i := 0 to value.size do 
+    for (size_t j = i; j < values.size(); j++) {
+      #pragma omp critical
+      if (values[i] > values[j]) {
+        swap(values[i], values[j]);
+      }
+    }
+  end
+  declare middle := values.size() / 2;
+  declare median := values.size() % 2 == 0 ?
+    (values[middle - 1] + values[middle]) / 2
+    : values[middle];
+
+  declare average := sum / values.size
+  standardDeviation := sqrt(standardDeviation / values.size)
+
+  print "Mediana" median
+  print "Promedio" average
+  print "Valor maximo" maxValue
+  print "Valor minimo" minValue
+  print "Desviacion estandard" standardDeviation
+end procedure
