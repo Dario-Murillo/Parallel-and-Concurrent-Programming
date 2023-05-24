@@ -83,7 +83,7 @@ procedure datos_abrir_archivo(archive, key):
   if txt := 'C' do
     found_key := true
     arreglo_agregar(contrasenas, key)
-  end
+  end if
   count++
   
   zip_close(za)

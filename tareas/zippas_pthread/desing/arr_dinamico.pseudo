@@ -34,5 +34,5 @@ procedure aumentar_capacidad(array):
   if nueva_capacidad do
     capacidad = nueva_capacidad
     elemento = nuevos_elementos
-  end
+  end if
 end procedure
