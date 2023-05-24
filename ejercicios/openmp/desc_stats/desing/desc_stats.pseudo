@@ -1,0 +1,31 @@
+procedure main(argc, argv[]):
+  thread_count := argv[1]
+  declare values as array of doubles
+
+  while value do
+    array := value
+  end
+
+  declare sum := 0
+  declare maxValue := values[0]
+  declare minValue := values[0]
+  declare standarDeviation := 0
+  declare mean := accumulate(values.begin(),
+  values.end(), 0.0) / values.size();
+
+  #pragma omp parallel for num_threads(thread_count) schedule(runtime) \
+    default(none) shared(values) reduction(+:sum) reduction(max:maxValue) \
+    reduction(min:minValue)
+  for i := o to values.size do
+    sum += values[index];
+    maxValue := maxValue > values[index] ? maxValue : values[index]
+    minValue := minValue < values[index] ? minValue : values[index]
+    standardDeviation += (values[index] - mean) ^ 2;
+  end
+  declare average := sum / values.size
+  standardDeviation := sqrt(standardDeviation / values.size)
+  print "Promedio" average
+  print "Valor maximo" maxValue
+  print "Valor minimo" minValue
+  print "Desviacion estandard" standardDeviation
+end procedure
