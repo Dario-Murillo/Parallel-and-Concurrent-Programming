@@ -62,7 +62,7 @@ void datos_impresion(datos_t* datos);
  * @param datos puntero de una variable tipo datos_t
  * @return carga inicial de trabajo
 */
-int inicio(uint64_t thread_number, int trabajo, datos_t* datos);
+int inicio(uint64_t thread_number, uint64_t trabajo, datos_t* datos);
 
 /**
  * @brief final de mapeo por bloque
@@ -71,7 +71,7 @@ int inicio(uint64_t thread_number, int trabajo, datos_t* datos);
  * @param datos puntero de una variable tipo datos_t
  * @return carga final de trabajo
 */
-int final(uint64_t thread_number, int trabajo, datos_t* datos);
+int final(uint64_t thread_number, uint64_t trabajo, datos_t* datos);
 
 /**
  * @brief crea equipo de hilos con los respectivos datos
@@ -262,7 +262,7 @@ char random_char(int index) {
   return charset[index];
 }
 
-int inicio(uint64_t thread_number, int trabajo, datos_t* datos) {
+int inicio(uint64_t thread_number, uint64_t trabajo, datos_t* datos) {
   int min = 0;
   if (thread_number <  trabajo % datos->thread_count) {
     min = thread_number;
@@ -272,7 +272,7 @@ int inicio(uint64_t thread_number, int trabajo, datos_t* datos) {
   return thread_number * (trabajo / datos->thread_count) + min;
 }
 
-int final(uint64_t thread_number, int trabajo, datos_t* datos) {
+int final(uint64_t thread_number, uint64_t trabajo, datos_t* datos) {
   return inicio(thread_number+1, trabajo, datos);
 }
 
@@ -329,7 +329,7 @@ int crear_hilos(datos_t* datos) {
     arreglo_innit(&private_data[thread_number].carga_final);
 
     for (uint64_t largo = 1; largo <= datos->limite; largo++) {
-      int trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
+      uint64_t trabajo = pow(strlen(datos->alfabeto.array[0]), largo);
       char in[100];
       snprintf(in, sizeof(in), "%d", inicio(thread_number, trabajo, datos));
       arreglo_agregar(&private_data[thread_number].carga_inicio, in);
