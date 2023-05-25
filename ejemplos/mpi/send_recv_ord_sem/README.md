@@ -1,0 +1,9 @@
+# Enunciado del ejemplo
+
+Modifique el ejemplo Ejemplo 43 (hello) para que los procesos saluden en orden por su identificador (rank). Dado que la función de comunicación punto a punto MPI_Recv implica bloqueo, y la espera es el mecanismo fundamental del control de concurrencia, puede usarse para sincronizar procesos, junto con MPI_Send. La salida será siempre determinística, por ejemplo:
+
+Hello from main thread of process 0 of 3 on a_host <br>
+Hello from main thread of process 1 of 3 on other_host <br>
+Hello from main thread of process 2 of 3 on a_host <br>
+
+Cada proceso debe escribir en la salida estándar su saludo. Controle la concurrencia de esta impresión con comunicación punto-a-punto simulando semáforos.
