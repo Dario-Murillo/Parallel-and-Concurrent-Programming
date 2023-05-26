@@ -23,11 +23,11 @@ struct datos
 procedure main(argc, argv[]):
   declare input
   declare datos := datos_create()
+  datos_innit(datos)
   run(datos, input, argc, argv)
 end procedure
 
 procedure run(datos, input, argc, argv[]):
-  datos_innit(datos)
   datos_analisis(datos, input, argc, argv[])
   crear_hilos(datos)
   datos_imprimir(datos)
@@ -97,7 +97,7 @@ procedure crear_hilos(datos):
         arreglo_agregar(carga_inicio, inicio)
         declare final = carga_final(thread_number, trabajo, thread_count)
         arreglo_agregar(carga_final, final)
-        create_thread(thread, datos_generate_password(), datos_priv)
+        create_thread(datos_generate_password(), datos_priv)
     end for
   end for
 end procedure
