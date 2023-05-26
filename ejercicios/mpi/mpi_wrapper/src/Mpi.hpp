@@ -8,11 +8,11 @@
 #include <stdexcept>
 
 class Mpi {
-private:
+ private:
   int process_number;
   int process_count;
   char* process_hostname;
-public:
+ public:
   inline int getProcessNumber();
   inline int getProcessCount();
   inline char* getHostname();
@@ -31,7 +31,8 @@ Mpi::Mpi(int* argc, char** argv[]) {
       if (MPI_Comm_size(MPI_COMM_WORLD, &process_count) != MPI_SUCCESS) {
         throw std::runtime_error("No se pudo obtener el numero total de procesos\n");
       }
-      this->process_hostname = "\0";
+      // char process_hostname[MPI_MAX_PROCESSOR_NAME] = { '\0' };
+      this->process_hostname = (char*)calloc(MPI_MAX_PROCESSOR_NAME, sizeof(char));
       int hostname_length = -1;
       if (MPI_Get_processor_name(process_hostname, &hostname_length)) {
         throw std::runtime_error("No se pudo obtener el nombre del proceso\n");
