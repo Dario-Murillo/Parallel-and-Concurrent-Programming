@@ -21,6 +21,7 @@ void datos_innit(datos_t* datos);
 
 /**
  * @brief controlador principal de la simulacion
+ * @param datos puntero a una variable de tipos datos_t
  * @param input archivo de entrada estandar
  * @param argc numero de argumentos
  * @param argv argumentos

@@ -16,7 +16,7 @@
 
 /**
  * @brief lee el archivo introducido por la entrada estandar
- * y carga los valores en las variables respectivas
+ * y carga los valores en la estructura de datos
  * @param datos puntero de una variable tipo datos_t
  * @param input archivo introducido de la entrada estandar
  * @param argc cantidad de argumentos
@@ -183,10 +183,10 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
     return error;
   }
 
-  /// analisis de datos
+  // analisis de datos
   error = datos_analisis(datos, input, argc, argv);
 
-  /// creacion de hilos y ejecuccion del programa
+  // creacion de hilos y ejecuccion del programa
   if (error == EXIT_SUCCESS) {
     crear_hilos(datos);
   } else {
@@ -195,7 +195,7 @@ int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
     return error;
   }
 
-  /// impresion de las claves
+  // impresion de las claves
   datos_impresion(datos);
   borrar_carpeta("tmp");
   return error;
@@ -211,13 +211,13 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
     uint64_t value = 0;
     while (fgets(str, 120, input)) {
       if (linea == 0) {
-        /// strcspn evita agregar cambios de linea
+        // strcspn evita agregar cambios de linea
         str[strcspn(str, "\n")] = 0;
         arreglo_agregar(&datos->alfabeto, str);
       } else if (linea == 1 && linea < 2) {
         str[strcspn(str, "\n")] = 0;
         sscanf(str, "%"  SCNu64 , &value);
-        /// revisa que no sea un numero muy grande
+        // revisa que no sea un numero muy grande
         if (value < _MAX_INT) {
           sscanf(str, "%"  SCNu64 , &datos->limite);
         } else {
@@ -229,7 +229,7 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
       } else if (linea >= 3) {
         str[strcspn(str, "\n")] = 0;
         FILE* fp;
-        /// revisar si es una dirrecion valida
+        // revisar si es una dirrecion valida
         if ((fp = fopen(str, "r")) != NULL) {
           arreglo_agregar(&datos->zips, str);
           fclose(fp);
@@ -245,8 +245,10 @@ int datos_analisis(datos_t* datos, FILE* input, int argc, char* argv[]) {
     error = EXIT_FAILURE;
     return error;
   }
+  // numero por default de hilos
   datos->thread_count = sysconf(_SC_NPROCESSORS_ONLN);
   if (argc == 2) {
+    // revisa si hay un argumento para indicar la cantidad de hilos
     if (sscanf(argv[1], "%" SCNu64, &datos->thread_count) == 1) {
     } else {
       fprintf(stderr, "Error: invalid thread count\n");
@@ -352,7 +354,7 @@ int crear_hilos(datos_t* datos) {
     }
   }
 
-  /// une los hilos y libera la memoria privada
+  // une los hilos y libera la memoria privada
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; ++thread_number) {
       pthread_join(private_data[thread_number].thread, NULL);
@@ -370,15 +372,15 @@ void* datos_generate_passw(void* data) {
   assert(data);
   datos_privados_t* private_data = (datos_privados_t*) data;
   datos_t* datos = private_data->datos_compartidos;
-  /// primer ciclo recorre todos los archivos zips
+  // primer ciclo recorre todos los archivos zips
   for (uint64_t ind = 0; ind < datos->zips.total; ind++) {
-    /// segundo ciclo recorre todos los largos posibles de la clave
+    // segundo ciclo recorre todos los largos posibles de la clave
     for (uint64_t i = 1; i <= (size_t)datos->limite; i++) {
       char* pass_temp = calloc(i + 1, sizeof(char*));
-      /// tercer ciclo recorre todas los caracteres del arreglo
+      // tercer ciclo recorre todas los caracteres del arreglo
       for (int j = atoi(private_data->carga_inicio.array[i-1]);
           j <= atoi(private_data->carga_final.array[i-1]); j++) {
-        /// largo de alfabero = base
+        // largo de alfabero = base
         int64_t base = strlen(datos->alfabeto.array[0]);
         int64_t numero = j;
         size_t cont = 0;
@@ -387,7 +389,7 @@ void* datos_generate_passw(void* data) {
             pass_temp[k] = datos->alfabeto.array[0][0];
           }
         } else {
-          /// ciclo para cambiar de base el numero
+          // ciclo para cambiar de base el numero
           while (numero > 0) {
             int64_t div = numero / base;
             int64_t residuo = numero % base;
@@ -396,17 +398,19 @@ void* datos_generate_passw(void* data) {
             cont++;
           }
         }
-        pass_temp[i] = '\0';  /// agregar terminacion nula a la clave
+        pass_temp[i] = '\0';  // agregar terminacion nula a la clave
 
         if (datos_abrir_archivo(private_data->archivos.array[ind],
-          pass_temp, datos)) {
+          pass_temp, datos) && datos->insercion == 0) {
           /// si la clave fue correcta
           pthread_mutex_lock(&datos->cambiar_variable);
           datos->encontroPass = true;
           datos->insercion++;
+          arreglo_agregar(&datos->contrasenas, pass_temp);
           pthread_mutex_unlock(&datos->cambiar_variable);
           break;
         }
+        // revisa con control de concurrencia si se encontro la clave
         pthread_mutex_lock(&datos->cambiar_variable);
         if (datos->encontroPass == true) {
           pthread_mutex_unlock(&datos->cambiar_variable);
@@ -415,6 +419,7 @@ void* datos_generate_passw(void* data) {
         pthread_mutex_unlock(&datos->cambiar_variable);
       }
       free(pass_temp);
+      // revisa con control de concurrencia si se encontro la clave
       pthread_mutex_lock(&datos->cambiar_variable);
       if (datos->encontroPass == true) {
         pthread_mutex_unlock(&datos->cambiar_variable);
@@ -472,7 +477,6 @@ bool datos_abrir_archivo(const char* archivo, const char* key
     zip_fread(fd, txt, finfo->size);
     if (strcmp(txt, "CI0117-23a") == 0) {
       found_key = true;
-      arreglo_agregar(&datos->contrasenas, key);
     }
     zip_fclose(fd);
   }
