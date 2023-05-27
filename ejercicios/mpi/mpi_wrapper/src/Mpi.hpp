@@ -47,6 +47,7 @@ Mpi::Mpi(int* argc, char** argv[]) {
 }
 
 Mpi::~Mpi() {
+  free(this->process_hostname);
   MPI_Finalize();
 }
 
