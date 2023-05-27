@@ -3,19 +3,22 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+  // cantidad de hilos
   int thread_count = omp_get_max_threads();
   if (argc >= 2) {
     thread_count = atoi(argv[1]);
   }
 
+  // cantidad de iteraciones
   int iteration_count = thread_count;
   if (argc >= 3) {
     iteration_count = atoi(argv[2]);
   }
 
+  // se crea region paralela, se especifica la memoria compartida
   #pragma omp parallel num_threads(thread_count) \
     default(none) shared(iteration_count, std::cout)
-  {
+  { // clausala omp for nos permite reutilizar los hilos en las iteraciones
     #pragma omp for
     for (int iteration = 0; iteration < iteration_count; ++iteration) {
       #pragma omp critical(stdout)
@@ -24,6 +27,7 @@ int main(int argc, char* argv[]) {
         << iteration_count << std::endl;
     }
 
+    // single indica que sera ejecutada por un solo hilo
     #pragma omp single
     std::cout << /*omp_get_thread_num() <<*/ std::endl;
     // #pragma omp barrier

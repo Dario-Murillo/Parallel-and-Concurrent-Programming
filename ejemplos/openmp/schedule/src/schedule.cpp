@@ -3,19 +3,28 @@
 #include <iostream>
 #include <vector>
 
+/**
+ * @brief imprime el tipo de mapeo y sus digitos
+ * @param type string para identificar el tipo de mapeo
+ * @param mapping vector con las unidades de trabajo
+ * 
+*/
 void print_mapping(const char* type, const std::vector<int>& mapping);
 
 int main(int argc, char* argv[]) {
+  // cantidad de hilos
   int thread_count = omp_get_max_threads();
   if (argc >= 2) {
     thread_count = atoi(argv[1]);
   }
 
+  // cantidad de iteraciones
   int iteration_count = thread_count;
   if (argc >= 3) {
     iteration_count = atoi(argv[2]);
   }
 
+  // tamano del bloque
   int block_size = 0;
   if (argc >= 4) {
     block_size = atoi(argv[3]);
@@ -27,14 +36,17 @@ int main(int argc, char* argv[]) {
     default(none) shared(iteration_count, mapping, block_size)
   {
     if (block_size == 0) {
+      // schedule permite elegir el tipo de mapeom en este caso estatico
       #pragma omp for schedule(static)
       for (int iteration = 0; iteration < iteration_count; ++iteration) {
+        // guarda en el arreglo el numero del hilo efectuando la iteracion
         mapping[iteration] = omp_get_thread_num();
       }
-
+      // single apra que solo sea ejecutado por un hilo
       #pragma omp single
       print_mapping("static    ", mapping);
 
+      // mapeo dinamico
       #pragma omp for schedule(dynamic)
       for (int iteration = 0; iteration < iteration_count; ++iteration) {
         mapping[iteration] = omp_get_thread_num();
@@ -43,6 +55,7 @@ int main(int argc, char* argv[]) {
       #pragma omp single
       print_mapping("dynamic   ", mapping);
 
+      // mapeo guiado
       #pragma omp for schedule(guided)
       for (int iteration = 0; iteration < iteration_count; ++iteration) {
         mapping[iteration] = omp_get_thread_num();
@@ -51,6 +64,8 @@ int main(int argc, char* argv[]) {
       #pragma omp single
       print_mapping("guided    ", mapping);
     } else {
+      // igual que el mapeo estatico solo que se puede especificar el tamano
+      // del bloque de las unidades
       #pragma omp for schedule(static, block_size)
       for (int iteration = 0; iteration < iteration_count; ++iteration) {
         mapping[iteration] = omp_get_thread_num();

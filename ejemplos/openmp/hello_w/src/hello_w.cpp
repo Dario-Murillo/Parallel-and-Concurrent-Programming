@@ -3,11 +3,13 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+  // obtiene una cantidad de hilos por default
   int thread_count = omp_get_max_threads();
   if (argc == 2) {
-    thread_count = atoi(argv[1]);
+    thread_count = atoi(argv[1]);  // si se proveee por linea de comandos
   }
 
+  // clausula num_threads nos permite indicar la cantida de hilos
   #pragma omp parallel num_threads(thread_count)
   {
     #pragma omp critical(stdout)
