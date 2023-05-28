@@ -3,7 +3,7 @@
 Este codigo consiste de un programa concurrente en C que encuentre mediante fuerza bruta la contraseña para desencriptar los archivos comprimidos dentro de un archivo ZIP.
 
  **Este programa no extrae los archivos** simplemente encuentra la contraseña para el o los archivos, en caso de que se soliciten multiples, y imprime en la salida estandar la clave que descencripta cada archivo, en caso de no encontar la contraseña no presenta nada. 
-
+ 
 El programa obtiene por medio de la entrada estandar de un archivo el alfabeto de posibles caracteres que componen 
 las contraseñas, asi como el numero maximo de caracteres por el que esta compuesta la clave y las direcciones de los archivos a 
 desencriptar. Ademas, se puede proveer como parametro el numero de hilos con el que el usuario desea correr el programa.
@@ -25,7 +25,7 @@ gcc -c -Wall -Wextra -pthread -g -std=c17 -Isrc -MMD src/main.c -o build/main.o 
 gcc -c -Wall -Wextra -pthread -g -std=c17 -Isrc -MMD src/simulacion.c -o build/simulacion.o <br>
 mkdir -p bin/ <br>
 gcc -Wall -Wextra -pthread -g -Isrc build/arr_dinamico.o build/main.o build/simulacion.o -o bin/zippas_pthread -lzip -lm <br>
-
+        
 Luego de esto el ejecutable se puede correr con un comando como este: <br>
 
 bin/zippas-serial < test/input004.txt
@@ -46,3 +46,40 @@ Codigo reutilizado  para borrar una carpeta temporal https://stackoverflow.com/q
 Codigo reutilizado para obtener una serie de caracteres random https://stackoverflow.com/questions/15767691/whats-the-c-library-function-to-generate-random-string
 
 [Link al archivo README de la carpeta desing](desing/README.md)
+
+## Incremento de desempeño en casos de pruebas
+
+La siguiente seccion muestra capturas de los resultados y tiempos de ejecuccion de algunos casos de prueba del programa concurrente, con el fin de demostrar el aumento de desempeño conforme a la version serial del programa. Las pruebas fueron hechas en una maquina con 4 nucleos, y los programas fueron ejecutados con 4 hilos, es decir con el numero por defecto de hilos.
+
+### Input000
+
+[input000_serial](desing/img/input000_serial.png)
+[input000_concurrente](desing/img/input000_concurrente.png)
+
+### Input001
+
+[input001_serial](desing/img/input001_serial.png)
+[input001_concurrente](desing/img/input001_concurrente.png)
+
+### Input002
+
+[input002_serial](desing/img/input002_serial.png)
+[input002_concurrente](desing/img/input002_concurrente.png)
+
+### Input003
+
+[input003_serial](desing/img/input003_serial.png)
+[input003_concurrente](desing/img/input003_concurrente.png)
+
+### Input004
+
+[input004_serial](desing/img/input004_serial.png)
+[input004_concurrente](desing/img/input004_concurrente.png)
+
+
+### Input005
+
+[input005_serial](desing/img/input005_serial.png)
+[input005_concurrente](desing/img/input005_concurrente.png)
+
+
