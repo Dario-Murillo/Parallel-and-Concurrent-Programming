@@ -1,4 +1,4 @@
-![Diagrama UML](/desing/diagram.png)
+![Diagrama UML](/desing/img/diagram.png)
 
 La imagen anterior hace referencia a un diagrama, el cual trata de ilustrar las estructuras de datos con sus respectivas subrutinas, atributos asi como las interacciones entre ellas a lo largo de la ejecuccion del programa. 
 
