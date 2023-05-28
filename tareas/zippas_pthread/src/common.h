@@ -13,7 +13,7 @@
 
 /**
  * @struct datos
- * @brief estructura encargada de recibir y manipular los datos del imput
+ * @brief estructura encargada de recibir y manipular los datos del input
  * 
  * @var datos::alfabeto
  * alfabeto guarda la primer linea de los lotes de prueba 
@@ -44,7 +44,7 @@
  * mutex para modificar memoria compartida
  * 
  * @var datos::leer_variable
- * mutes para leer memoria compartida
+ * mutex para leer memoria compartida
  * 
  * @var datos::insercion
  * contador de cuantas veces se ha encontrado una clave 

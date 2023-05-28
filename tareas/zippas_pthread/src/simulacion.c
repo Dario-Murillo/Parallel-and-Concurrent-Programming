@@ -15,8 +15,8 @@
 #include "simulacion.h"
 
 /**
- * @brief lee el archivo introducido por la entrada estandar
- * y carga los valores en la estructura de datos
+ * @brief lee el archivo introducido y los argumentos de
+ * la entrada estandar y carga los valores en la estructura de datos
  * @param datos puntero de una variable tipo datos_t
  * @param input archivo introducido de la entrada estandar
  * @param argc cantidad de argumentos
@@ -41,8 +41,9 @@ bool datos_abrir_archivo(const char* archivo, const char* clave
 
 /**
  * @brief genera todas las posibles claves dado 
- * un alfabeto y un maximo de la clave
- * @param datos puntero de una variable tipo datos_t
+ * un alfabeto y un maximo de la clave, se reparte
+ * la carga entre multiples hilos
+ * @param data puntero de una variable tipo datos_t
  * @return void
 */
 void* datos_generate_passw(void* data);
@@ -66,7 +67,7 @@ int inicio(uint64_t thread_number, uint64_t trabajo, datos_t* datos);
 
 /**
  * @brief final de mapeo por bloque
-  * @param thread_number numero de hilo
+ * @param thread_number numero de hilo
  * @param trabajo cantidad de trabajo a procesar
  * @param datos puntero de una variable tipo datos_t
  * @return carga final de trabajo
@@ -175,7 +176,7 @@ int borrar_carpeta(const char *carpeta) {
 int datos_run(datos_t* datos, FILE* input, int argc, char* argv[]) {
   int error = EXIT_SUCCESS;
 
-  /// creacion de carpeta temporal
+  // creacion de carpeta temporal
   error = mkdir("tmp", 0777);
   if (!error) {
   } else {
@@ -285,7 +286,7 @@ int crear_hilos(datos_t* datos) {
 
   unsigned int seed = time(NULL);
 
-  /// crea copias de cada archivo para cada hilo
+  // crea copias de cada archivo para cada hilo
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; thread_number++) {
     arreglo_innit(&private_data[thread_number].archivos);

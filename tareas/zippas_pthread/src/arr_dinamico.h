@@ -27,7 +27,6 @@ typedef struct arr_dinamico {
 } arr_dinamico_t;
 
 
-
 /**
  * @brief inicializa los valores del struct
  * @details reserva memoria inicial para el primer elemento
