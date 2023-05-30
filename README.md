@@ -44,7 +44,7 @@ Glosario
 
 20. Incremento de velocidad: Una comparacion entre cuando dura un proceso antes y cuanto dura despues de llevar a cabo una optimizacion
 
-21. Comunicacion punto a punto entre procesos
+21. Comunicacion punto a punto entre procesos: Permite la transferencia de datos, es decir comunicacion entre multiples procesos, esta comunicacion se da desde un proceso hasta otro, un proceso puede enviar multiples mensajes a otros procesos repetidas veces, pero siempre se da una comunicacion unica entre el proceso que manda los datos y el que los recibe. La comunicacion es orientada arreglos lo que permite pasar multiples datos de un proceso a otro. Las instrucciones suelen enviar un arreglo o un dato y deben especificar el tamano de los datos que se quieren enviar, asi como el tipo de dato y a cual proceso se desea enviar, los procesos que reciben estos datos deben tener el mismo tipo de datos y suelen almacenar la informacion recibida en un buffer, estos pueden especificar de que procesos pueden o no recibir mensajes.
 
 22. Comunicacion colectiva entre procesos
 
