@@ -12,7 +12,7 @@ class Mpi {
  private:
   int process_number;  /// numero de proceso
   int process_count;  /// cantidad total de procesos
-  char* process_hostname;  /// nombre de la maquina corriendo el proceso
+  std::string process_hostname;  /// nombre de la maquina corriendo el proceso
  public:
   /// @brief metodo get para el atributo process_number
   /// @return process_number
@@ -22,7 +22,7 @@ class Mpi {
   inline int getProcessCount();
   /// @brief metodo get para el atributo process_hostname
   /// @return process_hostname
-  inline char* getHostname();
+  inline std::string getHostname();
   /// @brief obtiene el numero del proceso
   /// @return numero del proceso
   inline int rank();
@@ -51,13 +51,13 @@ Mpi::Mpi(int* argc, char** argv[]) {
         throw std::runtime_error("No se pudo obtener el numero de procesos\n");
       }
       // char process_hostname[MPI_MAX_PROCESSOR_NAME] = { '\0' };
-      this->process_hostname = reinterpret_cast<char*>
-        (calloc(MPI_MAX_PROCESSOR_NAME, sizeof(char)));
+      char host[MPI_MAX_PROCESSOR_NAME];
       int hostname_length = -1;
-      if (MPI_Get_processor_name(process_hostname, &hostname_length)
+      if (MPI_Get_processor_name(host, &hostname_length)
           != MPI_SUCCESS) {
         throw std::runtime_error("No se pudo obtener el nombre del proceso\n");
       }
+      this->process_hostname = std::string(host, hostname_length);
     } else {
       throw std::runtime_error("No se pudo inicializar el ambiente MPI\n");
     }
@@ -68,7 +68,6 @@ Mpi::Mpi(int* argc, char** argv[]) {
 }
 
 Mpi::~Mpi() {
-  free(this->process_hostname);
   MPI_Finalize();
 }
 
@@ -80,7 +79,7 @@ inline int Mpi::getProcessCount() {
   return this->process_count;
 }
 
-inline char* Mpi::getHostname() {
+inline std::string Mpi::getHostname() {
   return this->process_hostname;
 }
 
