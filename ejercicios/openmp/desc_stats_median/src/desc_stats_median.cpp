@@ -38,12 +38,14 @@ int main(int argc, char* argv[]) {
     standardDeviation += pow(values[index] - mean, 2);
   }
 
-  #pragma omp parallel for num_threads(thread_count) schedule(runtime) \
+  // ordena el arreglo de manera concurrente para luego sacar la mediana
+  #pragma omp parallel num_threads(thread_count) \
     default(none) shared(values)
   for (size_t i = 0; i < values.size(); i++) {
+    #pragma omp for
     for (size_t j = i; j < values.size(); j++) {
-      #pragma omp critical
       if (values[i] > values[j]) {
+        #pragma omp critical(acceso)
         std::swap(values[i], values[j]);
       }
     }
@@ -53,8 +55,7 @@ int main(int argc, char* argv[]) {
   standardDeviation = sqrt(standardDeviation / values.size());
   const double middle = values.size() / 2;
   const double median = values.size() % 2 == 0 ?
-    (values[middle - 1] + values[middle]) / 2
-    : values[middle];
+    (values[middle - 1] + values[middle]) / 2 : values[middle];
 
   std::cout << "Mediana " << median <<  std::endl;
   std::cout << "Promedio " << average << std::endl;
