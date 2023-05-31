@@ -1,4 +1,4 @@
-# Enunciado del ejemplo
+# Enunciado del ejercicio
 
 Escriba una clase reutilizable Mpi en C++ que encapsule funcionalidad repetitiva del estándar MPI y provea un buen manejo de errores. Dado que usará plantillas, su clase estará en un archivo Mpi.hpp. En ejercicios posteriores usted incrementará y reutilizará esta clase.
 

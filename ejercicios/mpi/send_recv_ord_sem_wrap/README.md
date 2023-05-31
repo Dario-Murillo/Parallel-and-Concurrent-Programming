@@ -1,4 +1,4 @@
-# Enunciado del ejemplo
+# Enunciado del ejercicio
 
 Modifique su clase Mpi en la carpeta mpi_wrapper/ (no cree una nueva) para que pueda enviar y recibir mensajes punto a punto con métodos send() y receive(). La interfaz de estos y futuros métodos de esta clase serán similares al pseudocódigo propuesto para distribución (Pseudocódigo de paso de mensajes).
 

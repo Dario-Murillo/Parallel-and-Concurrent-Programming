@@ -1,4 +1,4 @@
-# Enunciado del ejemplo
+# Enunciado del ejercicio
 
 Implemente una clase para transportar potenciales errores que puedan surgir al usar la tecnología MPI y que necesitará en ejercicios siguientes.
 
