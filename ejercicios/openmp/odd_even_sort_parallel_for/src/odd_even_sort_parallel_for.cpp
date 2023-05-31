@@ -3,7 +3,19 @@
 #include <iostream>
 #include <random>
 
+/**
+ * @brief ordena un arreglo mediante el odd_even_sort de manera concurrente
+ * @param array arreglo a ordenar
+ * @param n numero de elementos
+ * @param thread_count numero de hilos que realizan el ordenamiento
+*/
 void parallel_odd_even_sort(double* array, int n, int thread_count);
+/**
+ * @brief cambia los elementos
+ * @param a primer elemento
+ * @param b segundo elemento
+ * 
+*/
 void swap(double* a, double* b);
 
 int main(int argc, char *argv[]) {
@@ -49,8 +61,8 @@ void parallel_odd_even_sort(double* array, int n, int thread_count) {
       #pragma omp parallel for num_threads(thread_count) \
         default(none) shared(array, n)
       for (int i = 1; i < n; i += 2) {
-        #pragma omp critical
         if (array[i - 1] > array[i]) {
+          #pragma omp critical(acesso)
           swap(&array[i-1], &array[i]);
         }
       }
@@ -58,8 +70,8 @@ void parallel_odd_even_sort(double* array, int n, int thread_count) {
       #pragma omp parallel for num_threads(thread_count) \
         default(none) shared(array, n)
       for (int i = 1; i < n - 1; i += 2) {
-        #pragma omp critical
         if (array[i] > array[i + 1]) {
+          #pragma omp critical(acesso)
           swap(&array[i], &array[i+1]);
         }
       }
