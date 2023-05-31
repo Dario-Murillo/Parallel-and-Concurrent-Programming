@@ -33,7 +33,7 @@ class Mpi {
   /// asi como los atributos por medio de metodos de mpi
   /// @param argc referencia al numero de argumentos
   /// @param argv referencia a los argumentos
-  Mpi(int *argc, char** argv[]);
+  Mpi(int &argc, char** &argv);
   /// @brief destructor de la clase, finaliza el ambiente mpi
   /// y libera memoria
   ~Mpi();
