@@ -6,6 +6,8 @@
 #include <mpi.h>
 #include <string>
 #include <stdexcept>
+#include "MpiError.hpp"
+
 
 /// @brief clase wrapper que encapsula funcionalidades de mpi
 class Mpi {
@@ -13,6 +15,7 @@ class Mpi {
   int process_number;  /// numero de proceso
   int process_count;  /// cantidad total de procesos
   std::string process_hostname;  /// nombre de la maquina corriendo el proceso
+
  public:
   /// @brief metodo get para el atributo process_number
   /// @return process_number
@@ -30,19 +33,29 @@ class Mpi {
   /// @return cantidad de procesos
   int size() const;
   /// @brief metodo plantilla para enviar mensajes a otros procesos
-  /// @tparam DataType 
+  /// @tparam DataType
   /// @param message mensaje o datos a comunicar a otro proceso
   /// @param toProcess numero del proceso al cual se va a enviar el mensaje
   /// @param tag tag
   template <typename DataType>
-  void send(const DataType& message, int toProcess, int tag = 0);
+  void send(const DataType& message, int toProcess, int tag = 0) {
+    if (MPI_Send(&message, /*count*/ 1, map(message), toProcess, tag
+    , MPI_COMM_WORLD) != MPI_SUCCESS) {
+      throw MpiError("No se pudo enviar el mensaje");
+    }
+  }
   /// @brief metodo plantilla para recibir mensajes de otros procesos
-  /// @tparam DataType 
-  /// @param message mensaje o datos a recibir de otros proceso 
+  /// @tparam DataType
+  /// @param message mensaje o datos a recibir de otros proceso
   /// @param fromProcess numero del proceso del cual recibe el mensaje
   /// @param tag tag
   template <typename DataType>
-  void receive(DataType& message, int fromProcess, int tag = MPI_ANY_SOURCE);
+  void receive(DataType& message, int fromProcess, int tag = MPI_ANY_SOURCE) {
+    if (MPI_Recv(&message, /*count*/ 1, map(message), fromProcess
+    , tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE) != MPI_SUCCESS ) {
+      throw MpiError("No se pudo recibir el mensaje");
+    }
+  }
   /// @brief metodos para devolver tipos de datos de MPI
   /// @return tipo de datos MPI
   static inline MPI_Datatype map(bool) { return MPI_C_BOOL; }
@@ -55,7 +68,8 @@ class Mpi {
   static inline MPI_Datatype map(long) { return MPI_LONG; }
   static inline MPI_Datatype map(unsigned long) { return MPI_UNSIGNED_LONG; }
   static inline MPI_Datatype map(long long) { return MPI_LONG_LONG; }
-  static inline MPI_Datatype map(unsigned long long) { return MPI_UNSIGNED_LONG_LONG; }
+  static inline MPI_Datatype map(unsigned long long)
+  { return MPI_UNSIGNED_LONG_LONG; }
   static inline MPI_Datatype map(float) { return MPI_FLOAT; }
   static inline MPI_Datatype map(double) { return MPI_DOUBLE; }
   static inline MPI_Datatype map(long double) { return MPI_LONG_DOUBLE; }

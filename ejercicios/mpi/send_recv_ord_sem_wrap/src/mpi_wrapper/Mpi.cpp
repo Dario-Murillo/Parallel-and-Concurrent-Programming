@@ -1,5 +1,6 @@
+// Copyright 2023 <Dario Murillo Chaverri C15406>
+
 #include "Mpi.hpp"
-#include "MpiError.hpp"
 
 Mpi::Mpi(int* argc, char** argv[]) {
   try {
@@ -53,17 +54,3 @@ int Mpi::size() const {
   return this->process_count;
 }
 
-void Mpi::send(const DataType& message, int toProcess, int tag = 0) {
-  if (MPI_Send(&message, /*count*/ 1, map(message), toProcess, tag
-    , MPI_COMM_WORLD) != MPI_SUCCESS) {
-    throw MpiError("No se pudo enviar el mensaje");
-  }
-}
-
-void Mpi::receive(DataType& message, int fromProcess
-  , int tag = MPI_ANY_SOURCE) {
-  if (MPI_Recv(&message, /*count*/ 1, map(message), fromProcess
-    , tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE) != MPI_SUCCESS ) {
-    throw MpiError("No se pudo recibir el mensaje");
-  }
-}
