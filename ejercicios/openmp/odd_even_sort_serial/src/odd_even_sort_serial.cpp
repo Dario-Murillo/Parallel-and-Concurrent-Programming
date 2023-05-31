@@ -2,7 +2,18 @@
 #include <iostream>
 #include <random>
 
+/**
+ * @brief ordena un arreglo de manera serial mediante
+ * el algoritmo odd even sort
+ * @param array arreglo a ordenar
+ * @param n numero de elementos
+*/
 void serial_odd_even_sort(double* array, int n);
+/**
+ * @brief cambia dos elementos
+ * @param a primero elemento
+ * @param b segundo elemento
+*/
 void swap(double* a, double* b);
 
 int main(int argc, char *argv[]) {
@@ -45,7 +56,7 @@ void serial_odd_even_sort(double* array, int n) {
     } else {
       for (int i = 1; i < n - 1; i += 2) {
         if (array[i] > array[i + 1]) {
-            swap(&array[i], &array[i+1]);
+          swap(&array[i], &array[i+1]);
         }
       }
     }
