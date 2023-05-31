@@ -9,11 +9,11 @@
 
 /// @brief clase wrapper que encapsula funcionalidades de mpi
 class Mpi {
-
  private:
   int process_number;  /// numero de proceso
   int process_count;  /// cantidad total de procesos
   std::string process_hostname;  /// nombre de la maquina corriendo el proceso
+
  public:
   /// @brief metodo get para el atributo process_number
   /// @return process_number
@@ -91,4 +91,5 @@ int Mpi::rank() {
 int Mpi::size() {
   return this->process_count;
 }
+
 #endif
