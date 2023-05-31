@@ -3,7 +3,19 @@
 #include <iostream>
 #include <random>
 
+/**
+ * @brief ordena un arreglo mediante el odd_even_sort de manera concurrente
+ * @param array arreglo a ordenar
+ * @param n numero de elementos
+ * @param thread_count numero de hilos que realizan el ordenamiento
+*/
 void parallel_odd_even_sort(double* array, int n, int thread_count);
+/**
+ * @brief cambia los elementos
+ * @param a primer elemento
+ * @param b segundo elemento
+ * 
+*/
 void swap(double* a, double* b);
 
 int main(int argc, char *argv[]) {
@@ -19,7 +31,7 @@ int main(int argc, char *argv[]) {
 
 
   double* array = new double[size];
-
+  // genera numeros random para el arreglo
   for (int i = 0; i < size; i++) {
     std::random_device rseed;
     std::mt19937 rng(rseed());
@@ -45,22 +57,22 @@ void swap(double* a, double* b) {
 
 void parallel_odd_even_sort(double* array, int n, int thread_count) {
   #pragma omp parallel num_threads(thread_count) \
-    default(none) shared(array, n, std::cout)
+    default(none) shared(array, n)
   for (int phase = 0; phase < n; ++phase) {
     if (phase % 2 == 0) {
       #pragma omp for
       for (int i = 1; i < n; i += 2) {
-        #pragma omp critical
         if (array[i - 1] > array[i]) {
+          #pragma omp critical(acceso)
           swap(&array[i-1], &array[i]);
         }
       }
     } else {
       #pragma omp for
       for (int i = 1; i < n - 1; i += 2) {
-        #pragma omp critical
         if (array[i] > array[i + 1]) {
-            swap(&array[i], &array[i+1]);
+          #pragma omp critical(acceso)
+          swap(&array[i], &array[i+1]);
         }
       }
     }
