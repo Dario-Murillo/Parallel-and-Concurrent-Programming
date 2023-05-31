@@ -9,6 +9,7 @@
 
 /// @brief clase wrapper que encapsula funcionalidades de mpi
 class Mpi {
+
  private:
   int process_number;  /// numero de proceso
   int process_count;  /// cantidad total de procesos
@@ -33,15 +34,15 @@ class Mpi {
   /// asi como los atributos por medio de metodos de mpi
   /// @param argc referencia al numero de argumentos
   /// @param argv referencia a los argumentos
-  Mpi(int *argc, char** argv[]);
+  Mpi(int &argc, char** &argv);
   /// @brief destructor de la clase, finaliza el ambiente mpi
   /// y libera memoria
   ~Mpi();
 };
 
-Mpi::Mpi(int* argc, char** argv[]) {
+Mpi::Mpi(int &argc, char** &argv) {
   try {
-    if (MPI_Init(argc, argv) == MPI_SUCCESS) {
+    if (MPI_Init(&argc, &argv) == MPI_SUCCESS) {
       this->process_number = -1;
       if (MPI_Comm_rank(MPI_COMM_WORLD, &process_number) != MPI_SUCCESS) {
         throw std::runtime_error("No se pudo obtener el numero de proceso\n");
@@ -71,23 +72,23 @@ Mpi::~Mpi() {
   MPI_Finalize();
 }
 
-inline int Mpi::getProcessNumber() {
+int Mpi::getProcessNumber() {
   return this->process_number;
 }
 
-inline int Mpi::getProcessCount() {
+int Mpi::getProcessCount() {
   return this->process_count;
 }
 
-inline std::string Mpi::getHostname() {
+std::string Mpi::getHostname() {
   return this->process_hostname;
 }
 
-inline int Mpi::rank() {
+int Mpi::rank() {
   return this->process_number;
 }
 
-inline int Mpi::size() {
+int Mpi::size() {
   return this->process_count;
 }
 #endif
