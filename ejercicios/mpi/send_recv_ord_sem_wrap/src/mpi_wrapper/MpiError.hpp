@@ -1,5 +1,8 @@
+// Copyright 2023 <Dario Murillo Chaverri C15406>
+
 #include <stdexcept>
 #include <sstream>
+#include <string>
 #include "Mpi.hpp"
 
 #ifndef MPIERROR_HPP
@@ -13,7 +16,7 @@ class MpiError: public std::runtime_error {
  public:
   /// @brief constructor de la clase
   /// @param message mensaje de error
-  explicit MpiError(const std::string& message):std::runtime_error(message){};
+  explicit MpiError(const std::string& message):std::runtime_error(message) {}
   /// @brief reporta un mensaje de error
   /// @param message mensaje de error
   /// @param mpi instancia de la clase mpi
