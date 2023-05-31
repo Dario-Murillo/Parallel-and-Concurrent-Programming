@@ -1,6 +1,6 @@
 # Enunciado del ejemplo
 
-mplemente una clase para transportar potenciales errores que puedan surgir al usar la tecnología MPI y que necesitará en ejercicios siguientes.
+Implemente una clase para transportar potenciales errores que puedan surgir al usar la tecnología MPI y que necesitará en ejercicios siguientes.
 
 Cree un archivo MpiError.hpp dentro de la carpeta mpi_wrapper/. Cree una clase MpiError que herede de std::runtime_error. Declare los tres constructores que están en el siguiente fragmento de código. Necesitará hacer un forward declaration de la clase Mpi. <br>
 
