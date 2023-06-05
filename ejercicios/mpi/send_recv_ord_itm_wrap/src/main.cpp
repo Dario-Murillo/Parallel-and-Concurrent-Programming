@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Mpi.hpp"
 
+const size_t MESSAGE_CAPACITY = 512;
 /**
  * @brief main
  * @param argc cantidad de argumentos
@@ -33,8 +34,8 @@ int main(int argc, char* argv[]) {
       for (int source = 1; source < process_count; ++source) {
         // crea un string para recibir el mensaje
         std::string message;
-        message.reserve(512);
-        mpi.receive(message, 512, source);
+        message.reserve(MESSAGE_CAPACITY);
+        mpi.receive(message, MESSAGE_CAPACITY, source);
         std::cout << source << " sent " << &message[0] << std::endl;
       }
     }
