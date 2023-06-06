@@ -1,0 +1,26 @@
+procedure main(int argc, char argv[]):
+  declare rank := process_number
+  declare count := process_count
+  if count != 2 do
+    print "Error"
+  end if
+  declare wait := 100
+  if argc == 1 do
+    wait := argv[1]
+  end
+  ping_pong(mpi, rank, wait)
+end procedure
+
+procedure ping_pong(mpi, rank, wait):
+  declare can_serve := true
+  if rank == 0 do
+    send(can_serve, 1, 0)
+    print rank " serves"
+    receive(can_serve, 1, 0)
+  end if
+  if rank != 0 do
+    receive(can_serve, 0, 0)
+    print rank " serves"
+    send(can_serve, 0, 0)
+  end
+end procedure
