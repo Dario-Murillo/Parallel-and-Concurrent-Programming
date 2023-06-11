@@ -48,4 +48,4 @@ Glosario
 
 22. Comunicacion colectiva entre procesos: Al igual que la comunicacion punto a punto entre procesos, la comunicacion colectiva permite la transferencia de datos, la diferencia es que en vez de ser una comunicacion exclusiva entre un proceso a otro, la comunicacion colectiva como su nombre lo indica, hace que un proceso designado transmite mensajes o envie datos hacia todos los demas procesos. La comunicacion colectiva hace que el codigo sea mas compacto ya que evita tener que hacer ciclos para hacer que un proceso se comunique con todos los demas.
 
-23. Reduccion
+23. Reduccion: Operaciones que pueden ser aplicadas en distintas tecnologias como openmp o mpi. Las reducciones consisten de operaciones simples como sumas, restas, que son aplicadas a todos los procesos, en el caso de MPI, o a todos los hilos, en regiones paralelas en el caso de openmp. Estas operaciones, reducen los datos que cada uno de estos procesos o hilos tiene independientemente en un solo resultado.
