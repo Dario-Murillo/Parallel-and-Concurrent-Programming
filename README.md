@@ -34,7 +34,7 @@ Glosario
 
 15. Barrera: Un punto de encuentro, donde todos los hilos tienen que llegar, y todos los hilos quedaran en espera, es decir no podran seguir su ejecuccion, hasta que el ultimo hilo llegue. Se puede implementar con herramientas de control de concurrencia, como los semaforos.
 
-16. Variable de condicion
+16. Variable de condicion: Mecanismo de control de concurrencia el cual actua de manera similar a la barrera. Este mecanismo usa la analogia de un hombre, el cual siempre tiene una señal de alto, y solo la levanta cuando ciertas condiciones se cumplen y otra persona se lo indica. La variable de condicion tiene la peculiaridad de que si bien bloquea hilos, como lo hace una barrera, este ocupa de un mutex para poder funcionar (al menos en la implementacion de pthreads), y ademas de que se tiene la posibilidad de hacer broadcast o comunicacion a un solo hilo, es decir, se pueden liberar todos los hilos que esperan en la variable de condicion o solo unos cuantos.
 
 17. Candado de lectura y escritura
 
