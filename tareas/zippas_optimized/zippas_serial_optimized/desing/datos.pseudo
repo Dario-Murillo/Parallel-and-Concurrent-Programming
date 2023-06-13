@@ -1,0 +1,90 @@
+struct datos:
+  declare alfabeto;
+  declare limite;
+  declare zips;
+  declare contrasenas;
+
+procedure datos_innit(datos)
+  arreglo_innit(alfabeto)
+  arreglo_innit(zips)
+  arreglo_innit(contrasenas)
+  zip_stat_init(sb)
+  za := NULL
+  zf := NULL
+  limite := 0
+end procedure
+
+procedure datos_destroy(datos)
+  arreglo_destroy(alfabeto)
+  arreglo_destroy(zips)
+  arreglo_destroy(contrasenas)
+  free(datos);
+end procedure
+
+procedure datos_analisis(datos, input):
+  if input != NULL do
+    declare str[120]
+    declare linea := 0
+    while str, input do 
+      if (linea := 0) do
+        arreglo_agregar(alfabeto,str)
+      end else (linea :=1 ) do
+        limite := str
+      end else (linea >= 3) do 
+        arreglo_agregar(zips,str)
+      end
+   end while
+  end if
+end procedure
+
+procedure datos_generate_password(datos):
+  declare base := strlen(alfabeto)
+  for ind := 0 to zip.total do 
+    declare encontro := false
+    declare arch := NULL
+    declare finfo
+    declare txt
+    zip_open(arch)
+    for i := 1 to limite do
+      declare pass_temp := i+1
+      for j := 0 to datos.alfabeto ^ i do
+        declare numero := j
+        declare cont := 0
+        if numero := 0 do
+          for k := 0 to i  do
+            pass_temp[k] := alfabeto[0]
+          end
+        else  
+          while numero > 0 do
+            declare div := numero / base
+            declare residuo := numero % base
+            pass_temp[cont] := alfabeto[residuo]
+            numero := div
+            cont++
+            end while
+        end if
+        fd := zip_fopen_index_encrypted(arch, pass_temp)
+        if fd != NULL do
+          if txt == "CI0117-23a" do
+            arreglo_agregar(&datos->contrasenas, pass_temp);
+            encontro := true
+          end if
+        end if
+      end for
+      if encontro == true do
+        break
+      end if
+    end for
+    if encontro := false do
+      arreglo_agregar(contrasenas, '\n')
+    end if
+  zip_close(arch)
+  end for
+end procedure
+
+procedure datos_imprimir(datos):
+  declare output := stdout 
+  for i :=0 to zips total do
+    print zips[i] contrasenas[i]
+  end for
+end procedure
