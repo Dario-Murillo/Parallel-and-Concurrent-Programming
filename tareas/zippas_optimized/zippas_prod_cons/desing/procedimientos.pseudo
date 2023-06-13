@@ -1,0 +1,76 @@
+procedure datos_generate_password(datos):
+  declare base := strlen(alfabeto)
+    for i := 1 to limite do
+      declare pass_temp := i+1
+      for j := 0 to base ^ i do
+        declare numero := j
+        declare cont := 0
+        if numero := 0 do
+          for k := 0 to i  do
+            pass_temp[k] := alfabeto[0]
+          end for
+        end if 
+        while numero > 0 do
+          declare div := numero / base
+          declare residuo := numero % base
+          pass_temp[cont] := alfabeto[residuo]
+          numero := div
+          cont++
+        end while
+        
+        pass_temp[i] := '\0'
+        queue_enqueue(cola, pass_temp)
+        signal(can_consume)
+      end for
+  end for
+  for i := to thread_count do 
+    queue_enqueue(cola, "pass_temp")
+    signal(can_consume)
+  end for
+end procedure
+
+
+procedure datos_abrir_archivo(datos_priv):
+  declare datos := datos_priv.datos
+  while true do 
+    wait(can_consume)
+    declare clave := queue_dequeue(cola)
+
+    if clave == "" do
+      break
+    end if
+
+    for i := 0 to datos.zips.total do 
+      declare error := 0
+      declare archive = datos_priv.archivos.array[i]
+      declare arch := NULL
+      
+      lock(abrir_archivo)
+      arch = zip_open(archive, 0, error) != NULL
+      unlock(abrir_archivo)
+    
+      declare finfo
+      zip_stat_init(finfo)
+      declare fd := NULL
+      declare txt := NULL
+      
+      zip_stat_index(arch, 0, 0 finfo) 
+      txt := finfo.size
+      fd = zip_fopen_index_encrypted(arch, count, 0, clave)
+      zip_fread(fd, txt, finfo->size);
+      if txt := "CI0117-23a" do
+        lock(cambiar_variable)
+        contador_pass := contador_pass + 1
+        strcpy(datos->claves[i], clave)
+        unlock(cambiar_variable)
+      end if
+    end for
+    lock(cambiar_variable)
+    if datos.contador_pass ==  datos.zips.total do
+      unlock(cambiar_variable)
+      break
+    end if
+    unlock(cambiar_variable)
+  end while
+end procedure
+

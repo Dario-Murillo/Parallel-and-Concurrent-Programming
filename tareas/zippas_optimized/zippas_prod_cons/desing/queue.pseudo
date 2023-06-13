@@ -1,0 +1,65 @@
+struct queue_node:
+  declare data 
+  declare next
+
+struct queue:
+  declare can_accese_queue
+  declare head
+  declare tail
+
+procedure queue_init(queue):
+  can_accese_queue := create_mutex()
+  head := NULL
+  tail := NULL
+end procedure
+
+procedure queue_destroy(queue):
+  queue_clear(queue)
+end procedure
+
+procedure queue_is_empty(queue):
+  lock(can_accese_queue)
+  declare result = head == NULL
+  unlock(can_accese_queue)
+end procedure
+
+procedure queue_is_empty_unsafe(queue):
+  declare result = head == NULL
+end procedure
+
+procedure queue_enqueue(queue, data):
+  declare new_node
+  new_node.data := data
+  lock(can_accese_queue)
+  if queue.tail do
+    queue.tail = queue.tail.nex = new_node
+  else 
+    queue.head = queue.tail = new_node
+  end if
+  unlock(can_accese_queue)
+end procedure
+
+procedure queue_dequeue(queue, data):
+  lock(can_accese_queue)
+  if !queue_is_empty_unsafe(queue) do
+    strcpy(data, queue.head.data)
+    queue_remove_first_unsafe(queue)
+  end if
+  unlock(can_accese_queue)
+end procedure
+
+procedure queue_remove_first_unsafe(queue):
+  declare node = queue.head
+  queue.head := queue.head.next
+  if queue.head == NULL do
+    queue.tail := NULL
+  end if
+end procedure
+
+procedure queue_clear(queue):
+  lock(can_accese_queue)
+  while !queue_is_empty_unsafe(queue) do
+    queue_remove_first_unsafe(queue)
+  end while
+  unlock(can_accese_queue)
+end procedure

@@ -1,0 +1,77 @@
+struct datos_priv
+  declare thread
+  declare archivos
+  declare datos_compartidos
+
+struct datos
+  declare alfabeto
+  declare limite
+  declare zips
+  declare contrasenas
+  declare thread_count
+  declare cola
+  declare abrir_archivo
+  declare cambiar_variable
+  declare contador_pass
+  declare claves
+
+procedure main(argc, argv[]):
+  declare input
+  declare datos := datos_create()
+  datos_innit(datos)
+  run(datos, input, argc, argv)
+end procedure
+
+procedure run(datos, input, argc, argv[]):
+  datos_analisis(datos, input, argc, argv[])
+  crear_hilos(datos)
+  datos_imprimir(datos)
+end procedure
+
+procedure datos_innit(datos):
+  arreglo_innit(alfabeto)
+  arreglo_innit(zips)
+  arreglo_innit(contrasenas)
+  queue_init(cola)
+  shared abrir_archivo := create_mutex()
+  shared cambiar_variable := create_mutex()
+  shared can_consume := create_semaphore(0)
+  shared limite := 0
+  shared contador_pass := 0
+end procedure
+
+procedure datos_analisis(datos, argc, argv[]):
+  declare str[120]
+  declare linea := 0
+  while str != input do {
+    if (linea := 0) do
+      arreglo_agregar(alfabeto,str)
+    end else (linea :=1 ) do
+      shared limite := str
+    end else (linea >= 3) do 
+      arreglo_agregar(zips,str)
+    end
+    linea := linea + 1
+  } end while
+  shared thread_count := integer(argv[1])
+end procedure
+
+procedure crear_hilos(datos):
+  declare datos_priv := thread_count
+  for thread_number := 0 to thread_count do
+    arreglo_innit(archivos)
+    for i := 0 to zips.total do
+      declare file = copy(zips[i])
+      arreglo_agregar(archivos , file)
+      create_thread(datos_abrir_archivo(), datos_priv)
+    end for
+  end for
+  datos_generate_password(datos)
+end procedure
+
+procedure datos_imprimir(datos):
+  declare output := stdout 
+  for i := 0 to zips total do
+    print zips[i] contrasenas[i]
+  end for
+end procedure
