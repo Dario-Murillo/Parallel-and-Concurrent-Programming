@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
         std::cin >> overall_start;
         std::cout << "Valor final " << std::endl;
         std::cin >> overall_finish;
-        for (int target = 0; target < process_count; target++) {
+        for (int target = 1; target < process_count; target++) {
           if (MPI_Send(&overall_start, 1, MPI_INT, target
           , /*tag*/ 0, MPI_COMM_WORLD) != MPI_SUCCESS) {
             throw std::runtime_error("could not send message");
