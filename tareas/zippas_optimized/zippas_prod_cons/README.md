@@ -1,6 +1,6 @@
 # Descripcion del Problema
 
-Este codigo consiste de un programa concurrente en C que encuentre mediante fuerza bruta la contraseña para desencriptar los archivos comprimidos dentro de un archivo ZIP. A diferencia de la primer version concurrente, la cual hacia uso de un mapeo por estatico por bloque para repartir su trabajo, esta hace uso de un mapeo dinamico, mediante el patron productor-consumidor.
+Este codigo consiste de un programa concurrente en C que encuentre mediante fuerza bruta la contraseña para desencriptar los archivos comprimidos dentro de un archivo ZIP. A diferencia de la primer version concurrente, la cual hacia uso de un mapeo estatico por bloque para repartir su trabajo, esta hace uso de un mapeo dinamico, mediante el patron productor-consumidor.
 
  **Este programa no extrae los archivos** simplemente encuentra la contraseña para el o los archivos, en caso de que se soliciten multiples, y imprime en la salida estandar la clave que descencripta cada archivo, en caso de no encontar la contraseña no presenta nada. 
  
