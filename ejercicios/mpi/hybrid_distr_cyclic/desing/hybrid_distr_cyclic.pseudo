@@ -21,7 +21,7 @@ procedure main(argc, argv[])
 
   declare msg
   declare process_size := work.size()
-  for i := to process_size do 
+  for i := process_number to process_size do 
     if  i != process_number - 1 do
       msg := msg + work[i] = ", "
     end else do
@@ -36,7 +36,7 @@ procedure main(argc, argv[])
     end if
 
     declare msg
-    for i := to my_nums.size() do 
+    for i := thread_number to my_nums.size() do 
       if  i != my_nums.size() - 1 do
         msg := msg + my_nums[i] = ", "
       end else do
