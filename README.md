@@ -8,7 +8,7 @@ Glosario
 
 2. Programacion Concurrente: Lo que no es serial, permite la ejecucion de tareas de manera intercalada, no hay que esperar para terminar las tareas.
 
-3. Programacion Paralela: A diferencia de la concurrenciua, las tareas e instrucciones son ejecutadas al mismo tiempo exactamente, es simultaneo.
+3. Programacion Paralela: A diferencia de la concurrencia, las tareas e instrucciones son ejecutadas al mismo tiempo exactamente, es simultaneo.
 
 4. Concurrencia de tareas: Separacion de asuntos, crear distintos hilos que trabajen en subrutinas distintas, por ejemplo, un hilo trabajando en calculos, otro en impresion de datos y otro en una lectura de datos. A diferencia del paralelismo de datos en lugar de crear una gran cantidad de hilos para una tarea, creamos un hilo.
 
@@ -36,7 +36,7 @@ Glosario
 
 16. Variable de condicion: Mecanismo de control de concurrencia el cual actua de manera similar a la barrera. Este mecanismo usa la analogia de un hombre, el cual siempre tiene una señal de alto, y solo la levanta cuando ciertas condiciones se cumplen y otra persona se lo indica. La variable de condicion tiene la peculiaridad de que si bien bloquea hilos, como lo hace una barrera, este ocupa de un mutex para poder funcionar (al menos en la implementacion de pthreads), y ademas de que se tiene la posibilidad de hacer broadcast o comunicacion a un solo hilo, es decir, se pueden liberar todos los hilos que esperan en la variable de condicion o solo unos cuantos.
 
-17. Candado de lectura y escritura
+17. Candado de lectura y escritura: Metodo de control de concurrencia que permite el acceso simultaneo de varios hilos para operaciones de lectura, para las operaciones de escritura si garantiza exclusion mutua entre los hilos. Este tipo de mecanismos se pueden ver implementados en distintas tecnologias como en pthreads, donde tiene el nombre de pthread_rwlock. Suele servir para situaciones donde los datos suelen ser leidos mas frecuentemente de lo que son modificados, ya que como se menciono permite a varios hilos leer datos de manera concurrente, y luego permitir a un solo hilo bloquear el candado cuando los datos van a ser modificados.
 
 18. Descomposicion: Identificar las tareas que se pueden realizar independientemente para asi, poder realizarlas de forma paralela, se dividen unidades de trabaje independientes e indivisibles. Existen multiples tecnicas para descomponer, como la descomposicion recursiva, de datos, exploratoria y especulativa.
 
