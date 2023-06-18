@@ -1,6 +1,6 @@
 # Descripcion del Problema
 
-Este codigo es un programa procedimental en C que encuentre mediante fuerza bruta la contraseña para desencriptar los archivos comprimidos dentro de un archivo ZIP. Esta es una version optimizada de la primer version serial.
+Este codigo es un programa procedimental en C que encuentre mediante fuerza bruta la contraseña para desencriptar los archivos comprimidos dentro de un archivo ZIP. Este programa es una version optimizada de la primer version serial.
 
  **Este programa no extrae los archivos** simplemente encuentra la contraseña para el archivo y la imprime en la salida estandar, en caso de no encontra la contraseña no presenta nada. 
 
@@ -11,9 +11,8 @@ desencriptar.
 ## Manual de uso 
 
 El programa es compilado en una terminal con el comando **"make"**. Para correr la solucion basta con escribir
-en la misma terminal el comando bin/zippas_seria_optimized el cual hace referencia al ejecutable y luego redirigirlo a algun
+en la misma terminal el comando bin/zippas_serial_optimized el cual hace referencia al ejecutable y luego redirigirlo a algun
 archivo de la carpeta tests/input00X.txt por medio del simbolo <. 
-
 
 Ejemplo: <br>
 
@@ -28,7 +27,7 @@ gcc -Wall -Wextra -g -Isrc build/arr_dinamico.o build/datos.o build/main.o -o bi
 
 Una vez compilado se puede correr con un comando como este: <br>
 
-bin/zippas_seria_optimized < test/input004.txt
+bin/zippas_serial_optimized < test/input004.txt
 
 ## Creditos
 
