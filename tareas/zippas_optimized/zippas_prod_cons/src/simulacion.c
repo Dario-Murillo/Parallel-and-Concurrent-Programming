@@ -110,6 +110,7 @@ void datos_destroy(datos_t* datos) {
   queue_destroy(&datos->cola);
   pthread_mutex_destroy(&datos->cambiar_variable);
   pthread_mutex_destroy(&datos->abrir_archivo);
+  sem_destroy(&datos->can_consume);
   datos->limite = 0;
   datos->contador_pass = 0;
   free(datos);
@@ -314,7 +315,7 @@ void* datos_generate_passw(datos_t* datos) {
     for (int64_t j = 0; j < pow(base, i) ; j++) {
       int64_t numero = j;
       size_t cont = 0;
-      if (numero == 0 || numero == pow(strlen(datos->alfabeto.array[0]), i)) {
+      if (numero == 0) {
         for (int64_t k = 0; k < (int64_t)i; k++) {
           pass_temp[k] = datos->alfabeto.array[0][0];
         }
