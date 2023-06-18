@@ -80,12 +80,6 @@ int main(int argc, char* argv[]) {
       , process_count, overall_start);
     const int process_size = process_finish - process_start;
 
-
-    const double elapsed = MPI_Wtime() - start_time;
-    std::cout << process_hostname << ':' << process_number << ": range ["
-      << process_start << ", " << process_finish << "[ size " << process_size
-      << " in " << elapsed << std::endl;
-
     #pragma omp parallel num_threads(thread_number) \
       default(none) shared(std::cout, process_hostname) \
       shared(process_number, process_start, process_finish)
@@ -112,6 +106,10 @@ int main(int argc, char* argv[]) {
         << omp_get_thread_num() << ": range [" << thread_start << ", " <<
         thread_finish << "[ size " << thread_size << std::endl;
     }
+    const double elapsed = MPI_Wtime() - start_time;
+    std::cout << process_hostname << ':' << process_number << ": range ["
+      << process_start << ", " << process_finish << "[ size " << process_size
+      << " in " << elapsed << std::endl;  
     MPI_Finalize();
   }
   return 0;
