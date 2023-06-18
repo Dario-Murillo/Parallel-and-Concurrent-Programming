@@ -8,8 +8,6 @@
 #include <thread>
 #include <string>
 #include <stdexcept>
-#include <thread>
-
 
 /**
  * @brief prinicipio de mapeo por bloque
@@ -33,7 +31,6 @@ int calculate_finish(int rank, int end, int workers, int begin);
 
 int main(int argc, char* argv[]) {
   if (MPI_Init(&argc, &argv) == MPI_SUCCESS) {
-
     // obtiene el tiempo para medirlo
     const double start_time = MPI_Wtime();
 
@@ -84,7 +81,7 @@ int main(int argc, char* argv[]) {
         }
       }
     }
-  
+
     // inicio de mapeo por bloque
     const int process_start = calculate_start(process_number, overall_finish
       , process_count, overall_start);
@@ -93,7 +90,13 @@ int main(int argc, char* argv[]) {
       , process_count, overall_start);
     const int process_size = process_finish - process_start;
 
- 
+
+    const double elapsed = MPI_Wtime() - start_time;
+
+    std::cout << process_hostname << ':' << process_number << ": range ["
+      << process_start << ", " << process_finish << "[ size " << process_size
+      << " in " << elapsed << std::endl;
+
 
     #pragma omp parallel num_threads(thread_number) \
       default(none) shared(std::cout, process_hostname) \
@@ -121,14 +124,6 @@ int main(int argc, char* argv[]) {
         << omp_get_thread_num() << ": range [" << thread_start << ", " <<
         thread_finish << "[ size " << thread_size << std::endl;
     }
-
-
-    const double elapsed = MPI_Wtime() - start_time;
-
-    std::cout << process_hostname << ':' << process_number << ": range ["
-      << process_start << ", " << process_finish << "[ size " << process_size
-      << " in " << elapsed << std::endl;
-
     MPI_Finalize();
   }
   return 0;
