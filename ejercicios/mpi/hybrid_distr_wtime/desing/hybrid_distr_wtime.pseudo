@@ -25,12 +25,6 @@ procedure main(argc, argv[])
     , overall_finish, process_count, overall_start)
   shared const process_size = process_finish - process_start
 
-  declare elapsed := start_time - time()
-  // E.g: hostname2:1: range [12, 20[ size 8
-  print process_hostname, ':', process_number, ": range [", process_start
-    , ", ", process_finish, "[ size ", process_size " in " elapsed
-
-
   parallel do
     declare thread_start := -1
     declare thread_finish := -1
@@ -48,6 +42,11 @@ procedure main(argc, argv[])
     print '\t', process_hostname, ':', process_number, '.', thread_number, \
       ": range [", thread_start, ", ",  thread_finish, "[ size ", thread_size
   end parallel
+
+  declare elapsed := start_time - time()
+  // E.g: hostname2:1: range [12, 20[ size 8
+  print process_hostname, ':', process_number, ": range [", process_start
+    , ", ", process_finish, "[ size ", process_size " in " elapsed
 end procedure
 
 function calculate_start(rank, end, workers, begin = 0)
