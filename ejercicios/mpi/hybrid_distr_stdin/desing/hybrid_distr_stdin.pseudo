@@ -5,10 +5,10 @@ procedure main(argc, argv[])
     overall_start = integer(argv[1])
     overall_finish = integer(argv[2])
   else do
-    if process_number := 0 do
+    if process_number = 0 do
       cin >> overall_start
       cin >> overall_finish
-      for target := 0 to process_count  do
+      for target := 1 to process_count do
         send(&overall_start, 1, target)
         send(&overall_finish, 1, target)
       end for
