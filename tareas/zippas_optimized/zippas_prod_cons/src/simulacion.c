@@ -45,7 +45,7 @@ void* datos_abrir_archivo(void* data);
  * @param data puntero de una variable tipo datos_t
  * @return void
 */
-void* datos_generate_passw(datos_t* datos);
+void* datos_generate_passw(void*  data);
 
 /**
  * @brief imprime las dirreciones de los zips y sus contrasenas
@@ -248,6 +248,14 @@ int crear_hilos(datos_t* datos) {
   datos_privados_t* private_data = (datos_privados_t*)
     calloc(datos->thread_count, sizeof(datos_privados_t));
 
+  datos_privados_t* private_data_generator = (datos_privados_t*)
+  calloc(1, sizeof(datos_privados_t));
+  private_data_generator[0].datos_compartidos = datos;
+  error = pthread_create(&private_data_generator[0].thread
+      , NULL
+      , datos_generate_passw
+      , &private_data_generator[0]);
+
 
   unsigned int seed = time(NULL);
   // crea copias de cada archivo para cada hilo
@@ -294,22 +302,23 @@ int crear_hilos(datos_t* datos) {
         , &private_data[thread_number]);
   }
 
-  datos_generate_passw(datos);
-
-
+  pthread_join(private_data_generator[0].thread, NULL);
   for (uint64_t thread_number = 0; thread_number < datos->thread_count
     ; ++thread_number) {
       pthread_join(private_data[thread_number].thread, NULL);
       arreglo_destroy(&private_data[thread_number].archivos);
   }
-
+  free(private_data_generator);
   free(private_data);
   return error;
 }
 
 
-void* datos_generate_passw(datos_t* datos) {
+void* datos_generate_passw(void* data) {
+  datos_privados_t *private_data =  (datos_privados_t*) data;
+  datos_t* datos = private_data->datos_compartidos;
   int64_t base = strlen(datos->alfabeto.array[0]);
+  bool puedo_salir = false;
   for (uint64_t i = 1; i <= datos->limite; i++) {
     char* pass_temp = calloc(i, sizeof(char*));
     for (int64_t j = 0; j < pow(base, i) ; j++) {
@@ -332,9 +341,18 @@ void* datos_generate_passw(datos_t* datos) {
       pass_temp[i] = '\0';
       queue_enqueue(&datos->cola, pass_temp);
       sem_post(&datos->can_consume);
-
+      pthread_mutex_lock(&datos->cambiar_variable);
+      if (datos->contador_pass == datos->zips.total) {
+        puedo_salir = true;
+        pthread_mutex_unlock(&datos->cambiar_variable);
+        break;
+      }
+      pthread_mutex_unlock(&datos->cambiar_variable);
     }
     free(pass_temp);
+    if (puedo_salir == true) {
+      break;
+    }
   }
   for (int64_t i = 0; i < (int64_t)datos->thread_count; i++) {
     queue_enqueue(&datos->cola, "");

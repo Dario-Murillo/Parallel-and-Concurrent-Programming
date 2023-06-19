@@ -1,5 +1,6 @@
 procedure datos_generate_password(datos):
   declare base := strlen(alfabeto)
+  declare puedo_salir := false
     for i := 1 to limite do
       declare pass_temp := i+1
       for j := 0 to base ^ i do
@@ -21,7 +22,17 @@ procedure datos_generate_password(datos):
         pass_temp[i] := '\0'
         queue_enqueue(cola, pass_temp)
         signal(can_consume)
+        lock(cambiar_variable)
+        if datos.contador_pass == datos.zips.total do
+          puedo_salir := true
+          unlock(cambiar_variable)
+          break
+        end if
+        unlock(cambiar_variable)
       end for
+      if puedo_salir = true do
+        break
+      end if
   end for
   for i := to thread_count do 
     queue_enqueue(cola, "pass_temp")
