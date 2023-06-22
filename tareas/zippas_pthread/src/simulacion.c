@@ -399,6 +399,9 @@ void* datos_generate_passw(void* data) {
             cont++;
           }
         }
+        if (strlen(pass_temp) < i) {
+          pass_temp[cont] = datos->alfabeto.array[0][0];
+        }
         pass_temp[i] = '\0';  // agregar terminacion nula a la clave
 
         if (datos_abrir_archivo(private_data->archivos.array[ind],
