@@ -6,7 +6,7 @@ La primera parte de este reporte consiste en presentar la optmizacion propuesta 
 
 ## Rendimiento
 
-El primer paso de este ciclo, consiste en tomar la duracion del programa a optimizar, para esto, tomamos el tiempo de ejecuccion de nuestro programa mediante la herramienta perf. La ejecuccion de este codigo se llevo a cabo en un sistema operativo linux, en una computadora con 16 nucleos, con un caso de prueba grande. El caso de prueba utilizado fue el input008, el cual es un caso de pruebas especial, creado para las multiples mediciones de tiempo y concurrencia llevadas a cabo, es decir no es uno de los casos brindados provicionalmente. La duracion de la version serial, es decir, de la tarea01 con este caso de pruebas fue de 847,562123859 segundos aproximadamente 14 minutos.
+El primer paso de este ciclo, consiste en tomar la duracion del programa a optimizar, para esto, tomamos el tiempo de ejecuccion de nuestro programa mediante la herramienta perf. La ejecuccion de este codigo se llevo a cabo en un sistema operativo linux, en una computadora con 16 nucleos y con 32 gb de RAM, con un caso de prueba grande. El caso de prueba utilizado fue el input008, el cual es un caso de pruebas especial, creado para las multiples mediciones de tiempo y concurrencia llevadas a cabo, es decir no es uno de los casos brindados provicionalmente, si no uno creado independientemente. La duracion de la version serial, es decir, de la tarea01 con este caso de pruebas fue de 888,39417887 segundos aproximadamente 15 minutos.
 
 ## Profiling y Análisis
 
@@ -26,10 +26,10 @@ Si analisamos, se esta abriendo y cerrando los archivos zips y reservando y libe
 
 ## Resultados
 
-La optimizacion fue exitosa ya que disminuyo el tiempo de ejecuccion del programa sustancialmente. El tiempo de ejecuccion, en el caso de prueba input008 fue de 820,841228273 segundos mientras que la version serial duro 847,562123859 segundos.
+La optimizacion fue exitosa ya que disminuyo el tiempo de ejecuccion del programa sustancialmente. El tiempo de ejecuccion, en el caso de prueba input008 fue de 867,665801882 segundos mientras que la version serial duro 888,39417887 segundos.
 
-1. Speedup: 1,032553062
-2. Eficiencia: 1,032553062 
+1. Speedup: 1,023889817
+2. Eficiencia: 1
 
 La eficiencia es la misma al speed up ya que al ser una optimizacion serial solo hay un trabajador.
 
@@ -43,14 +43,14 @@ Esto es muy util ya que si bien, la paralelizacion de un programa puede aumentar
 
 ## Diseño
 
-La optimización 2 consiste en hacer mejorar el rendimiento del programa al paralelizar tareas, es decir, hacer el programa concurrente repartiendo la generacion de claves lo mas equitativamente posible entre multiples hilos mediante un mapeo estatico por bloque.
+La optimización 2 consiste en hacer mejorar el rendimiento del programa al paralelizar tareas, es decir, hacer el programa concurrente repartiendo el trabajo de la generacion de claves lo mas equitativamente posible entre multiples hilos mediante un mapeo estatico por bloque.
 
 ## Resultados
 
-La optimización 2 la cual consiste de la paralelizacion multihilos con un mapeo estatico duro 208,402963537 segundos con el caso de pruba input008, es decir, alredor de 3 minutos, por lo tanto, si consiguio aumentar significativamente el desempeño del programa.
+La optimización 2 la cual consiste de la paralelizacion multihilos con un mapeo estatico duro 158,165189687 segundos con el caso de pruba input008, es decir, alredor de 3 minutos, por lo tanto, si consiguio aumentar significativamente el desempeño del programa.
 
-1. Speedup: 4,066938922
-2. Eficiencia: 0,254183683
+1. Speedup: 5,6168755
+2. Eficiencia: 0,351054719
 
 ## Lecciones aprendidas
 
@@ -67,8 +67,8 @@ Esto no solo disminuye significativamente la cantidad de trabajo de cada hilo al
 La tercera optimización consiste en paralelizar el programa, pero esta vez mediante un mapeo dinámico por medio del patrón productor-consumidor. Al igual que el resto de las optimizaciones, se seguira paso a paso el ciclo de optimización.
 
 ## Rendimiento
-
- La ejecuccion de este codigo se llevo a cabo en un sistema operativo linux, en una computadora con 16 nucleos, con un caso de prueba grande, en este caso se utilizo el caso de prueba input008. La duracion de la version con mapeo dinamico fue de 353,619903475 segundos, osea, aproximadamente 6 minutos.
+ 
+La duracion de la version con mapeo dinamico, la cual fue realizada en la misma computadora y con el mismo caso de prueba utilizados para las optimizaciones anteriors, fue de 161,242806986 segundos, osea, aproximadamente 3 minutos.
 
 ## Diseño
 
@@ -80,17 +80,17 @@ Para lograr lo propuesto, se escogio la apertura de archivos como la unidad de d
 
 En este caso, la solucion de mapeo dinamico presento un aumento del desempeño significativo respecto a la version serial, al igual que la version con mapeo estatico por bloque, sin embargo, esta version tuvo un peor speedup y eficiencia que la implementada con el otro mapeo.
 
-1. Speedup: 2,396816795
-2. Eficiencia: 0,14980105
+1. Speedup: 5,509667039
+2. Eficiencia: 0,34435419
 
 ## Lecciones aprendidas
 
 Si bien se ha estudiado que el mapeo dinamico es un mapeo que suele generar soluciones mas efectivas que los demas tipos de mapeo en la mayoria de los casos, los resultados de estas pruebas fueron muy enriquecedores para poder comprobar como no siempre esto sucede y que dependiendo del problema, el tipo de mapeo, la granulidad e incluso la unidad de descomposicion, asi como la implementacion del paralelismo mediante en el programa, pueden cambiar drasticamente el rendimiento del programa.
 
-La solucion mediante el mapeo dinamico, por medio del productor consumidor genero mejores resultados que la version serial, ya que esta tiene un tiempo de ejecuccion de aproximadamente 14 minutos, mientras que esta version dura aproximadamente 6 minutos al usar 16 hilos, sin embargo, es importante notar que esta version con mapeo dinamico sigue siendo peor que la version de mapeo por bloque, la cual, con la misma cantidad de hilos tiene un tiempo de ejecuccion de aproximadamente 3 minutos.
+La solucion mediante el mapeo dinamico, por medio del productor consumidor genero mejores resultados que la version serial, ya que esta tiene un tiempo de ejecuccion de aproximadamente 15 minutos, mientras que esta version dura aproximadamente 3 minutos al usar 16 hilos, sin embargo, es importante notar que esta version con mapeo dinamico sigue siendo peor que la version de mapeo por bloque, la cual, con la misma cantidad de hilos tiene un tiempo de ejecuccion de aproximadamente 3 minutos.
 
 Es interesante entonces analizar porque a pesar de que ambos son programas concurrentes, los cuales fueron probados con el mismo caso de pruebas y con la misma cantidad de hilos, presentan tiempos de ejecuccion distintos, ya que la version por bloque dura casi la mitad del tiempo que dura la version con mapeo dinamico.
 
 Una posible explicacion de porque sucede esto es que el tipo de mapeo y la unidad de descomposicion elegida en ambas soluciones es distinto, ya que en la version por bloque se reparte tanto, el trabajo de generacion de claves, asi como de apertura de archivos equitativamente entre los hilos disponibles, esto se hace para todos los archivos zips introducidos. Por otro lado, en el mapeo dinamico, hay solo un hilo generando claves y poniendolas en una cola, mientras hay multiples hilos consumiendo de esta, estos hilos igual tiene que probar esta clave con cada archivo introducido.
 
- Es entonces muy util despues de analizar estos resultados, poder llegar a entender, que paralelizar un programa con multiples hilos, puede generar resultados muy distintos dependiendo de la manera en que se implemente, y que por lo tanto, no se debe tomar a la ligera la parte de analisis y se debe ser muy cuidadoso a la hora de elegir el mapeo, la granularidad, unidad de descomposicion y la implementacion que se desea llevar a cabo, ya que dependiendo de esto podemos llegar a mejores resultados, y en ocasiones una mala implementacion podria llegar a causar un efecto adverso e incluso empeorar el rendimiento de un programa. 
+Es entonces muy util despues de analizar estos resultados poder llegar a entender, que paralelizar un programa con multiples hilos, puede generar resultados muy distintos dependiendo de la manera en que se implemente, y que por lo tanto, no se debe tomar a la ligera la parte de analisis y se debe ser muy cuidadoso a la hora de elegir el mapeo, la granularidad, unidad de descomposicion y la implementacion que se desea llevar a cabo, ya que dependiendo de esto podemos llegar a mejores resultados, y en ocasiones una mala implementacion podria llegar a causar un efecto adverso e incluso empeorar el rendimiento de un programa. 
