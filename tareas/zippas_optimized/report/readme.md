@@ -94,3 +94,41 @@ Es interesante entonces analizar porque a pesar de que ambos son programas concu
 Una posible explicacion de porque sucede esto es que el tipo de mapeo y la unidad de descomposicion elegida en ambas soluciones es distinto, ya que en la version por bloque se reparte tanto, el trabajo de generacion de claves, asi como de apertura de archivos equitativamente entre los hilos disponibles, esto se hace para todos los archivos zips introducidos. Por otro lado, en el mapeo dinamico, hay solo un hilo generando claves y poniendolas en una cola, mientras hay multiples hilos consumiendo de esta, estos hilos igual tiene que probar esta clave con cada archivo introducido.
 
 Es entonces muy util despues de analizar estos resultados poder llegar a entender, que paralelizar un programa con multiples hilos, puede generar resultados muy distintos dependiendo de la manera en que se implemente, y que por lo tanto, no se debe tomar a la ligera la parte de analisis y se debe ser muy cuidadoso a la hora de elegir el mapeo, la granularidad, unidad de descomposicion y la implementacion que se desea llevar a cabo, ya que dependiendo de esto podemos llegar a mejores resultados, y en ocasiones una mala implementacion podria llegar a causar un efecto adverso e incluso empeorar el rendimiento de un programa. 
+
+# Optimizaciones
+
+Una vez que las optimizaciones fueron realizadas se pueden hacer las mediciones para comparar distintos criterios de los programas. En esta seccion, se comparara el incremento de desempeño, para facilitar esto se muestran los siguientes graficos creados en base a los resultados obtenidos luego de las mediciones.
+ 
+Estas mediciones fueron realizadas todas en la misma computadora, con el mismo caso de pruebas el input008, ademas, para los programas concurrentes se uso el numero de CPUs disponibles como la cantidad de hilos, es decir, 16 hilos.
+
+El primer graficos muestra en comparacion la duracion del programa en segundos y el speedup obtenido respecto a la version serial.
+![Optimizations_graph](img/optimizations_graph.png)
+
+El segundo grafico muestra la comparacion entre el speedup y la eficiencia.
+![Optimizations_efficiency](img/optimizations_efficiency_graph.png)
+
+Como podemos notar, la version que produjo un menor tiempo de ejecuccion y por lo tanto la que tuvo consecuentemente  un mayor speedup, fue la version pthreads, es decir, la version concurrente con mapeo de bloque estatico. La version de productor-consumidor, produjo resultados muy parecidos, aunque un poco peores que los de la version pthreads, esto se ve reflejado en el leve aumento que se ve en la linea de grafico en el eje de duraciones.
+
+Es natural que las versiones multihilos produzcan mucho mejores resultados, que la version serial, y la optimizacion de la version serial, la cual, si bien produce mejores resultados, al tener un menor tiempo de duracion y un leve speedup, es un aumento mucho mas insignificante que las versiones anteriores. 
+
+Por otro lado, si bien las versiones de mapeo dinamico suelen producir mejores resultados que otros tipos de mapeo, ya que los hilos toman la siguiente unidad de trabajo disponible cuando se desocupan, esto no es constante, ya que dependiendo del programa a optimizar hay otros aspectos como la unidad de descomposicion o la granularidad del problema que puede hacer que otros tipos de mapeo produzcan mejores resultados, en el caso de nuestro programa si bien los resultados fueron muy similares esta version duro unos segundos mas que la version de bloque, lo que significa que no obtuvo un incremento del desempeño respecto a la otra version concurrente. 
+
+Despues de analizar los resultados, podemos concluir entonces, que el mapeo estático por bloque el cual asigna rangos continuos de trabajo a cada trabajador, resulto ser mucho mas eficiente para la reparticion de claves al dividir el trabajo  tanto de la produccion de claves como la de apertura de archivos equitaivamente, a diferencia de la version productor-consumidor, en la cual solo un hilo produce claves mientras otros consumen para intentar abrir los archivos con las claves que extraen del buffer. Sin embargo, si es importante destacar que ambas versiones fueron mejores respecto a la version serial, asi como la optimizacion serial de esta misma.
+
+# Grado de concurrencia
+
+Una vez comparado los tiempos de ejecuccion y el speedup entre las distintas versiones, podemos analizar el comportamiento de los programas concurrentes con distintos grados de concurrencia. Las mediciones fueron realizadas todas en la misma computadora, con el mismo caso de pruebas el input008, lo unico que cambio en cada medicion fue la cantidad de hilos utlizados.
+
+Este primer grafico muestras los distintos resultados de concurrencia respecto a la version pthreads, es decir la de mapeo, con bloque estatico.
+![pthread_concurrency_levels](img/concurrency_pthread_graph.png)
+
+El segundo grafico muestra los distintos resultados de concurrencia respecto a la version dinamico, es decir la version con productor-consumidor.
+![dynamic_concurrency_levels](img/concurrency_dynamic_graph.png)
+
+Una vez que obtenemos los resultados de las pruebas, y tenemos el apoyo visual de los graficos para poder analizar su comportamiento, podemos notar que los graficos de ambas versiones se ven similares, como ya fue mencionado anteriormente, esto se debe a que si bien la version pthread obtuvo mejores resultados, la diferencia comparada con la version dinamica es de unos pocos segundos, por lo tanto es dificil verlo reflejado en el grafico.
+
+En cuanto a la cantidad de hilos, si se puede notar que en ambas versiones 4 hilos, es lo que produce un menor speedup respecto a la version serial, esto es esperado ya que es una cantidad de hilos muy pequeña, y hace que haya una mucha menor paralizacion de datos, aunque esto tambien hace que haya un mejor uso de los recursos, por lo tanto, presenta mejor eficiencia que las otras versiones
+
+Por otro lado, 8 hilos fue lo que produjo un menor tiempo de ejecuccion y por lo tanto un mayor speedup respecto a la version serial, esto es un resultado esperado, ya que normalmente la cantidad optima de hilos a usar al correr un programa paralelo suele ser la cantidad de CPU's disponibles en la maquina o incluso menor.  En este caso, las pruebas se realizaron en una computadora que si bien posee 16 nucleos, solo 8 de ellos son nucleos fisicos, es decir, los demas son nucleos logicos o virtuales.
+
+De igual manera, tambien podemos notar que los resultados al usar 16,32 y 64 hilos no solo son peores que al usar 8 hilos, si no que el rendimiento del programa suele ser el mismo o incluso suele empeorar por algunos segundos conforme aumenta el numero de hilos. Esto se debe a que usar mas hilos en un programa no siempre asegura un incremento del desempeño, si no que mas bien puede causar resultados peores al saturar los recursos del sistemas, esto de hecho se puede ver reflejado en el eje de rendimiento el cual se reduce significativamente conforme se le agregan hilos, ademas de que un exceso de hilos puede resultar en que muchos de estos pasen la mayoria de tiempo en espera para poder trabajar. Por lo tanto, podemos concluir que la cantidad optima de hilos para conseguir el mejor rendimiento, considerando tanto el speedup como la eficiencia, es 8 hilos.
