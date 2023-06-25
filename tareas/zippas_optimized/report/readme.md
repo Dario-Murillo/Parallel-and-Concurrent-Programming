@@ -37,7 +37,7 @@ La eficiencia es la misma al speed up ya que al ser una optimizacion serial solo
 
 Luego de realizar la primer optimizacion, se puede concluir que la si bien la paralelizacion de tareas es una herramienta muy efectiva para aumentar el rendimiento de un programa, tambien podemos recurrir a soluciones que no requieren la reparticion de trabajo o el uso de multiples hilos de ejecuccion. Gracias a herramientas de profiling como la usada, podemos identificar que partes de nuestro programa toman la mayor cantidad de trabajo y en base a esto, podemos crear una optimizacion eficiente que cree una mejora corrorable en el programa. 
 
-Esto es muy util ya que si bien, la paralelizacion de un programa puede aumentar su desempeño, puede ser que nos veamos en la necesidad de optimizar un programa sin la posibilidad de hacerlo multihilo, es decir que sea un programa estrictamente serial, ya sea porque la implementacion de multiples hilos complica mucho el codigo  o porque se busca una solucion que no provoque afecte la metrica de eficiencia.
+Esto es muy util ya que si bien, la paralelizacion de un programa puede aumentar su desempeño, puede ser que nos veamos en la necesidad de optimizar un programa sin la posibilidad de hacerlo multihilo, es decir que sea un programa estrictamente serial, ya sea porque la implementacion de multiples hilos complica mucho el codigo  o porque se busca una solucion que no afecte la metrica de eficiencia, al utilizar muchos recursos.
 
 # Optimización 2
 
@@ -45,9 +45,11 @@ Esto es muy util ya que si bien, la paralelizacion de un programa puede aumentar
 
 La optimización 2 consiste en hacer mejorar el rendimiento del programa al paralelizar tareas, es decir, hacer el programa concurrente repartiendo el trabajo de la generacion de claves lo mas equitativamente posible entre multiples hilos mediante un mapeo estatico por bloque.
 
+En esta solucion se pretende repartir el trabajo tanto de generacion de claves como el de apertura de archivos entre multiples hilos, con la intencion de que el rango de claves con el que trabaje cada uno sea mucho menor, y que ademas canda hilo este trabajando en paralelo para disminuir el tiempo de las tareas.
+
 ## Resultados
 
-La optimización 2 la cual consiste de la paralelizacion multihilos con un mapeo estatico duro 158,165189687 segundos con el caso de pruba input008, es decir, alredor de 3 minutos, por lo tanto, si consiguio aumentar significativamente el desempeño del programa.
+La optimización 2 la cual consiste de la paralelizacion multihilos con un mapeo estatico duro 158,165189687 segundos con el caso de pruba input008, es decir, alredor de 3 minutos, por lo tanto, si consiguio aumentar significativamente el desempeño del programa, respecto a la version serial.
 
 1. Speedup: 5,6168755
 2. Eficiencia: 0,351054719
@@ -56,7 +58,7 @@ La optimización 2 la cual consiste de la paralelizacion multihilos con un mapeo
 
 Dependiendo del programa que estemos haciendo tener un solo hilo efectuando una tarea puede llegar a ser sumamente ineficiente, ya sea porque es una tarea que toma mucho tiempo, o porque requiere de muchos recursos del procesador.
 
-En este programa nos encontramos con un caso en el que ciertas partes pueden conllevar una gran cantidad de trabajo. Como analizamos en la seccion de profiling, la generacion de claves junto con la apertura de archivos, requieren muchos llamados y toman la mayor parte del tiempo de ejecuccion, ya que en ocasiones son muchas las claves que se deben probar para llegar a la respuesta, o en el peor caso se deben probar todas las claves posibles para agotar las posibles soluciones.
+En este programa nos encontramos con un caso en el que ciertas partes pueden conllevar una gran cantidad de trabajo. Como analizamos en la seccion de profiling, la generacion de claves junto con la apertura de archivos, requieren muchos llamados y toman la mayor parte del tiempo de ejecuccion, ya que en ocasiones son muchas las claves que se deben probar para llegar a la respuesta, o en el peor caso se deben probar todas las claves posibles para agotar las soluciones.
 
 Es de esta manera que se llego a la desicion de implementar una version concurrente, que consiste en repartir el trabajo de generacion de claves y apertura de archivos, entre varios hilos de manera equitativa, para que asi cada hilo pueda trabajar de manera paralela con un menor rango de claves. 
 
@@ -85,13 +87,11 @@ En este caso, la solucion de mapeo dinamico presento un aumento del desempeño s
 
 ## Lecciones aprendidas
 
-Si bien se ha estudiado que el mapeo dinamico es un mapeo que suele generar soluciones mas efectivas que los demas tipos de mapeo en la mayoria de los casos, los resultados de estas pruebas fueron muy enriquecedores para poder comprobar como no siempre esto sucede y que dependiendo del problema, el tipo de mapeo, la granulidad e incluso la unidad de descomposicion, asi como la implementacion del paralelismo mediante en el programa, pueden cambiar drasticamente el rendimiento del programa.
+Si bien se ha estudiado que el mapeo dinamico es un mapeo que suele generar soluciones mas efectivas que los demas tipos de mapeo en la mayoria de los casos, los resultados de estas pruebas fueron muy enriquecedores para poder comprobar como no siempre esto sucede y que dependiendo del problema, el tipo de mapeo, la granulidad e incluso la unidad de descomposicion, asi como la implementacion del paralelismo  en el programa, pueden cambiar drasticamente el rendimiento del programa.
 
-La solucion mediante el mapeo dinamico, por medio del productor consumidor genero mejores resultados que la version serial, ya que esta tiene un tiempo de ejecuccion de aproximadamente 15 minutos, mientras que esta version dura aproximadamente 3 minutos al usar 16 hilos, sin embargo, es importante notar que esta version con mapeo dinamico sigue siendo peor que la version de mapeo por bloque, la cual, con la misma cantidad de hilos tiene un tiempo de ejecuccion de aproximadamente 3 minutos.
+La solucion mediante el mapeo dinamico, por medio del productor consumidor genero mejores resultados que la version serial, ya que esta tiene un tiempo de ejecuccion de aproximadamente 15 minutos, mientras que esta version dura aproximadamente 3 minutos al usar 16 hilos, sin embargo, es importante notar que esta version con mapeo dinamico sigue siendo peor que la version de mapeo por bloque, la cual, con la misma cantidad de hilos tiene un tiempo de ejecuccion de tambien aproximadamente 3 minutos, pero con unos segundos menos.
 
-Es interesante entonces analizar porque a pesar de que ambos son programas concurrentes, los cuales fueron probados con el mismo caso de pruebas y con la misma cantidad de hilos, presentan tiempos de ejecuccion distintos, ya que la version por bloque dura casi la mitad del tiempo que dura la version con mapeo dinamico.
-
-Una posible explicacion de porque sucede esto es que el tipo de mapeo y la unidad de descomposicion elegida en ambas soluciones es distinto, ya que en la version por bloque se reparte tanto, el trabajo de generacion de claves, asi como de apertura de archivos equitativamente entre los hilos disponibles, esto se hace para todos los archivos zips introducidos. Por otro lado, en el mapeo dinamico, hay solo un hilo generando claves y poniendolas en una cola, mientras hay multiples hilos consumiendo de esta, estos hilos igual tiene que probar esta clave con cada archivo introducido.
+Una posible explicacion de porque sucede esto es que el tipo de mapeo y la unidad de descomposicion elegida en ambas soluciones es distinto, ya que en la version por bloque se reparte tanto, el trabajo de generacion de claves, asi como de apertura de archivos equitativamente entre los hilos disponibles, esto se hace para todos los archivos zips introducidos. Por otro lado, en el mapeo dinamico, hay solo un hilo generando claves y poniendolas en una cola, mientras hay multiples hilos consumiendo de esta, estos hilos igual tienen que probar esta clave con cada archivo introducido.
 
 Es entonces muy util despues de analizar estos resultados poder llegar a entender, que paralelizar un programa con multiples hilos, puede generar resultados muy distintos dependiendo de la manera en que se implemente, y que por lo tanto, no se debe tomar a la ligera la parte de analisis y se debe ser muy cuidadoso a la hora de elegir el mapeo, la granularidad, unidad de descomposicion y la implementacion que se desea llevar a cabo, ya que dependiendo de esto podemos llegar a mejores resultados, y en ocasiones una mala implementacion podria llegar a causar un efecto adverso e incluso empeorar el rendimiento de un programa. 
 
@@ -107,13 +107,14 @@ El primer graficos muestra en comparacion la duracion del programa en segundos y
 El segundo grafico muestra la comparacion entre el speedup y la eficiencia.
 ![Optimizations_efficiency](img/optimizations_efficiency_graph.png)
 
-Como podemos notar, la version que produjo un menor tiempo de ejecuccion y por lo tanto la que tuvo consecuentemente  un mayor speedup, fue la version pthreads, es decir, la version concurrente con mapeo de bloque estatico. La version de productor-consumidor, produjo resultados muy parecidos, aunque un poco peores que los de la version pthreads, esto se ve reflejado en el leve aumento que se ve en la linea de grafico en el eje de duraciones.
+Como podemos notar, la version que produjo un menor tiempo de ejecuccion y por lo tanto la que tuvo consecuentemente  un mayor speedup, fue la version pthreads, es decir, la version concurrente con mapeo de bloque estatico. La version de productor-consumidor, produjo resultados muy parecidos, aunque un poco peores que los de la version pthreads, esto se ve reflejado en el leve aumento que se ve en la linea del grafico en el eje de duraciones.
 
 Es natural que las versiones multihilos produzcan mucho mejores resultados, que la version serial, y la optimizacion de la version serial, la cual, si bien produce mejores resultados, al tener un menor tiempo de duracion y un leve speedup, es un aumento mucho mas insignificante que las versiones anteriores. 
 
 Por otro lado, si bien las versiones de mapeo dinamico suelen producir mejores resultados que otros tipos de mapeo, ya que los hilos toman la siguiente unidad de trabajo disponible cuando se desocupan, esto no es constante, ya que dependiendo del programa a optimizar hay otros aspectos como la unidad de descomposicion o la granularidad del problema que puede hacer que otros tipos de mapeo produzcan mejores resultados, en el caso de nuestro programa si bien los resultados fueron muy similares esta version duro unos segundos mas que la version de bloque, lo que significa que no obtuvo un incremento del desempeño respecto a la otra version concurrente. 
 
-Despues de analizar los resultados, podemos concluir entonces, que el mapeo estático por bloque el cual asigna rangos continuos de trabajo a cada trabajador, resulto ser mucho mas eficiente para la reparticion de claves al dividir el trabajo  tanto de la produccion de claves como la de apertura de archivos equitaivamente, a diferencia de la version productor-consumidor, en la cual solo un hilo produce claves mientras otros consumen para intentar abrir los archivos con las claves que extraen del buffer. Sin embargo, si es importante destacar que ambas versiones fueron mejores respecto a la version serial, asi como la optimizacion serial de esta misma.
+Despues de analizar los resultados, podemos concluir entonces, que el mapeo estático por bloque el cual asigna rangos continuos de trabajo a cada trabajador, resulto ser un poco mas eficiente para la reparticion de claves al dividir el trabajo  tanto de la produccion de claves como la de apertura de archivos equitaivamente, a diferencia de la version productor-consumidor, en la cual solo un hilo produce claves mientras otros consumen para intentar abrir los archivos con las claves que extraen del buffer. Sin embargo, si es importante destacar que ambas versiones fueron mejores respecto a la version serial, asi como la optimizacion serial de esta misma.
+Es decir ninguna optimizacion, obtuvo peores resultados que la version serial.
 
 # Grado de concurrencia
 
