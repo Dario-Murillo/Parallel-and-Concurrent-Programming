@@ -1,0 +1,44 @@
+procedure main(argc, argv[]):
+  shared quota := 4
+  for id := 0 to 5 do
+    create_thread(philosopher, id)
+  end for
+end procedure
+
+procedure philosopher(id):
+  if id == 0 do
+    for i = 0 to quota - 1 do 
+      send(&quota, 1, any_process, 0)
+      send(&quota, 1, any_process, 1)
+    end
+    while true do
+      receive(quota, 1, any_process, any_tag)
+      send(quota, 1, any_process, null)
+    end
+  else do
+    while true do
+      think()
+        get_left_chopstick(id)
+        get_right_chopstick(id)
+        eat()
+        put_left_chopstick(id)
+        put_right_chopstick(id)
+    end while
+  end
+end procedure
+
+procedure get_left_chopstick(id):
+  receive(&quota, 1, 0, 0)
+end procedure
+
+procedure get_right_chopstick(id):
+  receive(&quota, 1, 0, 1)
+end procedure
+
+procedure put_left_chopstick(id):
+  send(&quota, 1, id + 1 mod 5, 1)
+end procedure
+
+procedure put_right_chopstick(id):
+  send(&quota, 1, id, 1)
+end procedure
