@@ -1,7 +1,7 @@
 procedure main(argc, argv[]):
-  shared chopsticks[] := create_semaphores(5, 1)
-
-  for id := 0 to 5 do
+  shared philosopher_count := argv[1]
+  shared chopsticks[] := create_semaphores(philosopher_count, 1)
+  for id := 0 to philosopher_count do
     create_thread(philosopher, id)
   end for
 end procedure
@@ -23,7 +23,7 @@ procedure philosopher(id):
 end procedure
 
 procedure get_left_chopstick(id):
-  wait(chopsticks[(id + 1) mod 5])
+  wait(chopsticks[(id + 1) mod philosopher_count])
 end procedure
 
 procedure get_right_chopstick(id):
@@ -31,7 +31,7 @@ procedure get_right_chopstick(id):
 end procedure
 
 procedure put_left_chopstick(id):
-  signal(chopsticks[(id + 1) mod 5])
+  signal(chopsticks[(id + 1) mod philosopher_count])
 end procedure
 
 procedure put_right_chopstick(id):
