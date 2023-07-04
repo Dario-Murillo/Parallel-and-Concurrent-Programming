@@ -1,0 +1,7 @@
+![Diagrama UML](/desing/zippas_omp_diagram.png)
+
+La imagen anterior hace referencia a un diagrama tipo UML, el cual trata de ilustrar las estructuras de datos con sus respectivas subrutinas, atributos asi como las interacciones entre ellas. 
+
+Los cuadros mas grandes, representan las dos estructuras de datos que se utilizan durante la ejecucion del programa. Abajo de estos se presenta un diagrama de secuencia que trata de ilustrar el orden de ejecuccion del programa, mediante un ejemplo en el cual se introduce un caso de prueba ficticio, los circulos representan la secuencia de ejecucion de las tareas, las lineas muestran como se transfieren y cambian los datos durante la ejecuccion del programa, de igual manera, se representan los hilos de mediante un doble circulo. 
+
+En el ejemplo representado en el diagrama, el alfabeto de contraseñas es formado de 1,2,3, el maximo de la clave es 2, y hay un archivo zip, cuya clave para descrifrarlo es 31. Como podemos ver, en el diagrama se representa como entran los datos, asi como estos son procesados, para que luego la subrutina datos_generate_pass, empieze a generar claves, en este caso el trabajo es repartido equitativamente mediante dos hilos de ejecuccion, el primero de estos prueba la clave 31, la cual descifra el archivo, y al ser exitosa la agrega a un arreglo. Seguidamente ambos hilos terminan su ejecuccion debido a que no quedan mas archivos que procesar, luego se imprimen las respuestas y se realiza la limpieza de los datos.

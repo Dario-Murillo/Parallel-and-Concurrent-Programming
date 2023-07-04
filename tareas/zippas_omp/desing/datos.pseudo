@@ -1,0 +1,116 @@
+struct datos:
+  declare alfabeto;
+  declare limite;
+  declare zips;
+  declare contrasenas;
+  declare write_lock
+  declare thread_count
+
+procedure datos_innit(datos)
+  arreglo_innit(alfabeto)
+  arreglo_innit(zips)
+  arreglo_innit(contrasenas)
+  zip_stat_init(sb)
+  za := NULL
+  zf := NULL
+  limite := 0
+end procedure
+
+procedure datos_destroy(datos)
+  arreglo_destroy(alfabeto)
+  arreglo_destroy(zips)
+  arreglo_destroy(contrasenas)
+  free(datos);
+end procedure
+
+procedure datos_analisis(datos, input, argc, argv[]):
+  if input != NULL do
+    declare str[120]
+    declare linea := 0
+    while str, input do
+      if (linea := 0) do
+        arreglo_agregar(alfabeto,str)
+      end else (linea :=1 ) do
+        limite := str
+      end else (linea >= 3) do 
+        arreglo_agregar(zips,str)
+      end
+    end while
+  end if
+  if argc == 2 do
+    thread_count := argv[1]
+  end if
+end procedure
+
+procedure datos_generate_password(datos):
+  declare can_exit := false
+  for ind := 0 to zip.total do 
+    for i := 1 to limite do
+      declare len := datos.alfabeto ^ i
+      for j := 0 to len do
+        if can_exit == false do
+          declare pass_temp as array of chars
+          declare base := strlen(alfabeto)
+          declare numero := j
+          declare cont := 0
+          if numero == 0 do
+            for k := 0 to i  do
+              pass_temp[k] := alfabeto[0]
+            end for
+          else  
+            while numero > 0 do
+              declare div := numero / base
+              declare residuo := numero % base
+              pass_temp[cont] := alfabeto[residuo]
+              numero := div
+              cont++
+            end while
+          end if
+          if strlen(pass_temp < i) do
+            pass_temp[cont] = datos->alfabeto.array[0][0];
+          end if
+          declare retorno := datos_abrir_archivo(zips[ind], pass_temp, datos)
+          if retorno := && insercion := 0 do
+            arreglo_agregar(contrasenas, pass_temp)
+            can_exit := true
+          end if
+        end if
+      end for
+    end for
+    if encontro := false do
+      arreglo_agregar(contrasenas, '\n')
+    end if
+  end for
+end procedure
+
+
+procedure datos_abrir_archivo(archive, key, datos):
+  declare error := 0
+  declare archive = zips.array[i]
+  declare found_key := false 
+  declare arch := NULL
+  
+  lock(&write_lock)
+  arch := zip_open(archive, 0, error)
+  unlock(&write_lock)
+
+  declare finfo
+  zip_stat_init(finfo)
+  declare fd := NULL
+  declare txt := NULL
+  zip_stat_index(arch, 0, 0 finfo)  
+  txt := finfo.size
+  fd = zip_fopen_index_encrypted(arch, count, 0, key)
+  zip_fread(fd, txt, finfo->size);
+  if txt == "CI0117-23a" do
+    found_key := true
+  end if
+  count++
+  zip_close(za)
+end procedure
+
+procedure datos_imprimir(datos):
+  for i := 0 to zips total do
+    print zips[i] contrasenas[i]
+  end for
+end procedure
