@@ -1,9 +1,9 @@
 // Copyright 2021 Jeisson Hidalgo <jeisson.hidalgo@ucr.ac.cr> CC-BY 4.0
+#include <math.h>
 #include <omp.h>
 #include <iostream>
 #include <vector>
 #include <numeric>
-#include <math.h>
 
 int main(int argc, char* argv[]) {
   int thread_count = omp_get_max_threads();
@@ -44,5 +44,4 @@ int main(int argc, char* argv[]) {
   std::cout << "Valor maximo " << maxValue << std::endl;
   std::cout << "Valor minimo " << minValue << std::endl;
   std::cout << "Deviacion estandar " << standardDeviation << std::endl;
-
 }

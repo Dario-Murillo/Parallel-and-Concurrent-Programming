@@ -1,10 +1,11 @@
 // Copyright 2021 Jeisson Hidalgo <jeisson.hidalgo@ucr.ac.cr> CC-BY 4.0
+#include <math.h>
 #include <omp.h>
 #include <iostream>
 #include <vector>
 #include <numeric>
 #include <algorithm>
-#include <math.h>
+
 
 int main(int argc, char* argv[]) {
   int thread_count = omp_get_max_threads();
@@ -39,10 +40,9 @@ int main(int argc, char* argv[]) {
   }
 
   // ordena el arreglo de manera concurrente para luego sacar la mediana
-  #pragma omp parallel num_threads(thread_count) \
-    default(none) shared(values)
+  #pragma omp parallel for num_threads(thread_count) \
+    default(none) shared(values) collapse(2)
   for (size_t i = 0; i < values.size(); i++) {
-    #pragma omp for
     for (size_t j = i; j < values.size(); j++) {
       if (values[i] > values[j]) {
         #pragma omp critical(acceso)
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  
+
   const double average = values.size() ? sum / values.size() : 0.0;
   standardDeviation = sqrt(standardDeviation / values.size());
   const double middle = values.size() / 2;
@@ -62,5 +62,4 @@ int main(int argc, char* argv[]) {
   std::cout << "Valor maximo " << maxValue << std::endl;
   std::cout << "Valor minimo " << minValue << std::endl;
   std::cout << "Deviacion estandar " << standardDeviation << std::endl;
-
 }
