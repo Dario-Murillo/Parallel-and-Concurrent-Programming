@@ -10,15 +10,14 @@ procedure datos_innit(datos)
   arreglo_innit(alfabeto)
   arreglo_innit(zips)
   arreglo_innit(contrasenas)
-  zip_stat_init(sb)
-  za := NULL
-  zf := NULL
+  omp_init_lock(write_lock)
   limite := 0
 end procedure
 
 procedure datos_destroy(datos)
   arreglo_destroy(alfabeto)
   arreglo_destroy(zips)
+  omp_destroy_lock(write_lock)
   arreglo_destroy(contrasenas)
   free(datos);
 end procedure
@@ -47,6 +46,7 @@ procedure datos_generate_password(datos):
   for ind := 0 to zip.total do 
     for i := 1 to limite do
       declare len := datos.alfabeto ^ i
+      #pragma parallel for
       for j := 0 to len do
         if can_exit == false do
           declare pass_temp as array of chars
@@ -80,6 +80,7 @@ procedure datos_generate_password(datos):
     if encontro := false do
       arreglo_agregar(contrasenas, '\n')
     end if
+    can_exit := false
   end for
 end procedure
 
