@@ -1,6 +1,7 @@
 // Copyright Dario Murillo C15406
 #include <omp.h>
 #include <iostream>
+#include <thread>
 #include <random>
 
 /**
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]) {
     size = atoi(argv[1]);
   }
 
-  int thread_count = size;
+  int thread_count = std::thread::hardware_concurrency();
   if (argc >= 3) {
     thread_count = atoi(argv[2]);
   }
