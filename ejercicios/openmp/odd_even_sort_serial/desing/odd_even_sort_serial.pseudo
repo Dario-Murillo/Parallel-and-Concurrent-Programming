@@ -20,14 +20,14 @@ procedure serial_odd_even_sort(array, n):
       for i := 1 to n do
         if array[i-1] > array[i] do
           swap(array[i-1], array[i])
-        end
-      end
+        end if
+      end for
     else
       for i := 1 to n-1 do
         if array[i] > array[i+1] do
           swap(array[i], array[i+1])
-        end
-      end
-    end
-  end
+        end if
+      end for
+    end if
+  end for
 end procedure

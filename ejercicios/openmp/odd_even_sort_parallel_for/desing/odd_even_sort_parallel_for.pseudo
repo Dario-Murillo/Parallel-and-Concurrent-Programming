@@ -22,17 +22,19 @@ procedure parallel_odd_even_sort(array, n, thread_count):
         default(none) shared(array, n, std::cout)
         for i := 1 to n do
             if array[i-1] > array[i] do
+            #pragma critical
             swap(array[i-1], array[i])
-        end
-      end
+        end if
+      end for
     else
     #pragma omp parallel for num_threads(thread_count) \
     default(none) shared(array, n, std::cout)
       for i := 1 to n-1 do
         if array[i] > array[i+1] do
+          #pragma critical
           swap(array[i], array[i+1])
-        end
-      end
-    end
-  end
+        end if
+      end for
+    end if
+  end for
 end procedure
