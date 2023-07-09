@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
 
     free(private_data);
     free(shared_data->chopsticks);
-    free(shared_data); 
+    free(shared_data);
   } else {
-    printf("Usage\n 1. Philosopher Count\n 2. Max delay\n 3.Min delay\n");
+    printf("Usage\n 1. Philosopher Count\n 2. Max delay\n 3. Min delay\n");
   }
   return 0;
 }
