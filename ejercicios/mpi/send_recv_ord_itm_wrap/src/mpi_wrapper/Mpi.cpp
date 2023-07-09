@@ -2,9 +2,9 @@
 
 #include "Mpi.hpp"
 
-Mpi::Mpi(int* argc, char** argv[]) {
+Mpi::Mpi(int &argc, char** &argv) {
   try {
-    if (MPI_Init(argc, argv) == MPI_SUCCESS) {
+    if (MPI_Init(&argc, &argv) == MPI_SUCCESS) {
       this->process_number = -1;
       if (MPI_Comm_rank(MPI_COMM_WORLD, &process_number) != MPI_SUCCESS) {
         throw MpiError("Error al obtener el numero de proceso");

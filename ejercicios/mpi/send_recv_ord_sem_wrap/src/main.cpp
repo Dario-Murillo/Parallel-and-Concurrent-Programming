@@ -11,7 +11,7 @@
 */
 int main(int argc, char* argv[]) {
   try {
-    Mpi mpi(&argc, &argv);
+    Mpi mpi(argc, argv);
     const int rank = mpi.getProcessNumber();
     const int count = mpi.getProcessCount();
     const int previous = (count + rank - 1) % count;

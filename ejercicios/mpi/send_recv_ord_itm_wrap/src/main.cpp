@@ -12,7 +12,7 @@ const size_t MESSAGE_CAPACITY = 512;
 */
 int main(int argc, char* argv[]) {
   try {
-    Mpi mpi(&argc, &argv);
+    Mpi mpi(argc, argv);
     const int process_number = mpi.getProcessNumber();
     const int process_count = mpi.getProcessCount();
     std::string process_hostname = mpi.getHostname();
